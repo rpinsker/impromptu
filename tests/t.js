@@ -1,14 +1,71 @@
 
+/* test for parsing json file in javascript using json file with the following:
+*
+  {
+    "tune": {
+        "timeSignature": ["3","4"],
+        "clef": "0",
+        "title":"tune title!",
+        "contributors": ["contributor one","contributor two"],
+		"notes": [
+          {
+            "duration": "0",
+            "frequency": "25.0",
+            "onset": "5.67",
+            "pitch": {
+              "letter": "b",
+              "octave": "2",
+              "accidental": "2",
+            }
+          },
+          {
+            "duration": "3",
+            "frequency": "105.0",
+            "onset": "23.93",
+            "pitch": {
+              "letter": "r",
+              "octave": "5",
+              "accidental": "1",
+            }
+          }
+        ],
+        keySignature: {
+          "isMajor":"true",
+          "pitch": {
+            "letter":"b",
+            "octave":"2",
+            "accidental":"2",
+          }
+        }
+    }
+  }
+*
+* */
+describe ("parse json", function() {
+    beforeEach(function() {
+    parseJSON(tune.json); // parses the json file and stores the info accordingly
+  });
+
+  it("json parsing", function() {
+    expect(getTuneTitle()).toEqual("tune title!");
+    expect(getClef()).toEqual(0);
+    expect(getContributors).toEqual(["contributor one","contributor 2"]);
+    expect(length(getNotes())).toEqual(2);
+    expect(getLetter(getPitch(getKeySignature()))).toEqual("b");
+  });
+
+});
+
 /* changing title, adding name, and removing name
    all work as follows:
     - after the user inputs a string to change the title, add a name,
       or remove a name, the backend handles testing the constraints of
       that input and updates the object accordingly.
-    - the frontend then receives the new Tune object and a boolean as to whether
+    - the frontend then receives the new Tune object (as a JSON file) and a boolean as to whether
       the Tune object was updated (ie if the input matches the constraints or if
       the update was a failure).
     - the frontend uses the functions changeHTML<...> with the boolean to then update
-      the html text boxes. these tests are just testing whether the pages display the
+      the html text boxes if necessary. these tests are just testing whether the pages display the
       correct tune titles or names after changeHTMLTuneTitle is called with either the
       true or false input
  */
@@ -16,38 +73,46 @@
 describe("changing title", function() {
   beforeEach(function() {
     setUpHTMLFixture();
+    parseJSON(tune.json); // parses the json file and stores the info accordingly in variables
+                          // that can be set and retrieved from the javascript files
   });
 
-  changeHTMLTuneTitle(true); // takes a boolean isSuccess based on if the change was successful or not (ie does new title fit constraints?)
-                             // the title is changed if isSuccess is true
 
   it("valid title change renders in html", function() {
-    expect($('#tuneTitle').toHaveText(getTuneTitle())); // getTuneTitle() will be a function that returns the tune title from the backend's response after updating the Tune object
+    setTuneTitle("good title");
+    changeHTMLTuneTitle(true); // takes a boolean isSuccess based on if the change was successful or not (ie does new title fit constraints?)
+                               // the title is changed if isSuccess is true.
+    expect($('#tuneTitle').toHaveText("good title")); // getTuneTitle() will be a function that returns the tune title from the backend's response after updating the Tune object
   });
 
-  changeHTMLTuneTitle(false);
-
   it("invalid title change does not change html", function() {
-    expect($('#tuneTitle').toHaveText(getTuneTitle())); // the title should still match the tune object's title
+    setTuneTitle("good title");
+    changeHTMLTuneTitle(false);
+    expect($('#tuneTitle').toHaveText("tune title!")); // the title should not have changed from the original JSON file
+                                                       // even though setTuneTitle changed the title because false was sent to changeHTMLTuneTitle
   });
 });
 
 describe("adding name", function() {
   beforeEach(function() {
     setUpHTMLFixture();
+    parseJSON(tune.json); // parses the json file and stores the info accordingly in variables
+                          // that can be set and retrieved from the javascript files
   });
-
-  changeHTMLName(true); // takes a boolean isSuccess based on if the change was successful or not (ie does new name fit constraints?)
-                         // the name is added if isSuccess is true
 
   it("valid name change renders in html", function() {
-    expect($('#names').toHaveText(getTuneContributors()));
+    addName("contributor three");
+    changeHTMLName(true); // takes a boolean isSuccess based on if the change was successful or not (ie does new name fit constraints?)
+                          // the name is added if isSuccess is true
+    expect($('#names').toHaveText("contributor one, contributor two, contributor three"));
   });
 
-  changeHTMLName(false);
+
 
   it("invalid name change does not change html", function() {
-    expect($('#names').toHaveText(getTuneContributors())); // the names should still match the tune object's contributors
+    addName("contributor three");
+    changeHTMLName(false);
+    expect($('#names').toHaveText("contributor one, contributor two")); // the names should still match the original contributors according to the JSON file
   });
 
 });
@@ -55,22 +120,24 @@ describe("adding name", function() {
 describe("removing name", function() {
   beforeEach(function() {
     setUpHTMLFixture();
+    parseJSON(tune.json); // parses the json file and stores the info accordingly in variables
+                          // that can be set and retrieved from the javascript files
   });
 
-  changeHTMLName(true); // takes a boolean isSuccess based on if the deletion was successful or not (ie was the name the user wanted to delete actually present?)
-                         // the name is removed if isSuccess is true
 
   it("valid name change renders in html", function() {
-    expect($('#names').toHaveText(getTuneContributors()));
+    removeName("contributor one")
+    changeHTMLName(true); // takes a boolean isSuccess based on if the deletion was successful or not (ie was the name the user wanted to delete actually present?)
+                          // the name is removed if isSuccess is true
+    expect($('#names').toHaveText("contributor two"));
   });
-
-  changeHTMLName(false);
 
   it("invalid name change does not change html", function() {
-    expect($('#names').toHaveText(getTuneContributors())); // the names should still match the tune object's contributors
+    // user tries removing a non-existent name
+    changeHTMLName(false);
+    expect($('#names').toHaveText("contributor one, contributor two")); // the names should still match the contributors according to the JSON file
   });
 });
-
 
 describe("uploading midi", function() {
   // uses some code from https://www.noppanit.com/javascript-tdd-on-file-upload/
