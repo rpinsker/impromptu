@@ -82,7 +82,7 @@ describe("changing title", function() {
     setTuneTitle("good title");
     changeHTMLTuneTitle(true); // takes a boolean isSuccess based on if the change was successful or not (ie does new title fit constraints?)
                                // the title is changed if isSuccess is true.
-    expect($('#tuneTitle').toHaveText("good title")); // getTuneTitle() will be a function that returns the tune title from the backend's response after updating the Tune object
+    expect($('#tuneTitle').toHaveText("good title"));
   });
 
   it("invalid title change does not change html", function() {
