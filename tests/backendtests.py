@@ -1,6 +1,8 @@
 import unittest
 import midi
 
+
+#Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
     
     def pitchEqualTest(self):
@@ -207,11 +209,6 @@ class TestImpromptuBackend(unittest.TestCase):
         
         
     def ComputeNotesTest(self):
-        #Notes have duration, frequency, onset, pitch
-        #aubio gives us frequency and onset
-        #computeNotes calculates pitches and duration
-        #assume 0 = natural (no accidental)
-        #quarter note = 1 second
         tune = Tune((4, 4), Clef.TREBLE, "title1", ["a", "b"])
             
         #testing C major scale with all quarter notes
@@ -343,9 +340,6 @@ class TestImpromptuBackend(unittest.TestCase):
         self.assertTrue(tune.keyEquals(expectedKey))
 
     def tuneEqualsTest(self):
-        #should change this to build everything from bottom up
-    
-        #Tune(midi, time sig, clef, name, collaborators)
         midifile = midi.read_midifile("miditest.midi")
         tune = Tune(midifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
         note1 = Note( 261.63, 0.0)
