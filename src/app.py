@@ -4,6 +4,7 @@
 
 from abjad import *
 from flask import Flask
+from flask import render_template
 app = Flask(__name__)
 
 @app.route("/")
@@ -13,9 +14,8 @@ def tune():
     staff = Staff(notes)
     #show(staff)
     systemtools.IOManager.save_last_pdf_as("../resources/tune.pdf")
-    return "hello"
+    return render_template('home.html')
 
 if __name__ == "__main__":
-    tune()
     app.run()
 
