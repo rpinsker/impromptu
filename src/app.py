@@ -13,7 +13,7 @@ def tune():
     notes = [Note(pitch, duration) for pitch in range(8)]
     staff = Staff(notes)
     #show(staff)
-    systemtools.IOManager.save_last_pdf_as("../resources/tune.pdf")
+    #systemtools.IOManager.save_last_pdf_as("../resources/tune.pdf")
     return render_template('home.html')
 
 if __name__ == "__main__":
