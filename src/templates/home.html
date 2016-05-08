@@ -7,6 +7,19 @@
     <meta charset="UTF-8">
     <title>Impromptu</title>
 </head>
+<script type="text/javascript" language="JavaScript">
+    function check() {
+      var ext = document.f.pic.value;
+      ext = ext.substring(ext.length-3,ext.length);
+      ext = ext.toLowerCase();
+      if(ext != 'mid') {
+        alert('You selected a .'+ext+
+              ' file; please select a .mid file instead!');
+        return false; }
+      else
+        return true; }
+</script>
+<body>
 <body>
 <div class="header-bar">
     <div class="spacer"></div>
@@ -44,6 +57,20 @@
             <div class="button-box">
                 <button>Upload a MIDI File &#9834;</button>
             </div>
+            <script>
+               function chooseFile() {
+                  document.getElementById("fileInput").click();
+               }
+            </script>
+
+            <div style="height:0px;overflow:hidden">
+               <input type="file" id="fileInput" name="fileInput" accept=".mid,.midi"/>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
+                <br/>
+                <input type="submit" value="CONVERT">
+            </form>
         </div>
     </div>
 </div>
