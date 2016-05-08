@@ -21,6 +21,9 @@ class Accidental:
     NATURAL, SHARP, FLAT = range(3)
 
 
+class Duration(object):
+    SIXTEENTH, EIGHTH, QUARTER, HALF, WHOLE = range(5)
+
 #should refactor later to make variables private and use getters and setters instead
 #should be refactored so notes that don't exist cannot be created i.e. b sharp
 class Pitch(object):
@@ -59,15 +62,10 @@ class Note(object):
         return equal
 
 
-
-
 class Key(object):
-    isMajor = True
-    pitch = Pitch()
-
-    def __init__(self, isMajor, pitch):
-        self.isMajor = isMajor
-        self.pitch = pitch
+    def __init__(self, **kwargs):
+        self.isMajor = kwargs.get('isMajor', True)
+        self.pitch = kwargs.get('pitch', Pitch())
 
     def keyEqual(self, k):
         equal = False
@@ -76,22 +74,20 @@ class Key(object):
                 equal = True
         return equal
 
-class Duration(object):
-    SIXTEENTH, EIGHTH, QUARTER, HALF, WHOLE = range(5)
 
 
 class TestImpromptuBackend(unittest.TestCase):
     
     def testpitchequal(self):
         #Testing equality of the same note
-        pitch = Pitch(**dict(letter='b', octave=4, accidental=Accidental.FLAT))
-        samePitch = Pitch(**dict(letter='b', octave=4, accidental=Accidental.FLAT))
+        pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        samePitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
         self.assertTrue(pitch.pitchEqual(samePitch))
         
         #Testing equality of different notes
-        differentLetter = Pitch(**dict(letter='c', octave=4, accidental=Accidental.FLAT))
-        differentOctave = Pitch(**dict(letter='b', octave=5, accidental=Accidental.FLAT))
-        differentAccidental = Pitch(**dict(letter='b', octave=4, accidental=Accidental.NATURAL))
+        differentLetter = Pitch(letter='c', octave=4, accidental=Accidental.FLAT)
+        differentOctave = Pitch(letter='b', octave=5, accidental=Accidental.FLAT)
+        differentAccidental = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
         self.assertFalse(pitch.pitchEqual(differentLetter))
         self.assertFalse(pitch.pitchEqual(differentOctave))
         self.assertFalse(pitch.pitchEqual(differentAccidental))
