@@ -1,0 +1,63 @@
+/*
+* Imprompty First Iteration
+*/
+
+.header-bar{
+    background-color: #F8F8F8;
+    top: 0px;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #D1D1D1;
+    height: auto;
+    width: auto;
+}
+.header {
+    margin-left: 16%;
+}
+.spacer {
+    height: 60px;
+}
+#rcorners {
+    border-radius: 20px;
+    border: 2px solid #222222;
+    padding: 20px;
+    width: 750px;
+    height: 30px;
+}
+
+.buttons {
+    padding: 50px;
+}
+
+.title-box {
+    width: 300px;
+    margin-left: -50px;
+}
+
+.button-box {
+    position: fixed;
+    background-color: black;
+    padding: 10px;
+    bottom: 0;
+}
+
+button {
+    background-color: white;
+}
+
+button:hover {
+    /*background-color: #555;
+    border-color: black;
+    color: #F1F1F1;*/
+    background-color: #E1E1E1;
+}
+
+.button-small {
+    width: 40px;
+    padding: 5px;
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover {
+    background-color: #E1E1E1;
+}
