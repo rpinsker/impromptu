@@ -41,12 +41,8 @@ class Pitch(object):
 
 
 
-class Note(object):    
+class Note(object):
     def __init__(self, **kwargs):
-        self.letter = kwargs.get('letter', None)
-        self.octave = kwargs.get('octave', None)
-        self.accidental = kwargs.get('accidental', Accidental.NATURAL)
-        
         self.frequency = kwargs.get('frequency', None)
         self.duration = kwargs.get('duration', Duration.QUARTER)
         self.onset = kwargs.get('onset', None)
