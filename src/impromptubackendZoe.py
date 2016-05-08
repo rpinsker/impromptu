@@ -17,12 +17,14 @@
 import unittest
 import math
 
-class Accidental:
-    NATURAL, SHARP, FLAT = range(3)
+NATURAL, SHARP, FLAT = range(3)
 
 
-class Duration(object):
-    SIXTEENTH, EIGHTH, QUARTER, HALF, WHOLE = range(5)
+SIXTEENTH = (1,16)
+EIGHTH = (1,8)
+QUARTER = (1,4)
+HALF = (1,2)
+WHOLE = (1,1)
 
 #should refactor later to make variables private and use getters and setters instead
 #should be refactored so notes that don't exist cannot be created i.e. b sharp
@@ -31,7 +33,7 @@ class Pitch(object):
     def __init__(self, **kwargs):
         self.letter = kwargs.get('letter', None)
         self.octave = kwargs.get('octave', None)
-        self.accidental = kwargs.get('accidental', Accidental.NATURAL)
+        self.accidental = kwargs.get('accidental', NATURAL)
 
 
     def pitchEqual(self, p):
@@ -47,7 +49,7 @@ class Pitch(object):
 class Note(object):
     def __init__(self, **kwargs):
         self.frequency = kwargs.get('frequency', None)
-        self.duration = kwargs.get('duration', Duration.QUARTER)
+        self.duration = kwargs.get('duration', QUARTER)
         self.onset = kwargs.get('onset', None)
         self.pitch = kwargs.get('pitch', Pitch())
     #duration needs to be calculated somewhere
@@ -61,6 +63,7 @@ class Note(object):
                 equal = True
         return equal
 
+'''
 
 class Key(object):
     def __init__(self, **kwargs):
@@ -70,31 +73,50 @@ class Key(object):
     def keyEqual(self, k):
         equal = False
         if k.isMajor == self.isMajor:
-            if Pitch.pitchEqual(self.pitch, k.pitch):
+            p = self.pitch
+            if p.pitchEqual(self.pitch, k.pitch):
                 equal = True
         return equal
-
+'''
 
 
 class TestImpromptuBackend(unittest.TestCase):
     
     def testpitchequal(self):
         #Testing equality of the same note
-        pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
-        samePitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        pitch = Pitch(letter='b', octave=4, accidental=FLAT)
+        samePitch = Pitch(letter='b', octave=4, accidental=FLAT)
         self.assertTrue(pitch.pitchEqual(samePitch))
         
         #Testing equality of different notes
-        differentLetter = Pitch(letter='c', octave=4, accidental=Accidental.FLAT)
-        differentOctave = Pitch(letter='b', octave=5, accidental=Accidental.FLAT)
-        differentAccidental = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
+        differentLetter = Pitch(letter='c', octave=4, accidental=FLAT)
+        differentOctave = Pitch(letter='b', octave=5, accidental=FLAT)
+        differentAccidental = Pitch(letter='b', octave=4, accidental=NATURAL)
         self.assertFalse(pitch.pitchEqual(differentLetter))
         self.assertFalse(pitch.pitchEqual(differentOctave))
         self.assertFalse(pitch.pitchEqual(differentAccidental))
     
+    '''
+
+    def testKeyEqual(self):
+        pitch = Pitch(letter = 'b',accidental=FLAT)
+        key = Key(isMajor=True, pitch=FLAT)
+        sameKey = Key(isMajor=True, pitch=Pitch(letter='b', accidental=FLAT))
+        
+        self.assertTrue(key.keyEqual(sameKey))
+        
+        diffLetter = Key(isMajor=True, pitch=Pitch(letter='e', accidental=FLAT))
+        diffAccidental = Key(isMajor=True, pitch=Pitch(letter='b', accidental=NATURAL))
+        diffIsMajor = Key(isMajor=True, pitch=Pitch(letter='b', accidental=FLAT))
+        
+        self.assertFalse(key.keyEqual(diffLetter))
+        self.assertFalse(key.keyEqual(diffAccidental))
+        self.assertFalse(key.keyEqual(diffIsMajor))
+
+'''
 '''
     def pitchSetterGetterTest(self):
-        pitch = Pitch(**dict(letter='b', octave=4, accidental=Accidental.FLAT))
+        pitch = Pitch(**dict(letter='b', octave=4, accidental=FLAT))
             note = Note(493.88, 0.0)
             note.setPitch(pitch)
             self.assertTrue(pitch.pitchEqual(note.getPitch()))
@@ -106,13 +128,15 @@ suite = unittest.TestLoader().loadTestsFromTestCase(TestImpromptuBackend)
 unittest.TextTestRunner(verbosity=3).run(suite)
 
 
-#key1 = Key(False, Pitch('a', 0, Accidental.flat))
-#key2 = Key(False, Pitch('b', 0, Accidental.flat))
+#key1 = Key(False, Pitch('a', 0, flat))
+#key2 = Key(False, Pitch('b', 0, flat))
 
 
 #print Key.keyEqual(key1, key2)
 
-               #note1 = Note(1.7, 0.7)
-               #note2 = Note(1.7, 0.7)
-               #print Note.noteEqual(note1, note2)
+note1 = Note(frequency=1.7, onset=0.7, duration=(1,4))
+note2 = Note(frequency=1.7, onset=0.7, duration= QUARTER)
+note3 = Note(frequency=1.7, onset=0.7, duration=(1,16))
+print Note.noteEqual(note1, note2)
+print Note.noteEqual(note1, note3)
 
