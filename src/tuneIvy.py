@@ -1,4 +1,4 @@
-#  Tune(.mid file, timeSignature, clef, “title”, [“Contributors”], Key): Tune
+
 # +tunetoJSON(): file<file.json>
 # + readFrequency(MIDI[i]): float
 # + readOnset(MIDI[i]): float
