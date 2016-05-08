@@ -39,6 +39,32 @@ class Pitch(object):
                     equal = True
         return equal
 
+
+
+class Note(object):    
+    def __init__(self, **kwargs):
+        self.letter = kwargs.get('letter', None)
+        self.octave = kwargs.get('octave', None)
+        self.accidental = kwargs.get('accidental', Accidental.NATURAL)
+        
+        self.frequency = kwargs.get('frequency', None)
+        self.duration = kwargs.get('duration', Duration.QUARTER)
+        self.onset = kwargs.get('onset', None)
+        self.pitch = kwargs.get('pitch', Pitch())
+    #duration needs to be calculated somewhere
+    
+    def noteEqual(self, n):
+        equal = False
+        #if math.isclose (n.frequency, self.frequency):
+        #if math.isclose (n.onset, self.onset):
+        if n.duration == self.duration:
+            if Pitch.pitchEqual(self.pitch, n.pitch):
+                equal = True
+        return equal
+
+
+
+
 class Key(object):
     isMajor = True
     pitch = Pitch()
@@ -55,32 +81,7 @@ class Key(object):
         return equal
 
 class Duration(object):
-    sixteenth = 0
-    eighth = 1
-    quarter = 2
-    half = 3
-    whole = 4
-
-
-class Note(object):
-    frequency = 0.0
-    onset = 0.0
-    duration = Duration.quarter
-    pitch = Pitch()
-    
-    def __init__(self, frequency, onset):
-        self.frequency = frequency
-        self.onset = onset
-        #duration needs to be calculated somewhere
-
-    def noteEqual(self, n):
-        equal = False
-    #if math.isclose (n.frequency, self.frequency):
-    #if math.isclose (n.onset, self.onset):
-        if n.duration == self.duration:
-            if Pitch.pitchEqual(self.pitch, n.pitch):
-                equal = True
-        return equal
+    SIXTEENTH, EIGHTH, QUARTER, HALF, WHOLE = range(5)
 
 
 class TestImpromptuBackend(unittest.TestCase):
@@ -99,7 +100,7 @@ class TestImpromptuBackend(unittest.TestCase):
         self.assertFalse(pitch.pitchEqual(differentOctave))
         self.assertFalse(pitch.pitchEqual(differentAccidental))
     
-    '''
+'''
     def pitchSetterGetterTest(self):
         pitch = Pitch(**dict(letter='b', octave=4, accidental=Accidental.FLAT))
             note = Note(493.88, 0.0)
