@@ -55,19 +55,22 @@ class Key(object):
 
 # refer to vartec's answer at http://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
 class Tune(object):
-	def __init__(self, **kwargs):
-		if 'midi' in kwargs:
-			pass
-		else:
-			print "No MIDI file"
-			self.midi = None
-		self.notes = [Note('duration' = Duration.QUARTER, Pitch('letter'='a', 'octave'=4, 'accidental'=Accidental.SHARP)), Note('duration'=Duration.QUARTER, Pitch('letter'='c', 'octave'=4))]
-		self.timeSignature = kwargs.get('timeSignature', default=(4, 4))
-		self.keySignature = kwargs.get('keySignature', default=Key(True, Pitch('c', 0)))
-		self.clef = kwargs.get('clef', default=Clefs.TREBLE)
-		self.title = kwargs.get('title', default='Insert Title')
-		self.contributors = kwargs.get('contributors', default=['Add Contributors'])
+    def __init__(self, **kwargs):
+        if 'midi' not in kwargs:
+            print "No MIDI file"
+            self.midi = None
+        self.timeSignature = kwargs.get('timeSignature', (4, 4))
+        note1 = Note(duration = Duration.QUARTER, pitch = Pitch(letter='a', octave=4, accidental=Accidental.SHARP))
+        note2 = Note(duration = Duration.QUARTER, pitch = Pitch(letter='c', octave=4))
+        self.notes = [note1, note2]
+        
+        self.keySignature = kwargs.get('keySignature', Key(isMajor = True, pitch = Pitch(letter='c', octave = 0)))
+        self.clef = kwargs.get('clef', Clef.TREBLE)
+        self.title = kwargs.get('title', 'Insert Title')
+        self.contributors = kwargs.get('contributors', ['Add Contributors'])
 
-	@classmethod
-	def TuneWrapper(cls, midi):
-		return cls('midi'=midi)
+    @classmethod
+    def TuneWrapper(cls, midifile):
+        return cls(midi=midifile)
+
+tune = Tune.TuneWrapper(midi.read_midifile("c-major-scale-treble.mid")) 
