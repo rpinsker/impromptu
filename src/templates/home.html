@@ -31,9 +31,21 @@
     }
 
     .buttons {
-        padding: 50px;
+        padding: 20px;
     }
 </style>
+<script type="text/javascript" language="JavaScript">
+    function check() {
+      var ext = document.f.pic.value;
+      ext = ext.substring(ext.length-3,ext.length);
+      ext = ext.toLowerCase();
+      if(ext != 'mid') {
+        alert('You selected a .'+ext+
+              ' file; please select a .mid file instead!');
+        return false; }
+      else
+        return true; }
+</script>
 <body>
 <div class="header-bar">
     <div class="spacer"></div>
@@ -48,8 +60,30 @@
         <div class="pdf ten columns">
             <embed src={{ filename }}  width="800px" height = "800px" align="center"></embed>
         </div>
+
         <div class="two columns buttons">
-            <button>Upload a MIDI File</button>
+            <!--
+            <h6>Upload a MIDI File:</h6>
+            <form method="post" name=f enctype="multipart/form-data" onsubmit="return check();"><p>
+                <br>
+                <input type="file" name="pic" size="20" accept="audio/">
+                <input type="submit" value="Upload Midi">
+            </form>
+            -->
+            <script>
+               function chooseFile() {
+                  document.getElementById("fileInput").click();
+               }
+            </script>
+
+            <div style="height:0px;overflow:hidden">
+               <input type="file" id="fileInput" name="fileInput" accept=".mid,.midi"/>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
+                <br/>
+                <input type="submit" value="CONVERT">
+            </form>
         </div>
     </div>
 </div>
