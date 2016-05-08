@@ -3,49 +3,10 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <meta charset="UTF-8">
     <title>Impromptu</title>
 </head>
-<style>
-    .header-bar{
-        background-color: #F8F8F8;
-        top: 0px;
-        margin: 0;
-        padding: 0;
-        border-bottom: 1px solid #D1D1D1;
-        height: auto;
-        width: auto;
-    }
-    .header {
-        margin-left: 16%;
-    }
-    .spacer {
-        height: 60px;
-    }
-    #rcorners {
-        border-radius: 20px;
-        border: 2px solid #222222;
-        padding: 20px;
-        width: 750px;
-        height: 30px;
-    }
-
-    .buttons {
-        padding: 20px;
-    }
-</style>
-<script type="text/javascript" language="JavaScript">
-    function check() {
-      var ext = document.f.pic.value;
-      ext = ext.substring(ext.length-3,ext.length);
-      ext = ext.toLowerCase();
-      if(ext != 'mid') {
-        alert('You selected a .'+ext+
-              ' file; please select a .mid file instead!');
-        return false; }
-      else
-        return true; }
-</script>
 <body>
 <div class="header-bar">
     <div class="spacer"></div>
@@ -60,30 +21,29 @@
         <div class="pdf ten columns">
             <embed src={{ filename }}  width="800px" height = "800px" align="center"></embed>
         </div>
-
         <div class="two columns buttons">
-            <!--
-            <h6>Upload a MIDI File:</h6>
-            <form method="post" name=f enctype="multipart/form-data" onsubmit="return check();"><p>
+            <div class="title-box">
+                <div class="row">
+                    <div class="eleven columns">
+                        <input class="u-full-width" type="text" placeholder="Title" id="titleInput">
+                    </div>
+                    <div class="one column">
+                        <input class="button-small" type="submit" value="&#10132;">
+                    </div>
+                </div>
                 <br>
-                <input type="file" name="pic" size="20" accept="audio/">
-                <input type="submit" value="Upload Midi">
-            </form>
-            -->
-            <script>
-               function chooseFile() {
-                  document.getElementById("fileInput").click();
-               }
-            </script>
-
-            <div style="height:0px;overflow:hidden">
-               <input type="file" id="fileInput" name="fileInput" accept=".mid,.midi"/>
+                <div class="row">
+                    <div class="eleven columns">
+                        <input class="u-full-width" type="text" placeholder="Contributers" id="contributersInput">
+                    </div>
+                    <div class="one column">
+                        <input class="button-small" type="submit" value="&#10132;">
+                    </div>
+                </div>
             </div>
-            <form method="post" enctype="multipart/form-data">
-                <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
-                <br/>
-                <input type="submit" value="CONVERT">
-            </form>
+            <div class="button-box">
+                <button>Upload a MIDI File &#9834;</button>
+            </div>
         </div>
     </div>
 </div>
