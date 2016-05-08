@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/skeleton.css">
+    <meta charset="UTF-8">
+    <title>Impromptu</title>
+</head>
+<style>
+    .header-bar{
+        background-color: #F8F8F8;
+        top: 0px;
+        margin: 0;
+        padding: 0;
+        border-bottom: 1px solid #D1D1D1;
+        height: auto;
+        width: auto;
+    }
+    .header {
+        margin-left: 16%;
+    }
+    .spacer {
+        height: 60px;
+    }
+    #rcorners {
+        border-radius: 20px;
+        border: 2px solid #222222;
+        padding: 20px;
+        width: 750px;
+        height: 30px;
+    }
+
+    .buttons {
+        padding: 50px;
+    }
+</style>
+<body>
+<div class="header-bar">
+    <div class="spacer"></div>
+    <div class="header" id="rcorners">
+        <h1>impromptu</h1>
+    </div>
+    <br>
+</div>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="pdf ten columns">
+            <embed src={{ filename }}  width="800px" height = "800px" align="center"></embed>
+        </div>
+        <div class="two columns buttons">
+            <button>Upload a MIDI File</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

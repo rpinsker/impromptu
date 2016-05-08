@@ -56,6 +56,33 @@ describe ("parse json", function() {
 
 });
 
+/* testing UI button click events
+    - tests whether the proper functions are being called during the javascript button click events
+ */
+
+describe("Button Click Event Tests", function() {
+  var spyEvent;
+
+  beforeEach(function () {
+    setUpHTMLFixture();
+  });
+
+  it("should invoke the uploadFile click event.", function () {
+      spyEvent = spyOnEvent('#uploadFile', 'click');
+      $('#uploadFile').trigger("click");
+
+      expect('click').toHaveBeenTriggeredOn('#uploadFile');
+      expect(spyEvent).toHaveBeenTriggered();
+  });
+
+  it("should invoke the changeTitle click event.", function () {
+        spyEvent = spyOnEvent("#changeTitle", 'click');
+        $('#changeTitle').trigger("click");
+      });
+});
+
+
+
 /* changing title, adding name, and removing name
    all work as follows:
     - after the user inputs a string to change the title, add a name,
