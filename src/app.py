@@ -21,7 +21,7 @@ def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
 
 @app.route("/")
 def tune():
-    duration = Duration(1, 8)
+    duration = Duration(1, 1)
     notes = [Note(pitch, duration) for pitch in range(8)]
     staff = Staff(notes)
     saveLilypondForDisplay(staff)
@@ -47,5 +47,5 @@ def tune():
     return render_template('home.html',filename='static/currentTune/' + filename + '.pdf')
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=1995)
 
