@@ -5,16 +5,16 @@ import midi
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
     
-    def pitchEqualTest(self):
+    def testpitchequal(self):
         #Testing equality of the same note
-        pitch = Pitch('b', 4, flat)
-        samePitch = Pitch('b', 4, flat)
+        pitch = Pitch(letter='b', octave=4, accidental=FLAT)
+        samePitch = Pitch(letter='b', octave=4, accidental=FLAT)
         self.assertTrue(pitch.pitchEqual(samePitch))
         
         #Testing equality of different notes
-        differentLetter = Pitch('c', 4, flat)
-        differentOctave = Pitch('b', 5, flat)
-        differentAccidental = Pitch('b', 4, natural)
+        differentLetter = Pitch(letter='c', octave=4, accidental=FLAT)
+        differentOctave = Pitch(letter='b', octave=5, accidental=FLAT)
+        differentAccidental = Pitch(letter='b', octave=4, accidental=NATURAL)
         self.assertFalse(pitch.pitchEqual(differentLetter))
         self.assertFalse(pitch.pitchEqual(differentOctave))
         self.assertFalse(pitch.pitchEqual(differentAccidental))
@@ -45,24 +45,24 @@ class TestImpromptuBackend(unittest.TestCase):
         expectedPitchRest = Pitch('r', None, None)
         self.assertTrue(expectedPitchRest.pitchEqual(pitchRest))
     
-    def pitchSetterGetterTest(self):
-        pitch = Pitch('b', 4, flat)
-        note = Note(493.88, 0.0)
+    def testPitchGetterSetter(self):
+        pitch = Pitch(**dict(letter='b', octave=4, accidental=FLAT))
+        note = Note(frequency=493.88, onset=0.0)
         note.setPitch(pitch)
         self.assertTrue(pitch.pitchEqual(note.getPitch()))
     
-    def isRestTest(self):
+    def testIsRest(self):
         #Testing rest
-        restPitch = Pitch('r', None, None)
-        rest = Note(None, 0.0)
+        restPitch = Pitch(letter='r')
+        rest = Note()
         rest.setPitch(restPitch)
-        self.assertTue(isRest(rest))
+        self.assertTrue(rest.isRest())
         
         #testing note
-        notePitch = Pitch('b', 4, natural)
-        note = Note(493.88, 0.0)
+        notePitch = Pitch(letter='b', octave=4, accidental=NATURAL)
+        note = Note()
         note.setPitch(notePitch)
-        self.assertFalse(isRest(note))
+        self.assertFalse(note.isRest())
     
     def noteEqualTest(self):
         #Testing same notes
@@ -186,28 +186,26 @@ class TestImpromptuBackend(unittest.TestCase):
         self.assertFalse(tune.notesListEquals(notes,diffNoteOrder))
 
 
-    def tuneNotesListGetterSetterTest():
-        note1 = Note(261.63, 0.0)
-        note2 = Note(293.66, 1.0)
-        note3 = Note(329.63, 2.0)
-        note4 = Note(349.23, 3.0)
+    def testNotesListGetterSetter(self):
+        note1 = Note(frequency=261.63,onset= 0.0)
+        note2 = Note(frequency=293.66,onset= 1.0)
+        note3 = Note(frequency=329.63,onset= 2.0)
+        note4 = Note(frequency=349.23,onset= 3.0)
         
         notes = [note1, note2, note3, note4]
         
-        samenote1 = Note( 261.63, 0.0)
-        samenote2 = Note( 293.66, 1.0)
-        samenote3 = Note( 329.63, 2.0)
-        samenote4 = Note( 349.23, 3.0)
+        samenote1 = Note(frequency= 261.63,onset= 0.0)
+        samenote2 = Note(frequency= 293.66,onset= 1.0)
+        samenote3 = Note(frequency= 329.63,onset= 2.0)
+        samenote4 = Note(frequency= 349.23,onset= 3.0)
         
         sameNotes = [samenote1, samenote2, samenote3, samenote4]
         
-        midifile = midi.read_midifile("miditest.midi")
-        tune = Tune(midifile, (4, 4), treble, "firstTune", ["me", "you"])
+        tune = Tune()
         
         tune.setNotesList(notes)
         self.assertTrue(tune.notesListEquals(tune.getNotesList(), sameNotes))
-        
-        
+    
     def ComputeNotesTest(self):
         tune = Tune((4, 4), Clef.TREBLE, "title1", ["a", "b"])
             
@@ -314,30 +312,32 @@ class TestImpromptuBackend(unittest.TestCase):
             
         self.assertTrue(tune.notesListEquals(t3notesOrdered, t3expectedNotesOrdered))
 
-    def keyEqualsTest(self):
-        pitch = Pitch('b', None, flat)
-        key = Key(true, pitch)
-        sameKey = Key(true, Pitch('b', None, flat))
+    def testKeyEqual(self):
+        pitch = Pitch(letter = 'b',accidental=FLAT)
+        key = Key(isMajor=True, pitch=Pitch(letter='b', accidental=FLAT))
+        sameKey = Key(isMajor=True, pitch=Pitch(letter='b', accidental=FLAT))
         
-        self.assertTrue(key.keyEquals(sameKey))
+        self.assertTrue(key.keyEqual(sameKey))
         
-        diffLetter = Key(true, Pitch('e', None, flat))
-        diffAccidental = Key(true, Pitch('b', None, natural))
-        diffIsMajor = Key(false, Pitch('b', None, flat))
+        diffLetter = Key(isMajor=True, pitch=Pitch(letter='e', accidental=FLAT))
+        diffAccidental = Key(isMajor=True, pitch=Pitch(letter='b', accidental=NATURAL))
+        diffIsMajor = Key(isMajor=False, pitch=Pitch(letter='b', accidental=FLAT))
         
-        self.assertFalse(key.keyEquals(diffLetter))
-        self.assertFalse(key.keyEquals(diffAccidental))
-        self.assertFalse(key.keyEquals(diffIsMajor))
-            
-    def tuneKeySetterGetterTest(self):
-        pitch = Pitch('b', None, flat)
-        key = Key(true, pitch)
-        tune = Tune(diffMidiFile, (4,4), treble, "firstTune", ["me", "you"])
+        self.assertFalse(key.keyEqual(diffLetter))
+        self.assertFalse(key.keyEqual(diffAccidental))
+        self.assertFalse(key.keyEqual(diffIsMajor))
+
+
+    def testTuneGetterSetter(self):
+        pitch = Pitch(letter='b', accidental=FLAT)
+        key = Key(isMajor=True, pitch=pitch)
+        tune = Tune()
         tune.setKey(key)
         
-        expectedKey = Key(true, Pitch('b', None, flat))
+        expectedKey = Key(isMajor=True, pitch=Pitch(letter='b', accidental=FLAT))
         
         self.assertTrue(tune.keyEquals(expectedKey))
+
 
     def tuneEqualsTest(self):
         midifile = midi.read_midifile("miditest.midi")
