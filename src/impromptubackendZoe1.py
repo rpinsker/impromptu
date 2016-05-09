@@ -1,16 +1,8 @@
-'''
-+ isRest(): boolean
-+ can do next iterfreqToPitch(frequency): Pitch
+#can do next iterfreqToPitch(frequency): Pitch
 
-
-+ getKey(): Key
-+ setKey(Key): void
-
-+ computeNoteOrder(list<Note>, list<Note>): list<Note>
-
-
-'''
 import unittest
+import tuneIvy
+
 
 NATURAL, SHARP, FLAT = range(3)
 
@@ -71,6 +63,11 @@ class Note(object):
                     if Pitch.pitchEqual(self.pitch, n.pitch):
                         equal = True
         return equal
+    def isRest(self):
+        if self.pitch.letter == 'r':
+            return True
+        else:
+            return False
 
 
 
@@ -85,8 +82,16 @@ class Key(object):
             if self.pitch.pitchEqual(k.pitch):
                 equal = True
         return equal
-
-
+    
+class Tune(tuneIvy.Tune):
+    def getKey(self):
+        return self.Key
+    def setKey(k):
+        self.Key = k
+    def setNotesList(l):
+        self.notes = l
+    def getNotesList():
+        return self.notes
 
 class TestImpromptuBackend(unittest.TestCase):
     
@@ -155,28 +160,60 @@ class TestImpromptuBackend(unittest.TestCase):
         self.assertTrue(samerestNote.noteEqual(samerestNote))
 
 
-
-
-
-
-#
-#    def pitchSetterGetterTest(self):
-#        pitch = Pitch(**dict(letter='b', octave=4, accidental=FLAT))
-#            note = Note(493.88, 0.0)
-#            note.setPitch(pitch)
-#            self.assertTrue(pitch.pitchEqual(note.getPitch()))
-#
-#
-
+    def testPitchGetterSetter(self):
+        pitch = Pitch(**dict(letter='b', octave=4, accidental=FLAT))
+        note = Note(frequency=493.88, onset=0.0)
+        note.setPitch(pitch)
+        self.assertTrue(pitch.pitchEqual(note.getPitch()))
+    
+    def testIsRest(self):
+        #Testing rest
+        restPitch = Pitch(letter='r')
+        rest = Note()
+        rest.setPitch(restPitch)
+        self.assertTrue(rest.isRest())
+        
+        #testing note
+        notePitch = Pitch(letter='b', octave=4, accidental=NATURAL)
+        note = Note()
+        note.setPitch(notePitch)
+        self.assertFalse(note.isRest())
+    
+    #I get an error when running this in the tuneIvy class
+    '''
+    def testNotesListGetterSetter(self):
+        note1 = Note(frequency=261.63,onset= 0.0)
+        note2 = Note(frequency=293.66,onset= 1.0)
+        note3 = Note(frequency=329.63,onset= 2.0)
+        note4 = Note(frequency=349.23,onset= 3.0)
+        
+        notes = [note1, note2, note3, note4]
+        
+        samenote1 = Note(frequency= 261.63,onset= 0.0)
+        samenote2 = Note(frequency= 293.66,onset= 1.0)
+        samenote3 = Note(frequency= 329.63,onset= 2.0)
+        samenote4 = Note(frequency= 349.23,onset= 3.0)
+        
+        sameNotes = [samenote1, samenote2, samenote3, samenote4]
+        
+        tune = Tune()
+        
+        tune.setNotesList(notes)
+        self.assertTrue(tune.notesListEquals(tune.getNotesList(), sameNotes))
+    
+    def testTuneGetterSetter(self):
+        pitch = Pitch(letter='b', accidental=FLAT)
+        key = Key(isMajor=True, pitch=pitch)
+        tune = Tune()
+        tune.setKey(key)
+        
+        expectedKey = Key(isMajor=True, pitch=Pitch(letter='b', accidental=FLAT))
+        
+        self.assertTrue(tune.keyEquals(expectedKey))
+        '''
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestImpromptuBackend)
 unittest.TextTestRunner(verbosity=3).run(suite)
 
 
-
-#note1 = Note(frequency=1.7, onset=0.7, duration=(1,4))
-#note2 = Note(frequency=1.7, onset=0.7, duration= QUARTER)
-#note3 = Note(frequency=1.7, onset=0.7, duration=(1,16))
-#print Note.noteEqual(note1, note2)
-#print Note.noteEqual(note1, note3)
 
