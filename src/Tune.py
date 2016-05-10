@@ -75,13 +75,14 @@ class Note(object):
         # second argument to get is default value
         self.frequency = kwargs.get('frequency', None)
         self.duration = kwargs.get('duration', Duration.QUARTER)
+        self.s_duration = kwargs.get('s_duration', None)
         self.onset = kwargs.get('onset', None)
         self.pitch = kwargs.get('pitch', Pitch())
     
     # wrapper constructor to create Rest Note
     @classmethod
     def Rest(cls, **kwargs):
-        return cls(duration = kwargs.get('duration'), frequency = 0.0, onset = kwargs.get('onset'), pitch = Pitch(letter = 'r'))
+        return cls(duration = kwargs.get('duration'), s_duration = kwargs.get('s_duration'), frequency = 0.0, onset = kwargs.get('onset'), pitch = Pitch(letter = 'r'))
 
     def setDuration(self, d):
         self.duration = d
@@ -96,7 +97,7 @@ class Note(object):
         return self.pitch
 
     def NotetoString(self):
-        return "Note: Freq - %s, Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.duration), str(self.onset), self.pitch.PitchtoString())
+        return "Note: Freq - %s, s_Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), str(self.onset), self.pitch.PitchtoString())
 
     def isRest(self):
         if self.pitch.letter == 'r':
@@ -116,7 +117,7 @@ class Note(object):
     def noteEqual(self, n):
         #if math.isclose (n.frequency, self.frequency):
         #if math.isclose (n.onset, self.onset):
-        if (n.duration == self.duration) and Pitch.pitchEqual(self.pitch, n.pitch):
+        if (n.s_duration == self.s_duration) and Pitch.pitchEqual(self.pitch, n.pitch):
             return True
         return False
 
@@ -193,12 +194,13 @@ class Tune(object):
     # takes in a duration in seconds, returns Duration enum value
     # 1 second = quarter note
     def secondsToDuration(self, dur):
-        print "dur is", dur
         approx_power = math.log(1/dur, 2)
-        print "approx power is", approx_power
         note_val = 4 - (round(approx_power) + 2)
-        print "note_val is", note_val
-        return note_val
+        Dur_array = [Duration.SIXTEENTH, Duration.EIGHTH, Duration.QUARTER, Duration.HALF, Duration.WHOLE]
+        if note_val <= 0:
+            return Duration.SIXTEENTH
+        else: 
+            return Dur_array[int (note_val)]
 
     # Reads a MIDI file in, returns a list of Notes
     # Notes are populated with onset and duration
@@ -209,7 +211,7 @@ class Tune(object):
         index = 0
         bpm = 0
         resolution = pattern.resolution
-        duration = 0
+        s_duration = 0
         # changes ticks to cumulative values
         pattern.make_ticks_abs() 
         for track in pattern:
@@ -220,8 +222,9 @@ class Tune(object):
                     if (isinstance(event, midi.NoteOffEvent) or (isinstance(event, midi.NoteOnEvent) and event.data[1] == 0)):
                         endset = self.ticksToTime(event.tick, bpm, resolution)
                         currNote = NotesList[index]
-                        duration = endset - currNote.onset
-                        currNote.duration = self.secondsToDuration(duration)
+                        s_duration = endset - currNote.onset
+                        currNote.s_duration = s_duration
+                        currNote.duration = self.secondsToDuration(s_duration)
                         index += 1
                     else:
                         onset = self.ticksToTime(event.tick, bpm, resolution)
@@ -238,10 +241,10 @@ class Tune(object):
         ####  is duration negative?
         for i in range(0, n_notes-1):
             allNotes.append(list_of_notes[i])
-            onset = list_of_notes[i].onset + list_of_notes[i].duration
+            onset = list_of_notes[i].onset + list_of_notes[i].s_duration
             s_duration = list_of_notes[i+1].onset - onset
             duration = self.secondsToDuration(s_duration)
-            rest = Note.Rest(duration=duration, onset = onset)
+            rest = Note.Rest(duration=duration, s_duration=s_duration, onset = onset)
             allNotes.append(rest)
             if i == n_notes-2:
                 allNotes.append(list_of_notes[n_notes-1])
