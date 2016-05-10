@@ -10,7 +10,7 @@ from flask import render_template
 #import tuneIvy
 #import tuneTest
 #import impromptubackendZoe
-import Tune # added this
+import Tune
 
 import subprocess
 import time
@@ -41,11 +41,10 @@ def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
 
 @app.route('/', methods=['GET', 'POST'])
 def tune():
-    duration = Duration(1, 4)
-    notes = [Note(pitch, duration) for pitch in range(8)]
-    staff = Staff(notes)
+    duration = abjad.Duration(1, 4)
+    notes = [abjad.Note(pitch, duration) for pitch in range(8)]
+    staff = abjad.Staff(notes)
     lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
-
     if request.method == 'POST':
         if request.form.has_key('titleInput'):
             title = request.form['titleInput']
@@ -60,7 +59,7 @@ def tune():
                 filename = file.filename  # secure_filename(file.filename)
                 print UPLOAD_FOLDER + "/" + filename
                 file.save(UPLOAD_FOLDER + "/" + filename)
-                # return redirect(url_for('uploaded_file', filename=filename))
+                return redirect(url_for('uploaded_file', filename=filename))
     saveLilypondForDisplay(lilypond_file)
     filename = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
     oldFilenameFile = open("oldFilename.txt",'r')
@@ -72,7 +71,6 @@ def tune():
     abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filename + ".pdf")
     subprocess.Popen(["rm","static/currentTune/"+oldFilename+".pdf"])
     return render_template('home.html',filename='static/currentTune/' + filename + '.pdf')
-
 
 def tuneToNotes(tune):
     aNotes = []
@@ -93,5 +91,6 @@ def tuneToNotes(tune):
     return aNotes
 
 if __name__ == "__main__":
+    app.debug = True
     app.run(port=1995)
 
