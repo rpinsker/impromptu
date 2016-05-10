@@ -7,9 +7,10 @@ from flask import render_template, Flask, request, redirect, url_for
 from flask import send_from_directory
 from flask import Flask
 from flask import render_template
-import tuneIvy
-import tuneTest
-import impromptubackendZoe
+#import tuneIvy
+#import tuneTest
+#import impromptubackendZoe
+import Tune # added this
 
 import subprocess
 import time
@@ -74,9 +75,9 @@ def tuneToNotes(tune):
         pitch = note.pitch
         letter = pitch.letter
         accidental = ""
-        if pitch.accidental == impromptubackendZoe.FLAT:
+        if pitch.accidental == Tune.Accidental.FLAT: # changed from impromptubackendZoe.FLAT
             accidental += "f"
-        elif pitch.accidental == impromptubackendZoe.SHARP:
+        elif pitch.accidental == Tune.Accidental.SHARP: # changed from impromptubackendZoe.SHARP
             accidental += "s"
         octave = str(pitch.octave)
         aNote = abjad.Note(letter+accidental+octave)
