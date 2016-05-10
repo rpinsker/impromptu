@@ -20,7 +20,6 @@
         return true; }
 </script>
 <body>
-<body>
 <div class="header-bar">
     <div class="spacer"></div>
     <div class="header" id="rcorners">
@@ -36,26 +35,43 @@
         </div>
         <div class="two columns buttons">
             <div class="title-box">
-                <div class="row">
-                    <div class="eleven columns">
-                        <input class="u-full-width" type="text" placeholder="Title" id="titleInput">
+                <form name="form-name" value="title" action="/" method="POST">
+                    <div class="row">
+                        <div class="eleven columns">
+                            <input class="u-full-width" type="text" placeholder="Title" name="titleInput">
+                        </div>
+                        <div class="one column">
+                            <input class="button-small" type="submit" value="&#10132;">
+                        </div>
                     </div>
-                    <div class="one column">
-                        <input class="button-small" type="submit" value="&#10132;">
-                    </div>
-                </div>
+                </form>
                 <br>
-                <div class="row">
-                    <div class="eleven columns">
-                        <input class="u-full-width" type="text" placeholder="Contributers" id="contributersInput">
+                <form action="/" method="POST" name="form-name" value="composer">
+                    <div class="row">
+                        <div class="eleven columns">
+                            <input class="u-full-width" type="text" placeholder="Contributors" name="contributorsInput">
+                        </div>
+                        <div class="one column">
+                            <input class="button-small" type="submit" value="&#10132;">
+                        </div>
                     </div>
-                    <div class="one column">
-                        <input class="button-small" type="submit" value="&#10132;">
-                    </div>
-                </div>
+                </form>
             </div>
             <div class="button-box">
-                <button>Upload a MIDI File &#9834;</button>
+                <button id="upload">Upload a MIDI File &#9834;</button>
+                <div class="modal" id="uploadModal">
+                    <div class="modal-content">
+                        <span class="close">x</span>
+                        <form action="/" method="POST" name="upload">
+                        <div style="height:0px;overflow:hidden">
+                            <input type="file" id="fileInput" name="fileInput" accept=".mid,.midi"/>
+                        </div>
+                            <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
+                            <br/>
+                            <input type="submit" value="CONVERT">
+                        </form>
+                    </div>
+                </div>
             </div>
             <script>
                function chooseFile() {
@@ -63,16 +79,9 @@
                }
             </script>
 
-            <div style="height:0px;overflow:hidden">
-               <input type="file" id="fileInput" name="fileInput" accept=".mid,.midi"/>
-            </div>
-            <form method="post" enctype="multipart/form-data">
-                <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
-                <br/>
-                <input type="submit" value="CONVERT">
-            </form>
         </div>
     </div>
 </div>
+<script src="/static/js/script.js"></script>
 </body>
 </html>
