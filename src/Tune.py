@@ -207,6 +207,7 @@ class Tune(object):
     # assumes a one track MIDI file with notes in chronological order
     def computeOnset(self, myfile):
         pattern = midi.read_midifile(myfile)
+        print pattern
         NotesList = []
         index = 0
         bpm = 0
@@ -254,9 +255,13 @@ class Tune(object):
     #def TunetoString(self):
     #    str = "Tune: Title - %s Contributors - %s \n\tTime Sig - %s, Key Sig - %s, Clef - " %(self.title, str(self.contributors), str(self.timeSignature), self.keySignature.KeytoString())
 
-tune = Tune.TuneWrapper("c-major-scale-treble.mid") 
-for note in tune.notes:
-    print note.NotetoString()
+# tune = Tune.TuneWrapper("c-major-scale-treble.mid") 
+# for note in tune.notes:
+    # print note.NotetoString()
+# tune2 = Tune.TuneWrapper("b-harmonic-minor-scale-on-bass-clef.mid")
+# for note in tune2.notes:
+    # print note.NotetoString()
+
 
 # list_of_notes = tune.computeOnset("c-major-scale-treble.mid")
 # print list_of_notes[0].NotetoString()
