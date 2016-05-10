@@ -2,7 +2,7 @@
 import midi
 import math
 import itertools
-from tuneTest import *
+# from tuneTest import *
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -158,12 +158,14 @@ class Tune(object):
             self.notes = self.computeOnset(self.midifile)
             # then compute pitches of Notes
             i = 0
-            for event in pattern[1]: # looking through first track
-                if isinstance(event, midi.NoteOnEvent):
-                    self.notes[i].setPitch(Pitch.MIDInotetoPitch(event.get_pitch()))
-                    i += 1
-            # lastly insert in Rests
-            ############################################
+            for track in pattern:
+                for event in track: # looking through first track
+                    if isinstance(event, midi.NoteOnEvent):
+                        self.notes[i].setPitch(Pitch.MIDInotetoPitch(event.get_pitch()))
+                        i += 1
+
+            self.notes = self.calculateRests(self.notes)
+
         
     # wrapper constructor with only MIDI file as parameter
     @classmethod
@@ -191,8 +193,11 @@ class Tune(object):
     # takes in a duration in seconds, returns Duration enum value
     # 1 second = quarter note
     def secondsToDuration(self, dur):
+        print "dur is", dur
         approx_power = math.log(1/dur, 2)
+        print "approx power is", approx_power
         note_val = 4 - (round(approx_power) + 2)
+        print "note_val is", note_val
         return note_val
 
     # Reads a MIDI file in, returns a list of Notes
@@ -220,7 +225,7 @@ class Tune(object):
                         index += 1
                     else:
                         onset = self.ticksToTime(event.tick, bpm, resolution)
-                        print onset
+                        # print onset
                         newNote = Note(onset = onset)
                         NotesList.append(newNote)
         return NotesList
@@ -228,23 +233,27 @@ class Tune(object):
     # Takes a list of Notes, returns a list of Notes that are rests
     def calculateRests(self, list_of_notes):
         n_notes = len(list_of_notes)
-        RestsList = []
-        #### WHY IS THE RANGE TO n_notes-2? also is duration negative?
-        for i in range(0, n_notes-2):
+        allNotes = []
+ 
+        ####  is duration negative?
+        for i in range(0, n_notes-1):
+            allNotes.append(list_of_notes[i])
             onset = list_of_notes[i].onset + list_of_notes[i].duration
             s_duration = list_of_notes[i+1].onset - onset
             duration = self.secondsToDuration(s_duration)
             rest = Note.Rest(duration=duration, onset = onset)
-            RestsList.append(rest)
-        return RestsList
+            allNotes.append(rest)
+            if i == n_notes-2:
+                allNotes.append(list_of_notes[n_notes-1])
+        return allNotes
 
     # TO DO
     #def TunetoString(self):
     #    str = "Tune: Title - %s Contributors - %s \n\tTime Sig - %s, Key Sig - %s, Clef - " %(self.title, str(self.contributors), str(self.timeSignature), self.keySignature.KeytoString())
 
-# tune = Tune.TuneWrapper("c-major-scale-treble.mid") 
-# for note in tune.notes:
-#     print note.NotetoString()
+tune = Tune.TuneWrapper("c-major-scale-treble.mid") 
+for note in tune.notes:
+    print note.NotetoString()
 
 # list_of_notes = tune.computeOnset("c-major-scale-treble.mid")
 # print list_of_notes[0].NotetoString()
