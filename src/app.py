@@ -59,7 +59,7 @@ def tune():
                 filename = file.filename  # secure_filename(file.filename)
                 print UPLOAD_FOLDER + "/" + filename
                 file.save(UPLOAD_FOLDER + "/" + filename)
-                return redirect(url_for('uploaded_file', filename=filename))
+                #return redirect(url_for('uploaded_file', filename=filename))
     saveLilypondForDisplay(lilypond_file)
     filename = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
     oldFilenameFile = open("oldFilename.txt",'r')

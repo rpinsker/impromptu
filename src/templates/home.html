@@ -62,10 +62,7 @@
                 <div class="modal" id="uploadModal">
                     <div class="modal-content">
                         <span class="close">x</span>
-                        <form action="/" method="POST" name="upload">
-                        <div style="height:0px;overflow:hidden">
-                            <input type="file" id="fileInput" name="fileInput" accept=".mid,.midi"/>
-                        </div>
+                        <form action="/" method="POST" name="upload" enctype=multipart/form-data>
                             <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
                             <br/>
                             <input type="submit" value="CONVERT">
