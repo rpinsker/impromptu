@@ -34,6 +34,8 @@ class AppTestCase(unittest.TestCase):
         # assert the status code of the response
         self.assertEqual(result.status_code, 200)
 
+    # make sure only one pdf is in currentTune at a time so that there
+    # is not an overload when new files are being uploaded
     def test_delete_old_PDF(self):
         #delete all old pdfs to start
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
