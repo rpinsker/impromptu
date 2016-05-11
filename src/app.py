@@ -99,7 +99,7 @@ def tuneToNotes(tune):
            aNote = abjad.Note(pitch,abjad.Duration(note.duration[0],note.duration[1]))
            aNotes.append(aNote)
         else:
-            rest = abjad.scoretools.Rest("r"+note.duration[1])
+            rest = abjad.scoretools.Rest("r"+str(note.duration[1]))
             aNotes.append(rest)
     return aNotes
 
