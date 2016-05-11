@@ -20,6 +20,7 @@ UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = set(['mid', 'midi'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+tuneObj = None
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -41,20 +42,36 @@ def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
 
 @app.route('/', methods=['GET', 'POST'])
 def tune():
-    duration = abjad.Duration(1, 4)
-    notes = [abjad.Note(pitch, duration) for pitch in range(8)]
-    staff = abjad.Staff(notes)
-    lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
-    saveLilypondForDisplay(lilypond_file)
+    global tuneObj
+    if tuneObj == None:
+        duration = abjad.Duration(1, 4)
+        notes = [abjad.Note(pitch, duration) for pitch in range(8)]
+        staff = abjad.Staff(notes)
+        lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+        lilypond_file.header_block.title = abjad.markuptools.Markup("SAMPLE TUNE DISPLAY")
+    else:
+        notes = tuneToNotes(tuneObj)
+        staff = abjad.Staff(notes)
+        lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+        lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
+        lilypond_file.header_block.composer = abjad.markuptools.Markup(tuneObj.contributors)
 
     if request.method == 'POST':
         if request.form.has_key('titleInput'):
             title = request.form['titleInput']
             title = title.upper()
             lilypond_file.header_block.title = abjad.markuptools.Markup(title)
+            if tuneObj:
+                tuneObj.title = title
+            filenamePDF = updatePDFWithNewLY(lilypond_file)
+            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         if request.form.has_key('contributorsInput'):
             composer = request.form['contributorsInput']
             lilypond_file.header_block.composer = abjad.markuptools.Markup(composer)
+            if tuneObj:
+                tuneObj.contributors = composer
+            filenamePDF = updatePDFWithNewLY(lilypond_file)
+            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         if request.files.has_key('fileInput'):
             file = request.files['fileInput']
             if file and allowed_file(file.filename):
@@ -63,22 +80,17 @@ def tune():
                 file.save(UPLOAD_FOLDER + "/" + filename)
                 #return redirect(url_for('uploaded_file', filename=filename))
                 tune = Tune.Tune.TuneWrapper(UPLOAD_FOLDER + "/" + filename)
+                tuneObj = tune
                 notes = tuneToNotes(tune)
                 staff = abjad.Staff(notes)
                 lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
-                saveLilypondForDisplay(lilypond_file)
-                filenamePDF = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
-                oldFilenameFile = open("oldFilename.txt",'r')
-                oldFilename = ""
-                for line in oldFilenameFile:
-                    oldFilename = line
-                oldFilenameFile = open("oldFilename.txt", 'w')
-                oldFilenameFile.write(filenamePDF)
-                abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filenamePDF + ".pdf")
-                subprocess.Popen(["rm","static/currentTune/"+oldFilename+".pdf"])
+                lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
+                lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
+                filenamePDF = updatePDFWithNewLY(lilypond_file)
                 return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
-    abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/blank.pdf")
-    return render_template('home.html',filename='static/currentTune/blank.pdf')
+    #abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filenamePDFTemp + ".pdf")
+    filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
+    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
 
 def tuneToNotes(tune):
     aNotes = []
@@ -101,7 +113,22 @@ def tuneToNotes(tune):
             aNotes.append(rest)
     return aNotes
 
+
+def updatePDFWithNewLY(lilypond_file):
+    saveLilypondForDisplay(lilypond_file)
+    filenamePDF = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
+    oldFilenameFile = open("oldFilename.txt", 'r')
+    oldFilename = ""
+    for line in oldFilenameFile:
+        oldFilename = line
+    oldFilenameFile = open("oldFilename.txt", 'w')
+    oldFilenameFile.write(filenamePDF)
+    abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filenamePDF + ".pdf")
+    subprocess.Popen(["rm", "static/currentTune/" + oldFilename + ".pdf"])
+    return filenamePDF
+
 if __name__ == "__main__":
+    tuneObj = None
     app.debug = True
     app.run(port=1995)
 
