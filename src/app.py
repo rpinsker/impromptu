@@ -45,6 +45,7 @@ def tune():
     notes = [abjad.Note(pitch, duration) for pitch in range(8)]
     staff = abjad.Staff(notes)
     lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+
     if request.method == 'POST':
         if request.form.has_key('titleInput'):
             title = request.form['titleInput']
@@ -60,17 +61,25 @@ def tune():
                 print UPLOAD_FOLDER + "/" + filename
                 file.save(UPLOAD_FOLDER + "/" + filename)
                 #return redirect(url_for('uploaded_file', filename=filename))
-    saveLilypondForDisplay(lilypond_file)
-    filename = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
-    oldFilenameFile = open("oldFilename.txt",'r')
-    oldFilename = ""
-    for line in oldFilenameFile:
-        oldFilename = line
-    oldFilenameFile = open("oldFilename.txt", 'w')
-    oldFilenameFile.write(filename)
-    abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filename + ".pdf")
-    subprocess.Popen(["rm","static/currentTune/"+oldFilename+".pdf"])
-    return render_template('home.html',filename='static/currentTune/' + filename + '.pdf')
+                tune = Tune.Tune.TuneWrapper(UPLOAD_FOLDER + "/" + filename)
+                notes = tuneToNotes(tune)
+                print "\n\n\n\n *********************** \n\n\n\n"
+                print notes
+                staff = abjad.Staff(notes)
+                lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+                saveLilypondForDisplay(lilypond_file)
+                filenamePDF = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
+                oldFilenameFile = open("oldFilename.txt",'r')
+                oldFilename = ""
+                for line in oldFilenameFile:
+                    oldFilename = line
+                oldFilenameFile = open("oldFilename.txt", 'w')
+                oldFilenameFile.write(filenamePDF)
+                abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filenamePDF + ".pdf")
+                subprocess.Popen(["rm","static/currentTune/"+oldFilename+".pdf"])
+                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
+    abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/blank.pdf")
+    return render_template('home.html',filename='static/currentTune/blank.pdf')
 
 def tuneToNotes(tune):
     aNotes = []
@@ -80,14 +89,18 @@ def tuneToNotes(tune):
         letter = pitch.letter
         accidental = ""
         if pitch.accidental == Tune.Accidental.FLAT: # changed from impromptubackendZoe.FLAT
-            accidental += "f"
+            accidental += "b"
         elif pitch.accidental == Tune.Accidental.SHARP: # changed from impromptubackendZoe.SHARP
-            accidental += "s"
+            accidental += "#"
         octave = str(pitch.octave)
-        aNote = abjad.Note(letter+accidental+octave)
-        # TODO get actual duration
-        aNote.written_duration = abjad.Duration(1,4)
-        aNotes.append(aNote)
+        print letter + accidental + octave
+        if not letter == "r":
+           pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
+           aNote = abjad.Note(pitch,abjad.Duration(note.duration[0],note.duration[1]))
+           aNotes.append(aNote)
+        else:
+            rest = abjad.scoretools.Rest("r"+note.duration[1])
+            aNotes.append(rest)
     return aNotes
 
 if __name__ == "__main__":
