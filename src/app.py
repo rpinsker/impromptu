@@ -90,6 +90,8 @@ def tune():
 
 # convert a Tune object to an array of notes usable by abjad
 def tuneToNotes(tune):
+    if tune == None:
+        return []
     aNotes = []
     for note in tune.notes:
         pitch = note.pitch
@@ -100,21 +102,22 @@ def tuneToNotes(tune):
         elif pitch.accidental == Tune.Accidental.SHARP:
             accidental += "#"
         octave = str(pitch.octave)
-        if not letter == "r":
-           pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
-           if (note.duration):
-               duration = abjad.Duration(note.duration[0],note.duration[1])
-           else:
-               duration = (Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
-           aNote = abjad.Note(pitch,duration)
-           aNotes.append(aNote)
-        else: # handle rests
-            if (note.duration):
-                duration = str(note.duration[1])
-            else:
-                duration = "4"
+        if letter:
+            if not letter == "r":
+               pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
+               if (note.duration):
+                   duration = abjad.Duration(note.duration[0],note.duration[1])
+               else:
+                   duration = (Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
+               aNote = abjad.Note(pitch,duration)
+               aNotes.append(aNote)
+            else: # handle rests
+                if (note.duration):
+                    duration = str(note.duration[1])
+                else:
+                    duration = "4"
                 rest = abjad.scoretools.Rest("r"+duration)
-            aNotes.append(rest)
+                aNotes.append(rest)
     return aNotes
 
 # makes a lilypond file either from globally stored tune object or makes a filler
@@ -160,7 +163,7 @@ def validTitleOrNames(str):
         return False
     if str.isspace():
         return False
-    if "\n" in str:
+    if "\\n" in str:
         return False
     if len(str) > 128:
         return False
@@ -173,7 +176,6 @@ if __name__ == "__main__":
     app.run(port=1995)
 
 
-#class Helpers(object):
 def setTune(tune):
     global tuneObj
     tuneObj = tune
