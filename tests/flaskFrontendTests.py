@@ -9,6 +9,8 @@ import subprocess
 import glob
 import time
 import abjad
+from StringIO import StringIO
+from flask import Request
 
 tune = None
 
@@ -19,7 +21,7 @@ class AppTestCase(unittest.TestCase):
         global tune
         app.config['TESTING'] = True
         self.app = app.test_client()
-        tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
+        tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
 
     # def tearDown(self):
         # os.close(self.db_fd)
@@ -173,8 +175,46 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(tune.contributors, "good name, good name, good name")
         # title and contributors have same constraints so no need to test bad contributors
 
+    def test_midi_upload(self):
+        global tune
+        setTune(tune)
 
-    # TODO test uploading file (real MIDI and bad) and changing titles and names (both in pdf and on backend),
+        # Testing a valid .mid file
+        f = open("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid", 'rb')
+        self.app.post(
+            '/',
+            data={
+                'fileInput': f,
+            },
+            content_type = 'multipart/form-data',
+        )
+
+        # The tune object should have found the midi file, in the uploads directory
+        tune = getTune()
+        self.assertEqual(tune.midifile, "static/uploads/e-flat-major-scale-on-bass-clef.mid")
+
+        # Testing a non midi file
+        f = open("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.pdf", 'rb')
+        self.app.post(
+            '/',
+            data={
+                'fileInput': f,
+            },
+            content_type='multipart/form-data',
+        )
+
+        # The tune object should not have chosen the pdf, should remain unchanged
+        tune = getTune()
+        self.assertEqual(tune.midifile, "static/uploads/e-flat-major-scale-on-bass-clef.mid")
+
+
+
+
+
+
+
+    # TODO: changing titles and names (both in pdf and on backend),
+
 
 if __name__ == '__main__':
     unittest.main()

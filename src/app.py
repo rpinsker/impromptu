@@ -12,7 +12,7 @@ from flask import render_template
 #import impromptubackendZoe
 import Tune
 
-import subprocess
+import os, subprocess
 import time
 app = Flask(__name__)
 
@@ -67,7 +67,7 @@ def tune():
         if request.files.has_key('fileInput'):
             file = request.files['fileInput']
             if file and allowed_file(file.filename):
-                filename = file.filename  # secure_filename(file.filename)
+                filename = os.path.basename(file.filename)  # secure_filename(file.filename)
                 file.save(UPLOAD_FOLDER + "/" + filename)
                 # call backend to get Tune object
                 tune = Tune.Tune.TuneWrapper(UPLOAD_FOLDER + "/" + filename)
