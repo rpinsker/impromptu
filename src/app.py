@@ -60,14 +60,14 @@ def tune():
         if request.form.has_key('titleInput'):
             title = request.form['titleInput']
             title = title.upper()
-            lilypond_file.header_block.title = abjad.markuptools.Markup(title)
+            lilypond_file.header_block.title = abjad.markuptools.Markup(str(title))
             if tuneObj:
                 tuneObj.title = title
             filenamePDF = updatePDFWithNewLY(lilypond_file)
             return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         if request.form.has_key('contributorsInput'):
             composer = request.form['contributorsInput']
-            lilypond_file.header_block.composer = abjad.markuptools.Markup(composer)
+            lilypond_file.header_block.composer = abjad.markuptools.Markup(str(composer))
             if tuneObj:
                 tuneObj.contributors = composer
             filenamePDF = updatePDFWithNewLY(lilypond_file)
