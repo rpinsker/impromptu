@@ -45,6 +45,7 @@ def tune():
     notes = [abjad.Note(pitch, duration) for pitch in range(8)]
     staff = abjad.Staff(notes)
     lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+    saveLilypondForDisplay(lilypond_file)
 
     if request.method == 'POST':
         if request.form.has_key('titleInput'):
@@ -63,8 +64,6 @@ def tune():
                 #return redirect(url_for('uploaded_file', filename=filename))
                 tune = Tune.Tune.TuneWrapper(UPLOAD_FOLDER + "/" + filename)
                 notes = tuneToNotes(tune)
-                print "\n\n\n\n *********************** \n\n\n\n"
-                print notes
                 staff = abjad.Staff(notes)
                 lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
                 saveLilypondForDisplay(lilypond_file)
@@ -93,7 +92,6 @@ def tuneToNotes(tune):
         elif pitch.accidental == Tune.Accidental.SHARP: # changed from impromptubackendZoe.SHARP
             accidental += "#"
         octave = str(pitch.octave)
-        print letter + accidental + octave
         if not letter == "r":
            pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
            aNote = abjad.Note(pitch,abjad.Duration(note.duration[0],note.duration[1]))
