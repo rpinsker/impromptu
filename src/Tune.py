@@ -2,7 +2,7 @@
 import midi
 import math
 import itertools
-# from tuneTest import *
+import sys
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -12,17 +12,17 @@ class Duration(object):
     WHOLE = (1,1)
 
 class Clef(object):
-	TREBLE, BASS = range(2)
+    TREBLE, BASS = range(2)
 
 class Accidental(object):
     NATURAL, SHARP, FLAT = range(3)
 
-class Helper(object):
-    def floatComp(self,a,b):
-        if(abs((a-b)) < 0.00005):
-            return True
-        else:
-            return False
+# class Helper(object):
+#     def floatComp(self,a,b):
+#         if(abs((a-b)) < 0.00005):
+#             return True
+#         else:
+#             return False
 
 #should refactor later to make variables private and use getters and setters instead
 #should be refactored so notes that don't exist cannot be created i.e. b sharp
@@ -53,6 +53,8 @@ class Pitch(object):
         self.accidental = accidental
 
     @classmethod
+    # takes a MIDI note and generates a Pitch instance (e.g. MIDI note 60 is pitch C4)
+    # one to one mapping between MIDI notes and pitches on the piano
     def MIDInotetoPitch(cls, MIDIint):
         octaveTemp = int(MIDIint-12)/12
         letterTemp = cls.letterNotes.get(int(MIDIint-12)%12)
@@ -61,7 +63,6 @@ class Pitch(object):
             accidentalTemp = Accidental.SHARP
         else:
             accidentalTemp = Accidental.NATURAL
-        print letterTemp, octaveTemp, accidentalTemp
         return cls(octave=octaveTemp, letter=letterTemp, accidental = accidentalTemp)
 
     def PitchtoString(self):
@@ -75,6 +76,7 @@ class Note(object):
         # second argument to get is default value
         self.frequency = kwargs.get('frequency', None)
         self.duration = kwargs.get('duration', Duration.QUARTER)
+        # duration in seconds
         self.s_duration = kwargs.get('s_duration', None)
         self.onset = kwargs.get('onset', None)
         self.pitch = kwargs.get('pitch', Pitch())
@@ -97,7 +99,8 @@ class Note(object):
         return self.pitch
 
     def NotetoString(self):
-        return "Note: Freq - %s, s_Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), str(self.onset), self.pitch.PitchtoString())
+        durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
+        return "Note: Freq - %s, Duration (seconds) - %s, Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), durationstring, str(self.onset), self.pitch.PitchtoString())
 
     def isRest(self):
         if self.pitch.letter == 'r':
@@ -136,18 +139,30 @@ class Key(object):
             return True
         return False
 
+    def KeytoString(self):
+        buf = 'Key Signature - %s ' %(self.pitch.PitchtoString())
+        if (self.isMajor):
+            buf = buf + 'Major'
+        else:
+            buf = buf + 'Minor'
+        return buf
+
+
 # refer to vartec's answer at http://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
 class Tune(object):
 
     def __init__(self, **kwargs):
         self.timeSignature = (4,4) # default time Signature
-        self.keySignature = kwargs.get('keySignature', Key(isMajor = True, pitch = Pitch(letter='c', octave = 0)))
+        self.keySignature = kwargs.get('keySignature')
         self.clef = kwargs.get('clef', Clef.TREBLE)
-        self.title = kwargs.get('title', 'Insert Title')
+        # default title is midi file name
+        self.title = kwargs.get('title', kwargs.get('midi'))
         self.contributors = kwargs.get('contributors', ['Add Contributors'])
         self.midifile = kwargs.get('midi')
         if self.midifile != None: # midi file passed as parameter
-            pattern = midi.read_midifile(self.midifile)
+            pattern = self.MIDItoPattern(self.midifile)
+            if (pattern.format!=1): # will only look at first track, don't want type 0 MIDI file has all of the channel data on one track
+                print "\n***\nWARNING: Conversion of format %d MIDI files with more than one track is currently not supported and is still in development\n***\n" %(pattern.format)
             for event in pattern[0]: # looking through midi header
                 if isinstance(event, midi.TimeSignatureEvent):
                 # [nn dd cc bb] refer to http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midifile/time.htm
@@ -164,7 +179,7 @@ class Tune(object):
                     if isinstance(event, midi.NoteOnEvent):
                         self.notes[i].setPitch(Pitch.MIDInotetoPitch(event.get_pitch()))
                         i += 1
-
+            # lastly, insert rests 
             self.notes = self.calculateRests(self.notes)
 
         
@@ -194,11 +209,16 @@ class Tune(object):
     # takes in a duration in seconds, returns Duration enum value
     # 1 second = quarter note
     def secondsToDuration(self, dur):
+        if (dur <= 0):
+            return Duration.SIXTEENTH
         approx_power = math.log(1/dur, 2)
         note_val = 4 - (round(approx_power) + 2)
         Dur_array = [Duration.SIXTEENTH, Duration.EIGHTH, Duration.QUARTER, Duration.HALF, Duration.WHOLE]
-        if note_val <= 0:
-            return Duration.SIXTEENTH
+        if note_val < 0:
+            return None
+        if note_val >= 4:
+            # next iteration: add greater variety of note durations, e.g. combination of notes
+            return Duration.WHOLE
         else: 
             return Dur_array[int (note_val)]
 
@@ -206,8 +226,7 @@ class Tune(object):
     # Notes are populated with onset and duration
     # assumes a one track MIDI file with notes in chronological order
     def computeOnset(self, myfile):
-        pattern = midi.read_midifile(myfile)
-        print pattern
+        pattern = self.MIDItoPattern(myfile)
         NotesList = []
         index = 0
         bpm = 0
@@ -234,37 +253,49 @@ class Tune(object):
                         NotesList.append(newNote)
         return NotesList
 
-    # Takes a list of Notes, returns a list of Notes that are rests
+    # Takes a list of pitched Notes, returns a list of Notes with the included rests
     def calculateRests(self, list_of_notes):
         n_notes = len(list_of_notes)
         allNotes = []
- 
         ####  is duration negative?
         for i in range(0, n_notes-1):
             allNotes.append(list_of_notes[i])
             onset = list_of_notes[i].onset + list_of_notes[i].s_duration
             s_duration = list_of_notes[i+1].onset - onset
             duration = self.secondsToDuration(s_duration)
-            rest = Note.Rest(duration=duration, s_duration=s_duration, onset = onset)
-            allNotes.append(rest)
+            if (duration == None): # duration is too small to consider as a rest
+                rest = Note.Rest(duration=duration, s_duration=s_duration, onset = onset)
+                allNotes.append(rest)
             if i == n_notes-2:
                 allNotes.append(list_of_notes[n_notes-1])
         return allNotes
 
+    # convert MIDI file to Pattern
+    def MIDItoPattern(self, file):
+        return midi.read_midifile(file)
+
     # TO DO
-    #def TunetoString(self):
-    #    str = "Tune: Title - %s Contributors - %s \n\tTime Sig - %s, Key Sig - %s, Clef - " %(self.title, str(self.contributors), str(self.timeSignature), self.keySignature.KeytoString())
+    def TunetoString(self):
+        clefstring = {Clef.BASS: 'Bass', Clef.TREBLE: 'Treble'}.get(self.clef)
+        if (self.getKey() == None):
+            keystring = 'None'
+        else:
+            keystring = self.getKey().KeytoString()
+        buf = "Tune: \nTitle - %s, Contributors - %s \n\tTime Sig - %s, %s, Clef - %s\nList of Notes:\n" %(self.title, str(self.contributors), str(self.timeSignature), keystring, clefstring)
+        for note in self.getNotesList():
+            buf = buf + "%s\n" %(note.NotetoString())
+        return buf
 
-# tune = Tune.TuneWrapper("c-major-scale-treble.mid") 
-# for note in tune.notes:
-    # print note.NotetoString()
-# tune2 = Tune.TuneWrapper("b-harmonic-minor-scale-on-bass-clef.mid")
-# for note in tune2.notes:
-    # print note.NotetoString()
 
-
-# list_of_notes = tune.computeOnset("c-major-scale-treble.mid")
-# print list_of_notes[0].NotetoString()
-# list_of_rests = tune.calculateRests(list_of_notes)
-# print "rests", list_of_rests
-# print len(list_of_rests)
+# main function used for testing of Tune.py separate from web integration
+if __name__ == "__main__":
+    # default parameters 
+    INPUT_FILE = 'c-major-scale-treble.mid'
+    # Sets parameters and files
+    for i in xrange(1,len(sys.argv)):
+        if (sys.argv[i] == '-f'): # input flag: sets input file name
+            INPUT_FILE = sys.argv[i+1]
+    dummyInstance = Tune()
+    print dummyInstance.MIDItoPattern(INPUT_FILE)
+    tune = Tune.TuneWrapper(INPUT_FILE)
+    print tune.TunetoString()
