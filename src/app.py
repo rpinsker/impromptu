@@ -42,7 +42,7 @@ def tune():
     global tuneObj
     # make a lilypond file, either from tune object previously created or
     # a filler one when page is first loaded
-    lilypond_file = makeLilypondFile()
+    lilypond_file = makeLilypondFile(tuneObj)
     if request.method == 'POST':
         # change the title. update lilypond file and backend storage of tune object accordingly
         if request.form.has_key('titleInput'):
@@ -100,17 +100,25 @@ def tuneToNotes(tune):
         octave = str(pitch.octave)
         if not letter == "r":
            pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
-           aNote = abjad.Note(pitch,abjad.Duration(note.duration[0],note.duration[1]))
+           if (note.duration):
+               duration = abjad.Duration(note.duration[0],note.duration[1])
+           else:
+               duration = (Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
+           aNote = abjad.Note(pitch,duration)
            aNotes.append(aNote)
         else: # handle rests
-            rest = abjad.scoretools.Rest("r"+str(note.duration[1]))
+            if (note.duration):
+                duration = str(note.duration[1])
+            else:
+                duration = "4"
+                rest = abjad.scoretools.Rest("r"+duration)
             aNotes.append(rest)
     return aNotes
 
 # makes a lilypond file either from globally stored tune object or makes a filler
 # staff and pdf to display when page is first loaded
-def makeLilypondFile():
-    if tuneObj == None:
+def makeLilypondFile(tune):
+    if tune == None:
         duration = abjad.Duration(1, 4)
         notes = [abjad.Note(pitch, duration) for pitch in range(8)]
         staff = abjad.Staff(notes)
@@ -118,11 +126,11 @@ def makeLilypondFile():
         lilypond_file.header_block.title = abjad.markuptools.Markup("SAMPLE TUNE DISPLAY")
         return lilypond_file
     else:
-        notes = tuneToNotes(tuneObj)
+        notes = tuneToNotes(tune)
         staff = abjad.Staff(notes)
         lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
-        lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
-        lilypond_file.header_block.composer = abjad.markuptools.Markup(tuneObj.contributors)
+        lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
+        lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
         return lilypond_file
 
 # lilypond representation has changed so need to prepare to save a new pdf
