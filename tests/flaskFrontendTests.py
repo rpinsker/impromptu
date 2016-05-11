@@ -17,7 +17,6 @@ class AppTestCase(unittest.TestCase):
         # flaskr.init_db()
 
     # def tearDown(self):
-    #     print "HI"
         # os.close(self.db_fd)
         # os.unlink(flaskr.app.config['DATABASE'])
 
@@ -43,7 +42,11 @@ class AppTestCase(unittest.TestCase):
         #TODO RACHEL
         self.assertEqual(False,True)
 
-    # TODO test uploading file (real MIDI and bad), changing titles and names,
+    def test_title_and_name_input(self):
+        #TODO RACHEL
+        self.assertEqual(False,True)
+
+    # TODO test uploading file (real MIDI and bad) and changing titles and names (both in pdf and on backend),
 
 if __name__ == '__main__':
     unittest.main()

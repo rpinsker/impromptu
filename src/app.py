@@ -47,18 +47,20 @@ def tune():
         # change the title. update lilypond file and backend storage of tune object accordingly
         if request.form.has_key('titleInput'):
             title = str(request.form['titleInput'])
-            title = title.upper()
-            lilypond_file.header_block.title = abjad.markuptools.Markup(title)
-            if tuneObj:
-                tuneObj.title = title
+            if validTitleOrNames(title):
+                title = title.upper()
+                lilypond_file.header_block.title = abjad.markuptools.Markup(title)
+                if tuneObj:
+                    tuneObj.title = title
             filenamePDF = updatePDFWithNewLY(lilypond_file)
             return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         # change the contributors. update lilypond file and backend storage of tune object accordingly
         if request.form.has_key('contributorsInput'):
             composer = str(request.form['contributorsInput'])
-            lilypond_file.header_block.composer = abjad.markuptools.Markup(composer)
-            if tuneObj:
-                tuneObj.contributors = composer
+            if validTitleOrNames(composer):
+                lilypond_file.header_block.composer = abjad.markuptools.Markup(composer)
+                if tuneObj:
+                    tuneObj.contributors = composer
             filenamePDF = updatePDFWithNewLY(lilypond_file)
             return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         # use uploaded file to render a tune object and then render a PDF
@@ -152,6 +154,17 @@ def updatePDFWithNewLY(lilypond_file):
     subprocess.Popen(["rm", "static/currentTune/" + oldFilename + ".pdf"])
     # return what the pdf is called
     return filenamePDF
+
+def validTitleOrNames(str):
+    if str == "":
+        return False
+    if str.isspace():
+        return False
+    if not str.isalnum():
+        return False
+    if len(str) > 128:
+        return False
+    return True
 
 if __name__ == "__main__":
     tuneObj = None
