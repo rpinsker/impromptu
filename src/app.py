@@ -141,12 +141,12 @@ def updatePDFWithNewLY(lilypond_file):
     # timestamp for pdf name
     filenamePDF = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
     #delete the old file so only one file in currentTune folder at a time
-    oldFilenameFile = open("oldFilename.txt", 'r')
+    oldFilenameFile = open("static/currentTune/oldFilename.txt", 'r')
     oldFilename = ""
     for line in oldFilenameFile:
         oldFilename = line
     #now write the new file name to oldFilename.txt
-    oldFilenameFile = open("oldFilename.txt", 'w')
+    oldFilenameFile = open("static/currentTune/oldFilename.txt", 'w')
     oldFilenameFile.write(filenamePDF)
     # save the pdf
     abjad.systemtools.IOManager.save_last_pdf_as("static/currentTune/" + filenamePDF + ".pdf")
@@ -160,14 +160,25 @@ def validTitleOrNames(str):
         return False
     if str.isspace():
         return False
-    if not str.isalnum():
+    if "\n" in str:
         return False
     if len(str) > 128:
         return False
     return True
 
+
 if __name__ == "__main__":
     tuneObj = None
     app.debug = True
     app.run(port=1995)
+
+
+#class Helpers(object):
+def setTune(tune):
+    global tuneObj
+    tuneObj = tune
+
+def getTune():
+    global tuneObj
+    return tuneObj
 
