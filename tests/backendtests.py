@@ -304,7 +304,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		CRestC = [q1_C4, q2_C4]
 		rest = tune.calculateRests([q1_C4, q2_C4])
 		self.assertTrue(tune.notesListEquals(rest, CRestC))
-		self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
+    #self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
 
 	# We put computeNoteOrder functionality into the calculateRests method so this 
 	# test is not relevant 		
