@@ -4,6 +4,17 @@ import math
 import itertools
 import sys
 
+
+
+NATURAL, SHARP, FLAT = range(3)
+
+
+SIXTEENTH = (1,16)
+EIGHTH = (1,8)
+QUARTER = (1,4)
+HALF = (1,2)
+WHOLE = (1,1)
+
 class Duration(object):
     SIXTEENTH = (1,16)
     EIGHTH = (1,8)
