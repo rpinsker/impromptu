@@ -125,7 +125,7 @@ class Note(object):
     def noteEqual(self, n):
         #if math.isclose (n.frequency, self.frequency):
         #if math.isclose (n.onset, self.onset):
-        if (n.s_duration == self.s_duration) and Pitch.pitchEqual(self.pitch, n.pitch):
+        if (n.s_duration == self.s_duration) and Pitch.pitchEqual(self.pitch, n.pitch) and (self.frequency == n.frequency) and (self.duration == n.duration):
             return True
         return False
 
