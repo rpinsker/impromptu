@@ -143,7 +143,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		
 	def testcomputeOnset(self):
 		# check onsets are calculated correctly from computeOnset
-		TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/../tests/MIDITestFiles/c-major-scale-treble.mid")
+		TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		for i in xrange(0, 3):
 			self.assertEqual(computeOnset(TuneMIDI[i]), i)
 		

@@ -292,6 +292,13 @@ class Tune(object):
             buf = buf + "%s\n" %(note.NotetoString())
         return buf
 
+    def notesListEquals(self, Notelist1, Notelist2):
+        if len(Notelist1) != len(Notelist2):
+            return False
+        for i in range(len(Notelist1)):
+            if Notelist1[i].noteEqual(Notelist2[i]) == False:
+                return False
+        return True
 
 # main function used for testing of Tune.py separate from web integration
 if __name__ == "__main__":
