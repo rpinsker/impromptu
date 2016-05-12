@@ -60,7 +60,7 @@ class TestImpromptuBackend(unittest.TestCase):
                 
             diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
             sameNote.setPitch(samePitch)
-            self.assertFalse(note.noteEqual(diffOnsetNote))
+            self.assertTrue(note.noteEqual(diffOnsetNote)) # changed from assertFalse because notes with different onsets should still be the same note
 
             diffDurationNote = Note(frequency=493.88, onset=0.0, duration=Duration.EIGHTH, pitch=samePitch)
             sameNote.setPitch(samePitch)
