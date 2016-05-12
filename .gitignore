@@ -6,7 +6,6 @@
 
 src/static/uploads/*.mid
 src/static/currentTune/*.PDF
-src/static/currentTune/oldFilename.txt
 
 src/*.pyc
 
