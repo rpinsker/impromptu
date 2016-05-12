@@ -1,3 +1,5 @@
+THE PDF VERSION OF THIS README KEEPS OUR INTENDED FORMATTING AND SPACING AND IS MORE READABLE
+
 impromptu music notation
 Software Construction Spring 2016
 Contributors: Ivy Malao, Zoë Naidoo, Annie Chen (Mengyuan Chen), Rachel Pinsker, Zakir Gowani, Sofia Wyetzner
