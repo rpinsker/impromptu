@@ -1,15 +1,9 @@
-##############################################
-################ Abjad Tests :) ##############
-##############################################
 
 import abjad
 from flask import render_template, Flask, request, redirect, url_for
 from flask import send_from_directory
 from flask import Flask
 from flask import render_template
-#import tuneIvy
-#import tuneTest
-#import impromptubackendZoe
 import Tune
 
 import os, subprocess

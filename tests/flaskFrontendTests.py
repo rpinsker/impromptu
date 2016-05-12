@@ -9,8 +9,6 @@ import subprocess
 import glob
 import time
 import abjad
-from StringIO import StringIO
-from flask import Request
 
 tune = None
 
@@ -22,11 +20,6 @@ class AppTestCase(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
-
-    # def tearDown(self):
-        # os.close(self.db_fd)
-        # os.unlink(flaskr.app.config['DATABASE'])
-
 
     def test_home_status_code(self):
         # sends HTTP GET request to the application
@@ -219,17 +212,17 @@ class AppTestCase(unittest.TestCase):
 
         tune = getTune()
         ly_file = makeLilypondFile(tune)
-        test_tile = "test my title!".upper()
-        self.assertEqual(str(ly_file.header_block.title), "\\markup { " + test_tile + " }")
+        test_title = "test my title!".upper()
+        self.assertEqual(str(ly_file.header_block.title), "\\markup { \"" + test_title + "\" }")
 
         # test contributors change displays in PDF
         self.app.post('/', data=dict(
-            contribbutorsInput="good name, bad name, ok name",
+            contributorsInput="good name, bad name, ok name",
         ), follow_redirects=True)
 
-        tune = getTune()
-        ly_file = makeLilypondFile(tune)
-        self.assertEqual(str(ly_file.header_block.composer), "\\markup { good name, bad name, ok name }")
+        tune2 = getTune()
+        ly_file = makeLilypondFile(tune2)
+        self.assertEqual(str(ly_file.header_block.composer), "\\markup { \"good name, bad name, ok name\" }")
 
 if __name__ == '__main__':
     unittest.main()

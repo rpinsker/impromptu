@@ -3,3 +3,10 @@
 .idea/*
 .idea/libraries/*
 .idea/jsLibraryMappings.xml
+
+src/static/uploads/*.mid
+src/static/currentTune/*.PDF
+
+src/*.pyc
+
+node_modules
