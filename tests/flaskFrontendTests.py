@@ -208,13 +208,28 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(tune.midifile, "static/uploads/e-flat-major-scale-on-bass-clef.mid")
 
 
+    def test_change_title_and_name(self):
+        global tune
+        setTune(tune)
 
+        # test title change displays in PDF
+        self.app.post('/', data=dict(
+            titleInput="test my title!",
+        ), follow_redirects=True)
 
+        tune = getTune()
+        ly_file = makeLilypondFile(tune)
+        test_tile = "test my title!".upper()
+        self.assertEqual(str(ly_file.header_block.title), "\\markup { " + test_tile + " }")
 
+        # test contributors change displays in PDF
+        self.app.post('/', data=dict(
+            contribbutorsInput="good name, bad name, ok name",
+        ), follow_redirects=True)
 
-
-    # TODO: changing titles and names (both in pdf and on backend),
-
+        tune = getTune()
+        ly_file = makeLilypondFile(tune)
+        self.assertEqual(str(ly_file.header_block.composer), "\\markup { good name, bad name, ok name }")
 
 if __name__ == '__main__':
     unittest.main()
