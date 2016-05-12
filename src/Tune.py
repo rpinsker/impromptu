@@ -163,11 +163,13 @@ class Tune(object):
         if self.title != None and len(self.title) > 64:
             self.title = self.title[0:64]
         self.contributors = kwargs.get('contributors', ['Add Contributors'])
+        self.midifile = None
+        self.notes = None
         for i in range(len(self.contributors)):
             if len(self.contributors[i]) > 64:
                 self.contributors[i] = self.contributors[i][0:64]
-        self.midifile = kwargs.get('midi')
-        if self.midifile != None: # midi file passed as parameter
+        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
+            self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
             if (pattern.format!=1): # will only look at first track, don't want type 0 MIDI file has all of the channel data on one track
                 print "\n***\nWARNING: Conversion of format %d MIDI files with more than one track is currently not supported and is still in development\n***\n" %(pattern.format)
@@ -189,6 +191,7 @@ class Tune(object):
                         i += 1
             # lastly, insert rests 
             self.notes = self.calculateRests(self.notes)
+
 
         
     # wrapper constructor with only MIDI file as parameter
