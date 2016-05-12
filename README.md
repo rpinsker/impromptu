@@ -93,8 +93,3 @@ Classes:
 Unit tests:
 3. Following item 1, we removed our computeNoteOrder tests and revised our calculateRests tests.
 4. Following item 2, we had to revise our unit tests to work with the Python-midi library and to use MIDI files as inputs rather than constructed Note objects with frequencies. This made the testComputeFrequency test unnecessary as we did not implement a ComputeFrequency method for the Note class. The testComputeNotes test was implemented with Notes based on frequency, so is likewise, unecessary for this iteration
-(8) others: whatever you want to let the TA know
- 
-How to submit
-Please create a directory in code repository for this milestone, and submit through your code repository.
-Send an email to us to let us know when it is ready for us to checkout
