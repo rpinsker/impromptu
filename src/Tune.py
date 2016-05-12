@@ -215,6 +215,9 @@ class Tune(object):
             if len(cont[i]) <= 64:
                 self.contributors.append(cont[i])
 
+    def getContributors(self):
+        return self.contributors
+
     def getTimeSignature(self):
         return self.timeSignature
 

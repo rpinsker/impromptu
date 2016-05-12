@@ -175,8 +175,8 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertEqual(TuneMIDI.getTitle(), "new title")
 		TuneMIDI.setContributors(["person1, person2, person3"])
 		self.assertEqual(TuneMIDI.getContributors(), ["person1, person2, person3"])
-		TuneMIDI.setContributors(["this is tooooooooooooooooooooooooooooooooo long contributor name"])
-		self.assertEqual(TuneMIDI.getContributors(), ["person1, person2, person3"])
+		TuneMIDI.setContributors(["this is toooooooooooooooooooooooooooooooooooooooooooooooooo long contributor name"])
+		self.assertEqual(TuneMIDI.getContributors(), [])
 		
 		frequencies = [261.63, 293.66, 329.63]
 		# check frequencies and onsets calculated correctly from generateTune
