@@ -292,32 +292,20 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	self.assertFalse(tune.notesListEquals(CMajor2, CMajor1))
 		
 	def testcalculateRests(self):
-		tune = Tune(timeSignature = (4, 4), clef = Clef.TREBLE, title = "title2", contributor = ["c", "d"])
-			
-		q1_C4 = Note(frequency = 261.63, onset = 0)
-		q_rest = Note(frequency = 0, onset =  1)
-		q2_C4 = Note(frequency = 261.63, onset = 2)
-		CRestC = [q1_C4, q_rest, q2_C4]
-		rest = tune.calculateRests(CRestC)
-		self.assertTrue(tune.notesListEquals(rest, [q_rest]))
-		self.assertFalse(tune.notesListEquals(rest, []))
+		tune = Tune()
+		PitchC = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
+					
+		q1_C4 = Note(frequency=261.63, onset=0, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
+		q_rest = Pitch (letter='r')
+		q_restNote = Note(frequency=0, onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
+		q_restNote.setPitch(q_rest)
+		q2_C4 = Note(frequency=261.63, onset=2, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
 		
-		e_rest = Note(frequency = 0, onset = 2)
-		q3_C4 = Note(frequency = 261.63, onset = 2.5)
-		eRest = [q1_C4, q_rest, q2_C4, e_rest, q3_C4]
-		eighth_rest = tune.calculateRests(eRest)
-		self.assertTrue(tune.notesListEquals(rest, [q_rest, e_rest]))
-		self.assertFalse(tune.notesListEquals(rest, [q_rest]))
-		self.assertFalse(tune.notesListEquals(rest, []))
-		
-		s_rest = Note(frequency = 0, onset = 1)
-		q4_C4 = Note(frequency = 261.63, onset = 1.25)
-		sRest = [q1_C4, s_rest, q4_C4]
-		sixteenth_rest = tune.calculateRest(sRest)
-		self.assertTrue(tune.notesListEquals(sixteenth_rest, [s_rest]))
-		self.assertFalse(tune.notesListEquals(sixteenth_rest, [e_rest]))
-		self.assertFalse(tune.notesListEquals(sixteenth_rest, []))
-	
+		CRestC = [q1_C4, q2_C4]
+		rest = tune.calculateRests([q1_C4, q2_C4])
+		self.assertTrue(tune.notesListEquals(rest, CRestC))
+		self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
+
 	# We put computeNoteOrder functionality into the calculateRests method so this 
 	# test is not relevant 		
 #	def testcomputeNoteOrderTest(self):
