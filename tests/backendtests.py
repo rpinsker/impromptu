@@ -55,16 +55,16 @@ class TestImpromptuBackend(unittest.TestCase):
 		diffPitchNote = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=differentPitch)
 		self.assertFalse(note.noteEqual(diffPitchNote))
 		
-#	diffFreqNote = Note(frequency=350.0, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
-#	self.assertFalse(note.noteEqual(diffFreqNote))
+        diffFreqNote = Note(frequency=350.0, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
+        self.assertFalse(note.noteEqual(diffFreqNote))
+            
+		diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
+        sameNote.setPitch(samePitch)
+		self.assertFalse(note.noteEqual(diffOnsetNote))
 
-#		diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
-#		sameNote.setPitch(samePitch)
-#		self.assertFalse(note.noteEqual(diffOnsetNote))
-#
-#		diffDurationNote = Note(frequency=493.88, onset=0.0, duration=Duration.EIGHTH, pitch=samePitch)
-#		sameNote.setPitch(samePitch)
-#		self.assertFalse(note.noteEqual(diffDurationNote))
+		diffDurationNote = Note(frequency=493.88, onset=0.0, duration=Duration.EIGHTH, pitch=samePitch)
+		sameNote.setPitch(samePitch)
+		self.assertFalse(note.noteEqual(diffDurationNote))
 
 		rest = Pitch (letter='r')
 		restNote = Note(frequency=0, onset=0.0)
