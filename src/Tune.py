@@ -267,7 +267,9 @@ class Tune(object):
         allNotes = []
         for i in range(0, n_notes-1):
             allNotes.append(list_of_notes[i])
-            onset = list_of_notes[i].onset + list_of_notes[i].s_duration
+            noteonset = list_of_notes[i].onset if list_of_notes[i].onset!=None else 0
+            noteduration = list_of_notes[i].s_duration if list_of_notes[i].s_duration!= None else 0
+            onset = noteonset + noteduration
             s_duration = list_of_notes[i+1].onset - onset
             duration = self.secondsToDuration(s_duration)
             if (duration == None): # duration is too small to consider as a rest
