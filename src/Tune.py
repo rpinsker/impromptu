@@ -161,15 +161,10 @@ class Tune(object):
         self.keySignature = kwargs.get('keySignature')
         self.clef = kwargs.get('clef', Clef.TREBLE)
         # default title is midi file name
-        self.title = kwargs.get('title', kwargs.get('midi'))
-        if self.title != None and len(self.title) > 64:
-            self.title = self.title[0:64]
-        self.contributors = kwargs.get('contributors', ['Add Contributors'])
+        self.title = self.setTitle(kwargs.get('title', kwargs.get('midi')))
+        self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
         self.notes = None
-        for i in range(len(self.contributors)):
-            if len(self.contributors[i]) > 64:
-                self.contributors[i] = self.contributors[i][0:64]
         if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
@@ -181,7 +176,7 @@ class Tune(object):
                     self.timeSignature = (event.data[0], 2<<event.data[1])
             # override time sig in MIDI file
             if 'timeSignature' in kwargs:
-                self.timeSignature = kwargs.get('timeSignature')
+                self.timeSignature = self.setTimeSignature(kwargs.get('timeSignature'))
             # first compute onset of Notes to construct list of Notes
             self.notes = self.computeOnset(self.midifile)
             # then compute pitches of Notes
@@ -206,6 +201,28 @@ class Tune(object):
 
     def setKey(self, k):
         self.keySignature = k
+
+    def setTitle(self, title):
+        if title != None and len(title) < 64:
+            self.title = title
+
+    def getTitle(self):
+        return self.title
+
+    def setContributors(self, cont):
+        self.contributors = []
+        for i in range(len(cont)):
+            if len(cont[i]) <= 64:
+                self.contributors.append(cont[i])
+
+    def getTimeSignature(self):
+        return self.timeSignature
+
+    def setTimeSignature(self, ts):
+        self.timeSignature = ts
+        for i in range(2):
+            if ts[i] <= 0 or isinstance(ts[i], int) == False:
+                self.timeSignature = (4,4)
 
     def setNotesList(self, lst):
         self.notes = lst

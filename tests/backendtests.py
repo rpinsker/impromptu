@@ -147,7 +147,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		# check onsets are calculated correctly from computeOnset
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		for i in xrange(0, 3):
-			self.assertEqual(TuneMIDI.getNotesList()[i], i)
+			self.assertEqual(round(TuneMIDI.getNotesList()[i].onset), i)
 		
 	def testcreateTune(self):
 		# --- tests if MIDI files are successfully converted to a Tune object ---
@@ -158,27 +158,25 @@ class TestImpromptuBackend(unittest.TestCase):
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		
 		# ---- Fail Tune Parameter Constraints ---
-		self.assertFalse(Tune(midi = "wrongFileType.txt"))
+		self.assertTrue(Tune(midi = "wrongFileType.txt").midifile == None) 
 		#  timeSignature has to be (int, int) where int > 0
-		self.assertFalse(Tune(TuneMIDI), (-1, 0), Clef.BASS, "Title", ["Contributor"])
-		self.assertFalse(Tune(TuneMIDI, (2.5, 3), Clef.BASS, "Title", ["Contributor"]))
-		
-		tune = Tune(TuneMIDI, (3,4), Clef.TREBLE, "Title", ["Contributor"])
-		
+		self.assertTrue(Tune(timeSignature = (-1, 0)).timeSignature == (4,4))
+		self.assertTrue(Tune(timeSignature = (2.5, 3)).timeSignature == (4,4))
+			
 		# --- test Tune setters and getters ---
 		# If bad input, leave field unchanged
-		tune.setTimeSignature((4,4))
-		self.assertEqual(tune.getTimeSignature(), (4,4))
-		tune.setTimeSignature((-1, 0))
-		self.assertEqual(tune.getTimeSignature(), (4,4))
-		tune.setTitle("new title")
-		self.assertEqual(tune.getTitle(), "new title")
-		tune.setTitle("this is toooooooooooooooooooooooooooooooooooooooooooo long title")
-		self.assertEqual(tune.getTitle(), "new title")
-		tune.setContributors(["person1, person2, person3"])
-		self.assertEqual(tune.getContributors(), ["person1, person2, person3"])
-		tune.setContributors(["this is tooooooooooooooooooooooooooooooooo long contributor name"])
-		self.assertEqual(tune.getContributors(), ["person1, person2, person3"])
+		TuneMIDI.setTimeSignature((4,4))
+		self.assertEqual(TuneMIDI.getTimeSignature(), (4,4))
+		TuneMIDI.setTimeSignature((-1, 0))
+		self.assertEqual(TuneMIDI.getTimeSignature(), (4,4))
+		TuneMIDI.setTitle("new title")
+		self.assertEqual(TuneMIDI.getTitle(), "new title")
+		TuneMIDI.setTitle("this is toooooooooooooooooooooooooooooooooooooooooooo long title")
+		self.assertEqual(TuneMIDI.getTitle(), "new title")
+		TuneMIDI.setContributors(["person1, person2, person3"])
+		self.assertEqual(TuneMIDI.getContributors(), ["person1, person2, person3"])
+		TuneMIDI.setContributors(["this is tooooooooooooooooooooooooooooooooo long contributor name"])
+		self.assertEqual(TuneMIDI.getContributors(), ["person1, person2, person3"])
 		
 		frequencies = [261.63, 293.66, 329.63]
 		# check frequencies and onsets calculated correctly from generateTune
