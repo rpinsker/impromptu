@@ -265,26 +265,26 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	self.assertFalse(NoteListEquals(CMajor2, CMajor1))
 		
 	def testcalculateRests(self):
-		tune = Tune((4, 4), Clef.TREBLE, "title2", ["c", "d"])
+		tune = Tune(timeSignature = (4, 4), clef = Clef.TREBLE, title = "title2", contributor = ["c", "d"])
 			
-		q1_C4 = Note(261.63, 0)
-		q_rest = Note(0, 1)
-		q2_C4 = Note(261.63, 2)
+		q1_C4 = Note(frequency = 261.63, onset = 0)
+		q_rest = Note(frequency = 0, onset =  1)
+		q2_C4 = Note(frequency = 261.63, onset = 2)
 		CRestC = [q1_C4, q_rest, q2_C4]
 		rest = tune.calculateRests(CRestC)
 		self.assertTrue(NoteListEquals(rest, q_rest))
 		self.assertFalse(NoteListEquals(rest, []))
 		
-		e_rest = Note(0, 2)
-		q3_C4 = Note(261.63, 2.5)
+		e_rest = Note(frequency = 0, onset = 2)
+		q3_C4 = Note(frequency = 261.63, onset = 2.5)
 		eRest = [q1_C4, q_rest, q2_C4, e_rest, q3_C4]
 		eighth_rest = tune.calculateRests(eRest)
 		self.assertTrue(NoteListEquals(rest, [q_rest, e_rest]))
 		self.assertFalse(NoteListEquals(rest, [q_rest]))
 		self.assertFalse(NoteListEquals(rest, []))
 		
-		s_rest = Note(0, 1)
-		q4_C4 = Note(261.63, 1.25)
+		s_rest = Note(frequency = 0, onset = 1)
+		q4_C4 = Note(frequency = 261.63, onset = 1.25)
 		sRest = [q1_C4, s_rest, q4_C4]
 		sixteenth_rest = tune.calculateRest(sRest)
 		self.assertTrue(NoteListEquals(sixteenth_rest, [s_rest]))
@@ -293,27 +293,27 @@ class TestImpromptuBackend(unittest.TestCase):
 		
 	def testcomputeNoteOrderTest():
 		#testing notes with no rests
-		t1note1 = Note( 261.63, 0.0)
-		t1note2 = Note( 293.66, 1.0)
-		t1note3 = Note( 329.63, 2.0)
-		t1note4 = Note( 349.23, 3.0)
+		t1note1 = Note(frequency = 261.63, onset = 0.0)
+		t1note2 = Note( frequency = 293.66,onset =  1.0)
+		t1note3 = Note( frequency = 329.63, onset = 2.0)
+		t1note4 = Note( frequency = 349.23,onset =  3.0)
 		t1notes = [t1note2,t1note3,t1note1,t1note4]
 		t1notesOrdered = computeNoteOrder(t1notes, [])
 		t1expectedNotesOrdered = [t1note1,t1note2,t1note3,t1note4]
 		
 		midifile = midi.read_midifile("miditest.midi")
-		tune = Tune(midifile, (4/4), treble, "firstTune", ["me", "you"])
+		tune = Tune(midi = midifile, timeSignature = (4,4), clef = Clef.TREBLE, title = "firstTune", contributor = ["me", "you"])
 		
 		self.assertTrue(tune.notesListEquals(t1notesOrdered, t1expectedNotesOrdered))
 		
 		#testing notes with equal length rests
-		t21note1 = Note(261.63, 0.0)
-		t2note2 = Note(293.66, 1.0)
-		t2rest1 = Note(0, 2.0)
-		t2note3 = Note(329.63, 3.0)
-		t2note4 = Note(349.23, 4.0)
-		t2rest2 = Note(0, 5.0)
-		t2note5 = Note(392.00, 6.0)
+		t21note1 = Note(frequency = 261.63,onset =  0.0)
+		t2note2 = Note(frequency = 293.66, onset = 1.0)
+		t2rest1 = Note(frequency = 0,onset =  2.0)
+		t2note3 = Note(frequency = 329.63,onset =  3.0)
+		t2note4 = Note(frequency = 349.23, onset = 4.0)
+		t2rest2 = Note(frequency = 0, onset = 5.0)
+		t2note5 = Note(frequency = 392.00,onset =  6.0)
 		t2notes = [t2note5, t2note2,t2note3,t2note1,t2note4]
 		t2rests = [t2rest2, t2rest1]
 		
@@ -435,7 +435,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		
 		expectedKey = Key(isMajor=True, pitch=Pitch(letter='b', accidental=Accidental.FLAT))
 		
-		self.assertTrue(tune.keyEqual(expectedKey))
+		self.assertTrue(tune.getKey().keyEqual(expectedKey))
 
 
 if __name__ == '__main__':
