@@ -1,7 +1,6 @@
 import unittest
 import midi
 
-
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
     
@@ -112,8 +111,8 @@ class TestImpromptuBackend(unittest.TestCase):
         
         frequencies = [261.63, 293.66, 329.63]
             # check frequencies and onsets calculated correctly from generateTune
-            for i in xrange(0, 3):
-                self.assertEqual(readFrequency(TuneMIDI[i]), frequencies[i])
+        for i in xrange(0, 3):
+            self.assertEqual(readFrequency(TuneMIDI[i]), frequencies[i])
         
     def computeOnsetTest(self):
         # check onsets are calculated correctly from computeOnset
@@ -156,7 +155,7 @@ class TestImpromptuBackend(unittest.TestCase):
         # check frequencies and onsets calculated correctly from generateTune
         for i in xrange(0, 3):
             self.assertEqual(tune[i].getFrequency(), frequencies[i])
-                self.assertEqual(tune[i].getOnset(), i)
+            self.assertEqual(tune[i].getOnset(), i)
             
     def notesListEqualsTest(self):
         note1 = Note( 261.63, 0.0)
@@ -305,7 +304,7 @@ class TestImpromptuBackend(unittest.TestCase):
         t3note5 = Note(392.00, 14.0)
             
         t3notes = [t3note5, t3note3, t3note2,t3note1,t3note4]
-        t3rests = [t3rest2, t3rest3m t3rest1]
+        t3rests = [t3rest2, t3rest3m, t3rest1]
             
         t3notesOrdered = computeNoteOrder(t3notes, t3rests)
         t3expectedNotesOrdered = [t3note1,t3rest1, t3note2, t3rest2, t3note3, t3note4, t3rest3, t3note5]

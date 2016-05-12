@@ -78,7 +78,10 @@ class Note(object):
         self.duration = kwargs.get('duration', Duration.QUARTER)
         # duration in seconds
         self.s_duration = kwargs.get('s_duration', None)
-        self.onset = kwargs.get('onset', None)
+        if (kwargs.get('onset') != None) and (kwargs.get('onset') >= 0):
+            self.onset = kwargs.get('onset')
+        else:
+            self.onset = None
         self.pitch = kwargs.get('pitch', Pitch())
     
     # wrapper constructor to create Rest Note
@@ -157,7 +160,12 @@ class Tune(object):
         self.clef = kwargs.get('clef', Clef.TREBLE)
         # default title is midi file name
         self.title = kwargs.get('title', kwargs.get('midi'))
+        if self.title != None and len(self.title) > 64:
+            self.title = self.title[0:64]
         self.contributors = kwargs.get('contributors', ['Add Contributors'])
+        for i in range(len(self.contributors)):
+            if len(self.contributors[i]) > 64:
+                self.contributors[i] = self.contributors[i][0:64]
         self.midifile = kwargs.get('midi')
         if self.midifile != None: # midi file passed as parameter
             pattern = self.MIDItoPattern(self.midifile)
@@ -257,7 +265,6 @@ class Tune(object):
     def calculateRests(self, list_of_notes):
         n_notes = len(list_of_notes)
         allNotes = []
-        ####  is duration negative?
         for i in range(0, n_notes-1):
             allNotes.append(list_of_notes[i])
             onset = list_of_notes[i].onset + list_of_notes[i].s_duration
