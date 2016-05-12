@@ -4,17 +4,6 @@ import math
 import itertools
 import sys
 
-
-
-NATURAL, SHARP, FLAT = range(3)
-
-
-SIXTEENTH = (1,16)
-EIGHTH = (1,8)
-QUARTER = (1,4)
-HALF = (1,2)
-WHOLE = (1,1)
-
 class Duration(object):
     SIXTEENTH = (1,16)
     EIGHTH = (1,8)
@@ -292,7 +281,6 @@ class Tune(object):
     def MIDItoPattern(self, file):
         return midi.read_midifile(file)
 
-    # TO DO
     def TunetoString(self):
         clefstring = {Clef.BASS: 'Bass', Clef.TREBLE: 'Treble'}.get(self.clef)
         if (self.getKey() == None):
@@ -308,7 +296,7 @@ class Tune(object):
 # main function used for testing of Tune.py separate from web integration
 if __name__ == "__main__":
     # default parameters 
-    INPUT_FILE = 'c-major-scale-treble.mid'
+    INPUT_FILE = '../tests/MIDITestFiles/c-major-scale-treble.mid'
     # Sets parameters and files
     for i in xrange(1,len(sys.argv)):
         if (sys.argv[i] == '-f'): # input flag: sets input file name
