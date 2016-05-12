@@ -111,21 +111,21 @@ class Note(object):
         else:
             return False
 
-    # def noteEqual(self, n):
-    #     math = Helper()
-    #     equal = False
-    #     if math.floatComp (n.frequency, self.frequency):
-    #         if math.floatComp(n.onset, self.onset):
-    #             if n.duration == self.duration:
-    #                 if Pitch.pitchEqual(self.pitch, n.pitch):
-    #                     equal = True
+     def noteEqual(self, n):
+         math = Helper()
+         equal = False
+         if math.floatComp (n.frequency, self.frequency):
+             if math.floatComp(n.onset, self.onset):
+                 if n.duration == self.duration:
+                     if Pitch.pitchEqual(self.pitch, n.pitch):
+                         equal = True
 
-    def noteEqual(self, n):
-        #if math.isclose (n.frequency, self.frequency):
-        #if math.isclose (n.onset, self.onset):
-        if (n.s_duration == self.s_duration) and Pitch.pitchEqual(self.pitch, n.pitch):
-            return True
-        return False
+#    def noteEqual(self, n):
+#        #if math.isclose (n.frequency, self.frequency):
+#        #if math.isclose (n.onset, self.onset):
+#        if (n.s_duration == self.s_duration) and Pitch.pitchEqual(self.pitch, n.pitch):
+#            return True
+#        return False
 
     def isRest(self):
         if self.pitch.letter == 'r':
