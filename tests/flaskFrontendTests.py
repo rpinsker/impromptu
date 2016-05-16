@@ -224,5 +224,35 @@ class AppTestCase(unittest.TestCase):
         ly_file = makeLilypondFile(tune2)
         self.assertEqual(str(ly_file.header_block.composer), "\\markup { \"good name, bad name, ok name\" }")
 
+
+        #TODO: Iteration 2
+        #upload mp3 -- zakir
+
+
+        #clef, key,time signature -- rachel
+
+        #chords -- rachel
+
+        #record to mp3 -- sofia
+
+        # User chooses a measure number from a dropdown. Pop up occurs to display the notes in that measure,
+        # each with its duration and pitch. Option to delete a note and add a note or edit the duration
+        # and pitch of the given notes. We then update the Tune object accordingly and recreate the lilypond
+        # file to have abjad display as a pdf.
+
+        # entering a measure number returns the right indices of notes in our tune object's note array
+        # (test a few measure numbers) -- sofia
+
+
+        # entering valid duration and an invalid duration -- rachel
+
+        # entering valid pitch and an invalid pitch (letter or accidental) -- rachel
+
+        # deleting notes -- zakir
+
+        # adding notes -- zakir
+
+        # download and upload a json file (and that a non-json file doesn't upload) -- sofia
+
 if __name__ == '__main__':
     unittest.main()
