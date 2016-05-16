@@ -146,8 +146,8 @@ class TestImpromptuBackend(unittest.TestCase):
 	def testcomputeOnset(self):
 		# check onsets are calculated correctly from computeOnset
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		for i in xrange(0, 3):
-			self.assertEqual(round(TuneMIDI.getNotesList()[i].onset), i)
+		for i in xrange(0, 15):
+			self.assertEqual(round(TuneMIDI.getNotesList()[i].onset, 5), round(i*0.50505, 5))
 		
 	def testcreateTune(self):
 		# --- tests if MIDI files are successfully converted to a Tune object ---
@@ -296,14 +296,13 @@ class TestImpromptuBackend(unittest.TestCase):
 		PitchC = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
 					
 		q1_C4 = Note(frequency=261.63, onset=0, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
-		q_rest = Pitch (letter='r')
-		q_restNote = Note(frequency=0, onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
-		q_restNote.setPitch(q_rest)
+		q_restNote = Note.Rest(frequency=0, onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
 		q2_C4 = Note(frequency=261.63, onset=2, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
 		
-		CRestC = [q1_C4, q2_C4]
+		CRestC = [q1_C4, q_restNote, q2_C4]
 		rest = tune.calculateRests([q1_C4, q2_C4])
 		self.assertTrue(tune.notesListEquals(rest, CRestC))
+		self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
     #self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
 
 	# We put computeNoteOrder functionality into the calculateRests method so this 
