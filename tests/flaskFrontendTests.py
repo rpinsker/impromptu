@@ -20,18 +20,22 @@ class AppTestCase(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
+        tune.title = "test title"
 
     def test_home_status_code(self):
+        print "RUNNING: test_home_status_code ..."
         # sends HTTP GET request to the application
         # on the specified path
         result = self.app.get('/')
 
         # assert the status code of the response
         self.assertEqual(result.status_code, 200)
+        print "PASSED"
 
     # make sure only one pdf is in currentTune at a time so that there
     # is not an overload when new files are being uploaded
     def test_delete_old_PDF(self):
+        print "RUNNING: test_delete_old_PDF ..."
         #delete all old pdfs to start
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
 
@@ -41,8 +45,10 @@ class AppTestCase(unittest.TestCase):
             files = glob.glob("static/currentTune/*.pdf")
             time.sleep(1)
             self.assertEqual(len(files),1)
+        print "PASSED"
 
     def test_make_lilypond_file(self):
+        print "RUNNING: test_make_lilypond_file ..."
         # test both branches to make sure it works if tune object is empty
 
         # test that some lilypond file is created when no tune object is present
@@ -51,11 +57,13 @@ class AppTestCase(unittest.TestCase):
 
         # make file from tune object and check that title matches
         ly_file = makeLilypondFile(tune)
-        self.assertEqual(str(ly_file.header_block.title),"\\markup { "+tune.title+" }")
+
+        self.assertEqual(str(ly_file.header_block.title),"\\markup { \""+tune.title+"\" }")
         self.assertIsNotNone(ly_file)
+        print "PASSED"
 
     def test_tune_to_notes(self):
-
+        print "RUNNING: test_tune_to_notes ..."
         # test tune with no notes
         res = tuneToNotes(None)
         self.assertEqual(res,[])
@@ -115,7 +123,10 @@ class AppTestCase(unittest.TestCase):
         badTune.setNotesList(badNotes)
         self.assertRaises(TypeError,tuneToNotes,badTune)
 
+        print "PASSED"
+
     def test_title_and_name_input(self):
+        print "RUNNING: test_title_and_name_input ..."
         global tune
         setTune(tune)
 
@@ -168,7 +179,11 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(tune.contributors, "good name, good name, good name")
         # title and contributors have same constraints so no need to test bad contributors
 
+        print "PASSED"
+
     def test_midi_upload(self):
+        print "RUNNING: test_midi_upload ..."
+
         global tune
         setTune(tune)
 
@@ -200,8 +215,12 @@ class AppTestCase(unittest.TestCase):
         tune = getTune()
         self.assertEqual(tune.midifile, "static/uploads/e-flat-major-scale-on-bass-clef.mid")
 
+        print "PASSED"
+
 
     def test_change_title_and_name(self):
+        print "RUNNING: test_change_title_and_name ..."
+
         global tune
         setTune(tune)
 
@@ -224,6 +243,7 @@ class AppTestCase(unittest.TestCase):
         ly_file = makeLilypondFile(tune2)
         self.assertEqual(str(ly_file.header_block.composer), "\\markup { \"good name, bad name, ok name\" }")
 
+        print "PASSED"
 
         #TODO: Iteration 2
         #upload mp3 -- zakir
