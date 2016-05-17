@@ -442,6 +442,46 @@ class AppTestCase(unittest.TestCase):
 
         print "PASSED"
 
+    #chords -- rachel
+    def test_making_chord(self):
+        print "RUNNING test_making_chord ... "
+
+        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
+                     Tune.Duration.HALF, Tune.Duration.WHOLE]
+
+        testTune = Tune.Tune()
+        chords = []
+        for duration in durations:
+            pitch1 = Tune.Pitch()
+            pitch1.letter = 'a'
+            pitch1.accidental = Tune.Accidental.FLAT
+            pitch1.octave = 5
+
+            pitch2 = Tune.Pitch()
+            pitch2.letter = 'd'
+            pitch2.accidental = Tune.Accidental.SHARP
+            pitch2.octave = 6
+
+            pitch3 = Tune.Pitch()
+            pitch3.letter = 'g'
+            pitch3.octave = 3
+
+            pitches = [pitch1,pitch2,pitch3]
+
+            # make a chord in impromptu backend
+            chord = Tune.Chord()
+            chord.setPitches(pitches)
+            chord.setDuration(duration)
+
+            chords.append(chord)
+
+        testTune.setNotesList(chords)
+
+        # test calling tuneToNotes
+        notesA = tuneToNotes(testTune)
+        staff = abjad.Staff(notesA)
+        abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+
 
 # chords -- rachel
 
