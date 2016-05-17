@@ -24,8 +24,9 @@ You can also run the backend functionality independently by typing ‘Python Tun
 Note that the “obsolete” folders contain older versions of code that we are keeping as reference.
 
 (3) how to run the unit test cases
-Backend tests: When inside the src folder, run: python ../tests/backendtests.py
-Frontend tests: When inside the src folder, run: python ../tests/flaskFrontendTests.py
+The verbose flag (-v) allows you to run the test with more detail to see which tests pass and fail. 
+Backend tests: When inside the src folder, run: python ../tests/backendtests.py -v
+Frontend tests: When inside the src folder, run: python ../tests/flaskFrontendTests.py -v
 
 (4) please suggest some acceptance tests for the TA to try (i.e., what inputs to use, and what outputs are expected)
 Main acceptance tests are uploading valid MIDI files. To do this:
@@ -93,8 +94,3 @@ Classes:
 Unit tests:
 3. Following item 1, we removed our computeNoteOrder tests and revised our calculateRests tests.
 4. Following item 2, we had to revise our unit tests to work with the Python-midi library and to use MIDI files as inputs rather than constructed Note objects with frequencies. This made the testComputeFrequency test unnecessary as we did not implement a ComputeFrequency method for the Note class. The testComputeNotes test was implemented with Notes based on frequency, so is likewise, unecessary for this iteration
-(8) others: whatever you want to let the TA know
- 
-How to submit
-Please create a directory in code repository for this milestone, and submit through your code repository.
-Send an email to us to let us know when it is ready for us to checkout
