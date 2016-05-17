@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, '../src')
 
 from app import app
-from app import getTune, setTune, makeLilypondFile, tuneToNotes
+from app import getTune, setTune, makeLilypondFile, tuneToNotes, makeStaffFromTune, saveLilypondForDisplay
 import unittest
 import Tune
 import subprocess
@@ -22,6 +22,10 @@ class AppTestCase(unittest.TestCase):
         tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
         tune.title = "test title"
 
+    @classmethod
+    def tearDownClass(cls):
+        subprocess.Popen(["rm"] + glob.glob("test.ly"))
+
     def test_home_status_code(self):
         print "RUNNING: test_home_status_code ..."
         # sends HTTP GET request to the application
@@ -34,18 +38,18 @@ class AppTestCase(unittest.TestCase):
 
     # make sure only one pdf is in currentTune at a time so that there
     # is not an overload when new files are being uploaded
-    def test_delete_old_PDF(self):
-        print "RUNNING: test_delete_old_PDF ..."
-        #delete all old pdfs to start
-        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
-
-        # make 10 files and assert each time that there is one pdf in currentTune
-        for i in range(0,10):
-            self.app.get('/')
-            files = glob.glob("static/currentTune/*.pdf")
-            time.sleep(1)
-            self.assertEqual(len(files),1)
-        print "PASSED"
+    # def test_delete_old_PDF(self):
+    #     print "RUNNING: test_delete_old_PDF ..."
+    #     #delete all old pdfs to start
+    #     subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
+    #
+    #     # make 10 files and assert each time that there is one pdf in currentTune
+    #     for i in range(0,10):
+    #         self.app.get('/')
+    #         files = glob.glob("static/currentTune/*.pdf")
+    #         time.sleep(1)
+    #         self.assertEqual(len(files),1)
+    #     print "PASSED"
 
     def test_make_lilypond_file(self):
         print "RUNNING: test_make_lilypond_file ..."
@@ -245,11 +249,88 @@ class AppTestCase(unittest.TestCase):
 
         print "PASSED"
 
+
+    # ALL BELOW HERE IS FOR ITERATION 2
         #TODO: Iteration 2
         #upload mp3 -- zakir
 
 
-        #clef, key,time signature -- rachel
+    #clef, key,time signature -- rachel
+    def test_clef(self):
+        print "RUNNING test_clef ... "
+        global tune
+        tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
+
+        for c in [Tune.Clef.BASS, Tune.Clef.TREBLE]:
+            # make a staff from our tune object
+            tune.clef = c
+            staff = makeStaffFromTune(tune)
+            # make and save lilypond file
+            lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+            saveLilypondForDisplay(lilypond_file)
+            abjad.systemtools.IOManager.save_last_ly_as("test.ly")
+            file = open("test.ly")
+            #print file.readlines()
+            # make sure clef is in lilypond file
+            isPresent = ('        \\clef "' + {Tune.Clef.BASS: 'bass', Tune.Clef.TREBLE: 'treble'}.get(c) + '"\n' in file.readlines())
+            self.assertEqual(isPresent, True)
+        print "PASSED"
+
+    def test_key(self):
+        print "RUNNING: test_key ..."
+
+        global tune
+        tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
+
+        for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+            for isMajor in [True,False]:
+                pitch = Tune.Pitch()
+                pitch.letter = letter
+                k = Tune.Key()
+                k.pitch = pitch
+                k.isMajor = isMajor
+
+                # make a staff from our tune object
+                tune.keySignature = k
+                staff = makeStaffFromTune(tune)
+                # make and save lilypond file
+                lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+                saveLilypondForDisplay(lilypond_file)
+                abjad.systemtools.IOManager.save_last_ly_as("test.ly")
+                file = open("test.ly")
+                # make sure key is in lilypond file
+                if isMajor:
+                    isPresent = ('        \\key ' + letter + ' \\major\n' in file.readlines())
+                else:
+                    isPresent = ('        \\key ' + letter + ' \\minor\n' in file.readlines())
+                self.assertEqual(isPresent,True)
+        print "PASSED"
+
+
+    def test_time_signature(self):
+        print "RUNNING test_time_signature ... "
+
+        global tune
+        tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
+
+        for t in [(3, 4), (4, 4), (3, 8), (2, 4), (-1, -1)]:
+            # make a staff from our tune object
+            tune.setTimeSignature(t)
+            staff = makeStaffFromTune(tune)
+            # make and save lilypond file
+            lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+            saveLilypondForDisplay(lilypond_file)
+            abjad.systemtools.IOManager.save_last_ly_as("test.ly")
+            file = open("test.ly")
+            # make sure time signature is in lilypond file
+            isPresent = ('        \\time ' + str(t[0]) + '/' + str(t[1]) + '\n' in file.readlines())
+            # make sure invalid key not present
+            if t == (-1, -1):
+                self.assertEqual(isPresent, False)
+            # make sure valid key present
+            else:
+                self.assertEqual(isPresent, True)
+        print "PASSED"
 
         #chords -- rachel
 
