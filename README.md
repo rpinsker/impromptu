@@ -24,8 +24,9 @@ You can also run the backend functionality independently by typing ‘Python Tun
 Note that the “obsolete” folders contain older versions of code that we are keeping as reference.
 
 (3) how to run the unit test cases
-Backend tests: When inside the src folder, run: python ../tests/backendtests.py
-Frontend tests: When inside the src folder, run: python ../tests/flaskFrontendTests.py
+The verbose flag (-v) allows you to run the test with more detail to see which tests pass and fail. 
+Backend tests: When inside the src folder, run: python ../tests/backendtests.py -v
+Frontend tests: When inside the src folder, run: python ../tests/flaskFrontendTests.py -v
 
 (4) please suggest some acceptance tests for the TA to try (i.e., what inputs to use, and what outputs are expected)
 Main acceptance tests are uploading valid MIDI files. To do this:
