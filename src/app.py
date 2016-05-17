@@ -69,7 +69,7 @@ def tune():
                 tuneObj = tune
                 # convert our tune object to notes for abjad and then to a staff
                 notes = tuneToNotes(tune)
-                staff = abjad.Staff(notes)
+                staff = makeStaffFromTune(tune) #abjad.Staff(notes)
                 # make lilypond file, setting title and contributors, and then make the PDF
                 lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
                 lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
@@ -126,11 +126,36 @@ def makeLilypondFile(tune):
         return lilypond_file
     else:
         notes = tuneToNotes(tune)
-        staff = abjad.Staff(notes)
+        staff = makeStaffFromTune(tune) #abjad.Staff(notes)
         lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
         lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
         lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
         return lilypond_file
+
+def makeStaffFromTune(tune):
+    # TODO milestone 4b Rachel
+    notes = tuneToNotes(tune)
+    staff = abjad.Staff(notes)
+
+    time_signature = abjad.TimeSignature(tune.getTimeSignature())
+    if time_signature:
+        abjad.attach(time_signature, staff)
+    key = tune.getKey()
+    if key:
+        if key.isMajor:
+            key_signature = abjad.KeySignature(key.pitch.letter,"major")
+        else:
+            key_signature = abjad.KeySignature(key.pitch.letter, "minor")
+        abjad.attach(key_signature, staff)
+
+    clef = tune.clef
+    if clef == Tune.Clef.BASS:
+        c = abjad.Clef('bass')
+    else:
+        c = abjad.Clef('treble')
+    abjad.attach(c, staff)
+
+    return staff
 
 # lilypond representation has changed so need to prepare to save a new pdf
 def updatePDFWithNewLY(lilypond_file):
