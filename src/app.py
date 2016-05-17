@@ -114,6 +114,25 @@ def tuneToNotes(tune):
                 aNotes.append(rest)
     return aNotes
 
+
+# FOR PARSING CHORDS
+# ps = []
+# chord = abjad.Chord([], abjad.Duration(duration[0], duration[1]))
+# for pitch in pitches:
+#     letter = pitch.letter
+#     accidental = ""
+#     if pitch.accidental == Tune.Accidental.FLAT:
+#         accidental += "b"
+#     elif pitch.accidental == Tune.Accidental.SHARP:
+#         accidental += "#"
+#     octave = str(pitch.octave)
+#
+#     chord.note_heads.append(abjad.pitchtools.NamedPitch(letter.upper() + accidental + octave))
+#
+# staff = abjad.Staff([chord])
+# abjad.show(staff)
+
+
 # makes a lilypond file either from globally stored tune object or makes a filler
 # staff and pdf to display when page is first loaded
 def makeLilypondFile(tune):
