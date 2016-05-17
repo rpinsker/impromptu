@@ -26,8 +26,34 @@ class Accidental(object):
 #     else:
 #         return False
 
-#should refactor later to make variables private and use getters and setters instead
 #should be refactored so notes that don't exist cannot be created i.e. b sharp
+
+class Event(object):
+    def __init__(self, **kwargs):
+        self.duration = kwargs.get('duration', Duration.QUARTER)
+        if (kwargs.get('onset') != None) and (kwargs.get('onset') >= 0):
+            self.onset = kwargs.get('onset')
+        else:
+            self.onset = None
+        self.pitch = kwargs.get('pitch', Pitch())
+        self.duration = kwargs.get('duration', Duration.QUARTER)
+        # duration in seconds
+        self.s_duration = kwargs.get('s_duration', None)
+    def getPitch(self):
+        raise NotImplementedError
+
+class Chord(Event):
+    def __init__(self, **kwargs):
+        self.pitches = kwargs.get('pitches', [])
+    def getPitch(self):
+        return pitches
+
+
+class Rest(Event):
+    def getPitch(self):
+        return [Pitch(letter= 'r')]
+
+
 class Pitch(object):
 
     # Column index for Note Number, refer to http://www.electronics.dit.ie/staff/tscarff/Music_technology/midi/midi_note_numbers_for_octaves.htm
@@ -72,20 +98,15 @@ class Pitch(object):
         return "Pitch: " + str(self.letter) + str(self.octave) + acc
 
 # Should have Rest as subclass
-class Note(object):
-
+class Note(Event):
     def __init__(self, **kwargs):
-        # second argument to get is default value
-        self.frequency = kwargs.get('frequency', None)
-        self.duration = kwargs.get('duration', Duration.QUARTER)
-        # duration in seconds
-        self.s_duration = kwargs.get('s_duration', None)
-        if (kwargs.get('onset') != None) and (kwargs.get('onset') >= 0):
-            self.onset = kwargs.get('onset')
-        else:
-            self.onset = None
         self.pitch = kwargs.get('pitch', Pitch())
+        self.frequency = kwargs.get('frequency', None)
     
+    def getPitch(self):
+        return [self.pitch]
+
+
     # wrapper constructor to create Rest Note
     @classmethod
     def Rest(cls, **kwargs):
@@ -336,6 +357,6 @@ if __name__ == "__main__":
         if (sys.argv[i] == '-f'): # input flag: sets input file name
             INPUT_FILE = sys.argv[i+1]
     dummyInstance = Tune()
-    print dummyInstance.MIDItoPattern(INPUT_FILE)
+#    print dummyInstance.MIDItoPattern(INPUT_FILE)
     tune = Tune.TuneWrapper(INPUT_FILE)
-    print tune.TunetoString()
+#    print tune.TunetoString()
