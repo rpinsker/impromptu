@@ -332,28 +332,135 @@ class AppTestCase(unittest.TestCase):
                 self.assertEqual(isPresent, True)
         print "PASSED"
 
-        #chords -- rachel
+    def test_delete_notes(self):
+        print "RUNNING: test_delete_notes ..."
+        # Below is a comprehensive test tune input (all possible notes)
+        testTune1 = Tune.Tune()
+        notesInternal1 = []
 
-        #record to mp3 -- sofia
+        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
+                     Tune.Duration.HALF, Tune.Duration.WHOLE]
+        for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+            for accidental in [Tune.Accidental.FLAT, Tune.Accidental.SHARP]:
+                for octave in range(1, 11):
+                    for duration in durations:
+                        pitch = Tune.Pitch()
+                        pitch.letter = letter
+                        pitch.accidental = accidental
+                        pitch.octave = octave
+                        note = Tune.Note()
+                        note.pitch = pitch
+                        note.duration = duration
+                        notesInternal1.append(note)
+                        note2 = Tune.Note()
+                        note2.pitch = pitch
+                        notesInternal1.append(note2)
+        # test rests -- both with and without a duration
+        for duration in durations:
+            rest = Tune.Note()
+            rest.letter = 'r'
+            rest.duration = duration
+            notesInternal1.append(rest)
+            rest2 = Tune.Note()
+            rest2.letter = 'r'
+            notesInternal1.append(rest2)
+        # test empty note
+        notesInternal1.append(Tune.Note())
+        testTune1.setNotesList(notesInternal1)
+        # test calling tuneToNotes
+        notes1 = tuneToNotes(testTune1)
+        staff1 = abjad.Staff(notes1)
+        abjad.lilypondfiletools.make_basic_lilypond_file(staff1)
 
-        # User chooses a measure number from a dropdown. Pop up occurs to display the notes in that measure,
-        # each with its duration and pitch. Option to delete a note and add a note or edit the duration
-        # and pitch of the given notes. We then update the Tune object accordingly and recreate the lilypond
-        # file to have abjad display as a pdf.
 
-        # entering a measure number returns the right indices of notes in our tune object's note array
-        # (test a few measure numbers) -- sofia
+        # Now try deleting notes at all different positions
+        for i in range(len(notesInternal1)):
+            self.app.post('/', data=dict(
+                deleteNoteInput="{'note': " + str(i) + "}",
+            ), follow_redirects=True)
+            tune = getTune()
+            ithPositionDeleted = notesInternal1[:i] + notesInternal1[i + 1:]
+            self.assertEqual(tune.getNotesList(), ithPositionDeleted)
+
+        print "PASSED"
+
+    def test_add_notes(self):
+        print "RUNNING: test_delete_notes ..."
+        # Below is a comprehensive test tune input (all possible notes)
+        testTune1 = Tune.Tune()
+        notesInternal1 = []
+
+        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
+                     Tune.Duration.HALF, Tune.Duration.WHOLE]
+        for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+            for accidental in [Tune.Accidental.FLAT, Tune.Accidental.SHARP]:
+                for octave in range(1, 11):
+                    for duration in durations:
+                        pitch = Tune.Pitch()
+                        pitch.letter = letter
+                        pitch.accidental = accidental
+                        pitch.octave = octave
+                        note = Tune.Note()
+                        note.pitch = pitch
+                        note.duration = duration
+                        notesInternal1.append(note)
+                        note2 = Tune.Note()
+                        note2.pitch = pitch
+                        notesInternal1.append(note2)
+        # test rests -- both with and without a duration
+        for duration in durations:
+            rest = Tune.Note()
+            rest.letter = 'r'
+            rest.duration = duration
+            notesInternal1.append(rest)
+            rest2 = Tune.Note()
+            rest2.letter = 'r'
+            notesInternal1.append(rest2)
+        # test empty note
+        notesInternal1.append(Tune.Note())
+        testTune1.setNotesList(notesInternal1)
+        # test calling tuneToNotes
+        notes1 = tuneToNotes(testTune1)
+        staff1 = abjad.Staff(notes1)
+        abjad.lilypondfiletools.make_basic_lilypond_file(staff1)
+
+        # Now try adding a every duration note at all different positions
+        for currentDuration in durations:
+            for i in range(len(notesInternal1)):
+                tune = getTune()
+                self.app.post('/', data=dict(
+                    addNoteInput="{'position': " + str(i) + ", letter: 'a', octave: 4}",
+                ), follow_redirects=True)
+                note = Tune.Note()
+                pitch = Tune.Pitch()
+                pitch.letter = 'a'
+                pitch.octave = 4
+                note.pitch = pitch
+                note.duration = currentDuration
+                ithPositionAdded = notesInternal1[:i] + [note] + notesInternal1[i + 1:]
+                self.assertEqual(tune.getNotesList(), ithPositionAdded)
+
+        print "PASSED"
 
 
-        # entering valid duration and an invalid duration -- rachel
+# chords -- rachel
 
-        # entering valid pitch and an invalid pitch (letter or accidental) -- rachel
+# record to mp3 -- sofia
 
-        # deleting notes -- zakir
+# User chooses a measure number from a dropdown. Pop up occurs to display the notes in that measure,
+# each with its duration and pitch. Option to delete a note and add a note or edit the duration
+# and pitch of the given notes. We then update the Tune object accordingly and recreate the lilypond
+# file to have abjad display as a pdf.
 
-        # adding notes -- zakir
+# entering a measure number returns the right indices of notes in our tune object's note array
+# (test a few measure numbers) -- sofia
 
-        # download and upload a json file (and that a non-json file doesn't upload) -- sofia
+
+# entering valid duration and an invalid duration -- rachel
+
+# entering valid pitch and an invalid pitch (letter or accidental) -- rachel
+
+# download and upload a json file (and that a non-json file doesn't upload) -- sofia
 
 if __name__ == '__main__':
     unittest.main()
