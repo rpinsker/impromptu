@@ -44,12 +44,14 @@ class Event(object):
 
 class Chord(Event):
     def __init__(self, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.pitches = kwargs.get('pitches', [])
     def getPitch(self):
         return pitches
 
 
 class Rest(Event):
+    super(self.__class__, self).__init__(*args, **kwargs)
     def getPitch(self):
         return [Pitch(letter= 'r')]
 
@@ -100,6 +102,7 @@ class Pitch(object):
 # Should have Rest as subclass
 class Note(Event):
     def __init__(self, **kwargs):
+        super(self.__class__, self).__init__(*args, **kwargs)
         self.pitch = kwargs.get('pitch', Pitch())
         self.frequency = kwargs.get('frequency', None)
     
