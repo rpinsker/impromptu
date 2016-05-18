@@ -485,8 +485,6 @@ class AppTestCase(unittest.TestCase):
 
 # chords -- rachel
 
-# record to mp3 -- sofia
-
 
 # User chooses a measure number from a dropdown. Pop up occurs to display the notes in that measure,
 # each with its duration and pitch. Option to delete a note and add a note or edit the duration
@@ -556,10 +554,46 @@ class AppTestCase(unittest.TestCase):
 
         # The tune object should not have chosen the pdf, should remain unchanged
         tune = getTune()
-        self.assertEqual(tune.jsonfileile, "static/uploads/e-flat-major-scale-on-bass-clef.json")
+        self.assertEqual(tune.jsonfile, "static/uploads/e-flat-major-scale-on-bass-clef.json")
 
         print "PASSED"
 
+
+    def test_mp3_upload(self):
+        print "RUNNING: test_mp3_upload ..."
+
+        global tune
+        setTune(tune)
+
+        # Testing a valid .json file
+        f = open("../tests/MP3TestFiles/e-flat-major-scale-on-bass-clef.mp3", 'rb')
+        self.app.post(
+            '/',
+            data={
+                'fileInput': f,
+            },
+            content_type='multipart/form-data',
+        )
+
+        # The tune object should have found the json file, in the uploads directory
+        tune = getTune()
+        self.assertEqual(tune.jsonfile, "static/uploads/e-flat-major-scale-on-bass-clef.mp3")
+
+        # Testing a non json file
+        f = open("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.pdf", 'rb')
+        self.app.post(
+            '/',
+            data={
+                'fileInput': f,
+            },
+            content_type='multipart/form-data',
+        )
+
+        # The tune object should not have chosen the pdf, should remain unchanged
+        tune = getTune()
+        self.assertEqual(tune.mp3file, "static/uploads/e-flat-major-scale-on-bass-clef.mp3")
+
+        print "PASSED"
 
 if __name__ == '__main__':
     unittest.main()
