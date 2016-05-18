@@ -451,7 +451,9 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	diffNotesList.setNotes(t2note1)
 	# 	self.assertFalse(tune.tuneEquals(diffNotesList))
 
-	def eventsListEquals(self):
+
+
+	def testeventsListEquals(self):
         
 		event1 = Note(frequency=261.63,onset= 0.0)
 		event2 = Note(frequency=293.66,onset= 1.0)
@@ -487,7 +489,33 @@ class TestImpromptuBackend(unittest.TestCase):
         self.assertTrue(tune.eventsListEquals(tune.getNotesList(), diffOrderEvents))
         self.assertFalse(tune.eventsListEquals(tune.getNotesList(), lessEvents))
         self.assertFalse(tune.eventsListEquals(tune.getNotesList(), diffEvents))
-
+           
+    def testNotesListToChords(self):
+        event1 = Note(frequency=261.63,onset= 0.0)
+        event2 = Note(frequency=293.66,onset= 1.0)
+        event3 = Note(frequency=329.63,onset= 2.0)
+        event4 = Note(frequency=349.23,onset= 3.0)
+        event5 = Rest(onset=4.0)
+        event6 = Note(pitch=Pitch(letter='b', octave=4, accidental=Accidental.FLAT), onset=5.0,duration=Duration.QUARTER)
+        event7 = Note(pitch=Pitch(letter='c', octave=4, accidental=Accidental.NATURAL), onset=5.0,duration=Duration.QUARTER)
+        event8 = Note(pitch=Pitch(letter='a', octave=4, accidental=Accidental.FLAT), onset=5.0,duration=Duration.QUARTER)
+        
+        events = [event1, event2, event3, event4, event5, event6, event7,event8]
+        
+        sameevent1 = Note(frequency= 261.63,onset= 0.0)
+        sameevent2 = Note(frequency= 293.66,onset= 1.0)
+        sameevent3 = Note(frequency= 329.63,onset= 2.0)
+        sameevent4 = Note(frequency= 349.23,onset= 3.0)
+        sameevent5 = Rest(onset=4.0)
+        spitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        spitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+        spitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
+        sameevent6 = Chord(pitches=[spitch1,spitch2,spitch3],duration=Duration.QUARTER, onset=5.0)
+        sameEvents = [sameevent1, sameevent2, sameevent3, sameevent4, sameevent5, sameevent6]
+        tune=Tune()
+        
+        self.assertTrue(tune.eventsListEquals(tune.noteListToChords(events), sameEvents))
+        self.assertFalse(tune.eventsListEquals(tune.noteListToChords(events), events))
 
 
 	def testTuneGetterSetter(self):
