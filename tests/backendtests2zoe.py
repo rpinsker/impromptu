@@ -57,13 +57,13 @@ class TestImpromptuBackend(unittest.TestCase):
 	def testIsRest(self):
 		#Testing rest
 		restPitch = Pitch(letter='r')
-		rest = Note()
+		rest = Event()
 		rest.setPitch(restPitch)
 		self.assertTrue(rest.isRest())
 		
 		#testing note
 		notePitch = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
-		note = Note()
+		note = Event()
 		note.setPitch(notePitch)
 		self.assertFalse(note.isRest())
 	
@@ -450,6 +450,31 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	diffNotesList = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"])
 	# 	diffNotesList.setNotes(t2note1)
 	# 	self.assertFalse(tune.tuneEquals(diffNotesList))
+
+    def testEventequal(self):
+        note = Note(frequency=261.63,onset= 0.0)
+        diffnote = Note(frequency=241.63,onset= 0.0)
+        sameNote = Note(frequency=261.63,onset= 0.0)
+        rest = Rest(onset=4.0)
+        sameRest = Rest(onset=4.0)
+        diffRest=Rest(onset=3.0)
+        pitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        pitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+        pitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
+        pitch4 = Pitch(letter='a', octave=4, accidental=Accidental.NATURAL)
+        chord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
+        sameChord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
+        diffChord = Chord(pitches=[pitch1,pitch2,pitch4],duration=Duration.QUARTER, onset=5.0)
+        
+        self.assertTrue(note.eventEqual(sameNote)
+        self.assertTrue(rest.eventEqual(sameRest)
+        self.assertTrue(chord.eventEqual(sameChord)
+        
+        self.assetFalse(note.eventEqual(rest))
+        self.assetFalse(note.eventEqual(chord))
+        self.assetFalse(note.eventEqual(diffNote))
+        self.assetFalse(rest.eventEqual(diffRest))
+        self.assetFalse(chord.eventEqual(diffChord))
 
 
 
