@@ -184,7 +184,10 @@ class TestImpromptuBackend(unittest.TestCase):
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		
 		# ---- Fail Tune Parameter Constraints ---
-		self.assertTrue(Tune(midi = "wrongFileType.txt").midifile == None) 
+		self.assertTrue(Tune(midi = "wrongFileType.txt").midifile == None)
+        # ---- Pass Tune Parameter Constraints ---
+        self.assertFalse(Tune(midi = "wrongFileType.mp3").midifile == None)
+            
 		#  timeSignature has to be (int, int) where int > 0
 		self.assertTrue(Tune(timeSignature = (-1, 0)).timeSignature == (4,4))
 		self.assertTrue(Tune(timeSignature = (2.5, 3)).timeSignature == (4,4))
