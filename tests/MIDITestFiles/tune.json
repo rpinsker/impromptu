@@ -34,7 +34,7 @@
       "isMajor":"true",
       "pitch": {
         "letter":"b",
-        "octave":"2",
+        "octave":"",
         "accidental":"2",
       }
     }

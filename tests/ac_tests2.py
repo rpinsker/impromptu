@@ -6,7 +6,9 @@ import os
 from TuneIter2 import *
 
 class TestImpromptuBackend2(unittest.TestCase):
-	#def TestTunetoJSON(self):
+	def TestTunetoJSON(self):
+		tune = TuneWrapper("../tests/MIDITestFiles/tune-with-chord-rest-note.mid")
+		
 
 	def TestJSONtoTune(self):
 		# Test a tune with two notes
