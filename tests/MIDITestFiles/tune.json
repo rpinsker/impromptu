@@ -1,0 +1,42 @@
+{
+  "tune": {
+    "timeSignature": ["3","4"],
+    "clef": "0",
+    "title":"tune title!",
+    "contributors": ["contributor one","contributor two"],
+		"events": [
+      {
+        "class":"note",
+        "duration":"QUARTER",
+        "s_duration":"1.0",
+        "frequency": "25.0",
+        "onset": "5.67",
+        "pitch": {
+          "letter": "b",
+          "octave": "2",
+          "accidental": "2",
+        }
+      },
+      {
+        "class":"rest",
+        "duration":"WHOLE",
+        "s_duration":"4.0",
+        "frequency": "105.0",
+        "onset": "6.67",
+        "pitch": {
+          "letter": "r",
+          "octave": "",
+          "accidental": "",
+        }
+      }
+    ],
+    "keySignature": {
+      "isMajor":"true",
+      "pitch": {
+        "letter":"b",
+        "octave":"2",
+        "accidental":"2",
+      }
+    }
+  }
+}
