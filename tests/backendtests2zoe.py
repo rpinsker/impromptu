@@ -7,7 +7,36 @@ from Tune import *
 
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
-	
+	def testChordequal(self):
+        pitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        pitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+        pitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
+        chord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=0.5)
+        
+        pitchComp1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        pitchComp2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+        pitchComp3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
+        chordSame = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=0.5)
+        chordSameDiffOrder = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=0.5)
+
+        self.assertTrue(chord.chordEqual(chordSame))
+        self.assertTrue(chord.chordEqual(chordSameDiffOrder))
+
+        pitch4 = Pitch(letter='e', octave=4, accidental=Accidental.FLAT)
+        chordDiffNotes = Chord(pitches=[pitch1,pitch2,pitch4],duration=Duration.QUARTER, onset=0.5)
+        chordExtraNote = Chord(pitches=[pitch1,pitch2,pitch3, pitch4],duration=Duration.QUARTER, onset=0.5)
+        chordDiffDuration = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.HALF, onset=0.5)
+        chordDiffOnset = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=0.0)
+
+        self.assertFalse(chord.chordEqual(chordDiffNotes))
+        self.assertFalse(chord.chordEqual(chordExtraNote))
+        self.assertFalse(chord.chordEqual(chordDiffDuration))
+        self.assertFalse(chord.chordEqual(chordDiffOnset))
+
+    def testChordGettersAndSetters(self):
+
+
+
 	def testpitchequal(self):
 		#Testing equality of the same note
 		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
