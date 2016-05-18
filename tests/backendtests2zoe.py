@@ -33,9 +33,6 @@ class TestImpromptuBackend(unittest.TestCase):
         self.assertFalse(chord.chordEqual(chordDiffDuration))
         self.assertFalse(chord.chordEqual(chordDiffOnset))
 
-    def testChordGettersAndSetters(self):
-
-
 
 	def testpitchequal(self):
 		#Testing equality of the same note
@@ -72,37 +69,37 @@ class TestImpromptuBackend(unittest.TestCase):
 	
 	def testNoteEqual(self):
 		#Testing same notes
-            notePitch = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
-            note = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=notePitch)
+        notePitch = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
+        note = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=notePitch)
 
-            samePitch = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
-            sameNote = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
-            self.assertTrue(note.noteEqual(sameNote))
+        samePitch = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
+        sameNote = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
+        self.assertTrue(note.noteEqual(sameNote))
 
-            #Testing different notes
-            differentPitch = Pitch (letter='c', octave=5, accidental=Accidental.FLAT)
-            diffPitchNote = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=differentPitch)
-            self.assertFalse(note.noteEqual(diffPitchNote))
+        #Testing different notes
+        differentPitch = Pitch (letter='c', octave=5, accidental=Accidental.FLAT)
+        diffPitchNote = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=differentPitch)
+        self.assertFalse(note.noteEqual(diffPitchNote))
 
-            diffFreqNote = Note(frequency=350.0, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
-            self.assertFalse(note.noteEqual(diffFreqNote))
-                
-            diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
-            sameNote.setPitch(samePitch)
-            self.assertTrue(note.noteEqual(diffOnsetNote)) # changed from assertFalse because notes with different onsets should still be the same note
+        diffFreqNote = Note(frequency=350.0, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
+        self.assertFalse(note.noteEqual(diffFreqNote))
+            
+        diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
+        sameNote.setPitch(samePitch)
+        self.assertTrue(note.noteEqual(diffOnsetNote)) # changed from assertFalse because notes with different onsets should still be the same note
 
-            diffDurationNote = Note(frequency=493.88, onset=0.0, duration=Duration.EIGHTH, pitch=samePitch)
-            sameNote.setPitch(samePitch)
-            self.assertFalse(note.noteEqual(diffDurationNote))
+        diffDurationNote = Note(frequency=493.88, onset=0.0, duration=Duration.EIGHTH, pitch=samePitch)
+        sameNote.setPitch(samePitch)
+        self.assertFalse(note.noteEqual(diffDurationNote))
 
-            rest = Pitch (letter='r')
-            restNote = Note(frequency=0, onset=0.0)
-            note.setPitch(rest)
+        rest = Pitch (letter='r')
+        restNote = Note(frequency=0, onset=0.0)
+        note.setPitch(rest)
 
-            samerest = Pitch (letter='r')
-            samerestNote = Note(frequency=0, onset=0.0)
-            note.setPitch(samerest)
-            self.assertTrue(samerestNote.noteEqual(samerestNote))
+        samerest = Pitch (letter='r')
+        samerestNote = Note(frequency=0, onset=0.0)
+        note.setPitch(samerest)
+        self.assertTrue(samerestNote.noteEqual(samerestNote))
 
 	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
 	# This instead will be needed for iteration 2 with audio files.
@@ -454,25 +451,44 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	diffNotesList.setNotes(t2note1)
 	# 	self.assertFalse(tune.tuneEquals(diffNotesList))
 
-	def testNotesListGetterSetter(self):
-		note1 = Note(frequency=261.63,onset= 0.0)
-		note2 = Note(frequency=293.66,onset= 1.0)
-		note3 = Note(frequency=329.63,onset= 2.0)
-		note4 = Note(frequency=349.23,onset= 3.0)
+	def eventsListEquals(self):
+        
+		event1 = Note(frequency=261.63,onset= 0.0)
+		event2 = Note(frequency=293.66,onset= 1.0)
+		event3 = Note(frequency=329.63,onset= 2.0)
+		event4 = Note(frequency=349.23,onset= 3.0)
+        event5 = Rest(onset=4.0)
+        pitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        pitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+        pitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
+        event6 = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
 		
-		notes = [note1, note2, note3, note4]
+		events = [event1, event2, event3, event4, event5, event6]
 		
-		samenote1 = Note(frequency= 261.63,onset= 0.0)
-		samenote2 = Note(frequency= 293.66,onset= 1.0)
-		samenote3 = Note(frequency= 329.63,onset= 2.0)
-		samenote4 = Note(frequency= 349.23,onset= 3.0)
-		
-		sameNotes = [samenote1, samenote2, samenote3, samenote4]
-		
+		sameevent1 = Note(frequency= 261.63,onset= 0.0)
+		sameevent2 = Note(frequency= 293.66,onset= 1.0)
+		sameevent3 = Note(frequency= 329.63,onset= 2.0)
+		sameevent4 = Note(frequency= 349.23,onset= 3.0)
+        sameevent5 = Rest(onset=4.0)
+        spitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+        spitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+        spitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
+        sameevent6 = Chord(pitches=[spitch1,spitch2,spitch3],duration=Duration.QUARTER, onset=5.0)
+		sameEvents = [sameevent1, sameevent2, sameevent3, sameevent4, sameevent5, sameevent6]
+        diffOrderEvents = [sameevent1, sameevent3, sameevent4, sameevent2, sameevent5, sameevent6]
+        lessEvents = [sameevent1, sameevent2, sameevent4, sameevent5, sameevent6]
+        event7 = Note(frequency= 320.0,onset= 5.0)
+        diffEvents = [sameevent1, sameevent2, sameevent3, sameevent4, sameevent5, sameevent6, event7]
+
 		tune = Tune()
 		
-		tune.setNotesList(notes)
-		self.assertTrue(tune.notesListEquals(tune.getNotesList(), sameNotes))
+		tune.setNotesList(events)
+		self.assertTrue(tune.eventsListEquals(tune.getNotesList(), sameEvents))
+        self.assertTrue(tune.eventsListEquals(tune.getNotesList(), diffOrderEvents))
+        self.assertFalse(tune.eventsListEquals(tune.getNotesList(), lessEvents))
+        self.assertFalse(tune.eventsListEquals(tune.getNotesList(), diffEvents))
+
+
 
 	def testTuneGetterSetter(self):
 		pitch = Pitch(letter='b', accidental=Accidental.FLAT)
