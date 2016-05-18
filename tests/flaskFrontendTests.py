@@ -38,18 +38,18 @@ class AppTestCase(unittest.TestCase):
 
     # make sure only one pdf is in currentTune at a time so that there
     # is not an overload when new files are being uploaded
-    # def test_delete_old_PDF(self):
-    #     print "RUNNING: test_delete_old_PDF ..."
-    #     #delete all old pdfs to start
-    #     subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
-    #
-    #     # make 10 files and assert each time that there is one pdf in currentTune
-    #     for i in range(0,10):
-    #         self.app.get('/')
-    #         files = glob.glob("static/currentTune/*.pdf")
-    #         time.sleep(1)
-    #         self.assertEqual(len(files),1)
-    #     print "PASSED"
+    def test_delete_old_PDF(self):
+        print "RUNNING: test_delete_old_PDF ..."
+        #delete all old pdfs to start
+        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
+
+        # make 10 files and assert each time that there is one pdf in currentTune
+        for i in range(0,10):
+            self.app.get('/')
+            files = glob.glob("static/currentTune/*.pdf")
+            time.sleep(1)
+            self.assertEqual(len(files),1)
+        print "PASSED"
 
     def test_make_lilypond_file(self):
         print "RUNNING: test_make_lilypond_file ..."
@@ -482,9 +482,6 @@ class AppTestCase(unittest.TestCase):
         staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
-
-# chords -- rachel
-
 # record to mp3 -- sofia
 
 
@@ -518,9 +515,100 @@ class AppTestCase(unittest.TestCase):
 
         print "PASSED"
 
-# entering valid duration and an invalid duration -- rachel
+    # changing duration (will be from a dropdown so can't be invalid) -- rachel
+    def test_change_duration(self):
+        print "RUNNING test_change_duration ... "
+        # make notes of all different durations
+        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
+                     Tune.Duration.HALF, Tune.Duration.WHOLE]
+        notes = []
 
-# entering valid pitch and an invalid pitch (letter or accidental) -- rachel
+        for duration in durations:
+            pitch = Tune.Pitch()
+            pitch.letter = "a"
+            #pitch.accidental = Tune.Accidental.SHARP
+            pitch.octave = 5
+            note = Tune.Note()
+            note.pitch = pitch
+            note.duration = duration
+            notes.append(note)
+
+        # make test tune object with the notes
+        testTune = Tune.Tune()
+        testTune.setNotesList(notes)
+        #set the app's tune to be this test tune
+        setTune(testTune)
+
+        for i in range(0,len(durations)):
+            newDuration = durations[len(durations)-i-1]
+            # after making post request to change the duration, make sure new tune object's note list has been updated
+            self.app.post('/', data=dict(
+                editDurationInputIndex=i,
+                editDurationInputDuration0=newDuration[0],
+                editDurationInputDuration1=newDuration[1]
+            ), follow_redirects=True)
+
+            updatedTune = getTune()
+            noteI = updatedTune.notes[i]
+            durationI = noteI.duration
+
+            self.assertEqual(durationI,newDuration)
+        print "PASSED"
+
+
+
+
+    # changing pitch (letter or accidental) (will be from a dropdown so can't be invalid) -- rachel
+    def test_change_pitch(self):
+        print "RUNNING test_change_pitch ..."
+        # make notes of all possible pitches
+
+        letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+        accidentals = [Tune.Accidental.FLAT, Tune.Accidental.SHARP]
+        octaves = range(1, 11)
+        notes = []
+
+        for letter in letters:
+            for accidental in accidentals:
+                for octave in octaves:
+                    pitch = Tune.Pitch()
+                    pitch.letter = letter
+                    pitch.accidental = accidental
+                    pitch.octave = octave
+                    note = Tune.Note()
+                    note.pitch = pitch
+                    note.duration = Tune.Duration.HALF
+                    notes.append(note)
+
+        # make test tune object with the notes
+        testTune = Tune.Tune()
+        testTune.setNotesList(notes)
+        # set the app's tune to be this test tune
+        setTune(testTune)
+
+        for i in range(0, len(notes),15):
+            newPitch = Tune.Pitch()
+            newPitch.letter = letters[i % len(letters)]
+            newPitch.accidental = accidentals[i %len(accidentals)]
+            newPitch.octave = octaves[i % len(octaves)]
+
+            # after making post request to change the duration, make sure new tune object's note list has been updated
+            self.app.post('/', data=dict(
+                editPitchInputIndex=i,
+                editPitchInputLetter=newPitch.letter,
+                editPitchInputAccidental=newPitch.accidental,
+                editPitchInputOctave=newPitch.octave
+            ), follow_redirects=True)
+
+            updatedTune = getTune()
+            noteI = updatedTune.notes[i]
+            pitchI = noteI.pitch
+
+            pitchesEqual = pitchI.pitchEqual(newPitch)
+
+            self.assertEqual(pitchesEqual, True)
+
+        print "PASSED"
 
 # upload a json file (and that a non-json file doesn't upload) -- sofia
 
