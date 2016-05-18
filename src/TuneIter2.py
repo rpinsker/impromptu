@@ -26,7 +26,6 @@ class Accidental(object):
 #     else:
 #         return False
 
-#should be refactored so notes that don't exist cannot be created i.e. b sharp
 
 class Event(object):
     def __init__(self, **kwargs):
@@ -35,7 +34,6 @@ class Event(object):
             self.onset = kwargs.get('onset')
         else:
             self.onset = None
-        self.pitch = kwargs.get('pitch', Pitch())
         self.duration = kwargs.get('duration', Duration.QUARTER)
         # duration in seconds
         self.s_duration = kwargs.get('s_duration', None)
@@ -188,7 +186,7 @@ class Tune(object):
         self.title = self.setTitle(kwargs.get('title', kwargs.get('midi')))
         self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
-        self.notes = None
+        self.events = None
         if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
@@ -202,19 +200,20 @@ class Tune(object):
             if 'timeSignature' in kwargs:
                 self.timeSignature = self.setTimeSignature(kwargs.get('timeSignature'))
             # first compute onset of Notes to construct list of Notes
-            self.notes = self.computeOnset(self.midifile)
+            self.events = self.computeOnset(self.midifile)
             # then compute pitches of Notes
             i = 0
             for track in pattern:
                 for event in track: # looking through first track
                     if isinstance(event, midi.NoteOnEvent):
-                        self.notes[i].setPitch(Pitch.MIDInotetoPitch(event.get_pitch()))
+                        self.events[i].setPitch(Pitch.MIDInotetoPitch(event.get_pitch()))
                         i += 1
-            # lastly, insert rests 
-            self.notes = self.calculateRests(self.notes)
+            # then, insert rests
+            self.events = self.calculateRests(self.events)
+            # lastly, compute chords
+            self.events = self.calculateRests(self.events)
 
 
-        
     # wrapper constructor with only MIDI file as parameter
     @classmethod
     def TuneWrapper(cls, midifile):
@@ -251,11 +250,11 @@ class Tune(object):
             if ts[i] <= 0 or isinstance(ts[i], int) == False:
                 self.timeSignature = (4,4)
 
-    def setNotesList(self, lst):
-        self.notes = lst
+    def setEventsList(self, lst):
+        self.events = lst
 
-    def getNotesList(self):
-        return self.notes
+    def getEventsList(self):
+        return self.events
 
     # turns ticks to time in seconds
     # The formula used is:
@@ -339,7 +338,7 @@ class Tune(object):
         else:
             keystring = self.getKey().KeytoString()
         buf = "Tune: \nTitle - %s, Contributors - %s \n\tTime Sig - %s, %s, Clef - %s\nList of Notes:\n" %(self.title, str(self.contributors), str(self.timeSignature), keystring, clefstring)
-        for note in self.getNotesList():
+        for note in self.getEventsList():
             buf = buf + "%s\n" %(note.NotetoString())
         return buf
 
