@@ -39,19 +39,28 @@ class Event(object):
         self.s_duration = kwargs.get('s_duration', None)
     def getPitch(self):
         raise NotImplementedError
+    def eventEqual(event):
+        raise NotImplementedError
+    def setPitch(self, pitch):
+        raise NotImplementedError
 
 class Chord(Event):
     def __init__(self, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(**kwargs)
         self.pitches = kwargs.get('pitches', [])
     def getPitch(self):
         return pitches
+    def chordEqual(self, chord):
+        raise NotImplementedError
 
 
 class Rest(Event):
-    super(self.__class__, self).__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super(self.__class__, self).__init__(**kwargs)
     def getPitch(self):
         return [Pitch(letter= 'r')]
+    def setPitch(self, pitch):
+        raise NotImplementedError
 
 
 class Pitch(object):
@@ -100,7 +109,7 @@ class Pitch(object):
 # Should have Rest as subclass
 class Note(Event):
     def __init__(self, **kwargs):
-        super(self.__class__, self).__init__(*args, **kwargs)
+        super(self.__class__, self).__init__(**kwargs)
         self.pitch = kwargs.get('pitch', Pitch())
         self.frequency = kwargs.get('frequency', None)
     
@@ -187,7 +196,7 @@ class Tune(object):
         self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
         self.events = None
-        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
+        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid', '.mp3'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
             if (pattern.format!=1): # will only look at first track, don't want type 0 MIDI file has all of the channel data on one track
@@ -255,6 +264,12 @@ class Tune(object):
 
     def getEventsList(self):
         return self.events
+
+    def eventsListEquals(self, list1, list2):
+        raise NotImplementedError
+
+    def JSONtoTune(file):
+        return NotImplementedError
 
     # turns ticks to time in seconds
     # The formula used is:
