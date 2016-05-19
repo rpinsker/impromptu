@@ -27,19 +27,16 @@ class AppTestCase(unittest.TestCase):
         subprocess.Popen(["rm"] + glob.glob("test.ly"))
 
     def test_home_status_code(self):
-        print "RUNNING: test_home_status_code ..."
         # sends HTTP GET request to the application
         # on the specified path
         result = self.app.get('/')
 
         # assert the status code of the response
         self.assertEqual(result.status_code, 200)
-        print "PASSED"
 
     # make sure only one pdf is in currentTune at a time so that there
     # is not an overload when new files are being uploaded
     def test_delete_old_PDF(self):
-        print "RUNNING: test_delete_old_PDF ..."
         #delete all old pdfs to start
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.pdf"))
 
@@ -49,10 +46,8 @@ class AppTestCase(unittest.TestCase):
             files = glob.glob("static/currentTune/*.pdf")
             time.sleep(1)
             self.assertEqual(len(files),1)
-        print "PASSED"
 
     def test_make_lilypond_file(self):
-        print "RUNNING: test_make_lilypond_file ..."
         # test both branches to make sure it works if tune object is empty
 
         # test that some lilypond file is created when no tune object is present
@@ -64,10 +59,8 @@ class AppTestCase(unittest.TestCase):
 
         self.assertEqual(str(ly_file.header_block.title),"\\markup { \""+tune.title+"\" }")
         self.assertIsNotNone(ly_file)
-        print "PASSED"
 
     def test_tune_to_notes(self):
-        print "RUNNING: test_tune_to_notes ..."
         # test tune with no notes
         res = tuneToNotes(None)
         self.assertEqual(res,[])
@@ -127,10 +120,7 @@ class AppTestCase(unittest.TestCase):
         badTune.setNotesList(badNotes)
         self.assertRaises(TypeError,tuneToNotes,badTune)
 
-        print "PASSED"
-
     def test_title_and_name_input(self):
-        print "RUNNING: test_title_and_name_input ..."
         global tune
         setTune(tune)
 
@@ -183,10 +173,8 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(tune.contributors, "good name, good name, good name")
         # title and contributors have same constraints so no need to test bad contributors
 
-        print "PASSED"
 
     def test_midi_upload(self):
-        print "RUNNING: test_midi_upload ..."
 
         global tune
         setTune(tune)
@@ -219,11 +207,9 @@ class AppTestCase(unittest.TestCase):
         tune = getTune()
         self.assertEqual(tune.midifile, "static/uploads/e-flat-major-scale-on-bass-clef.mid")
 
-        print "PASSED"
 
 
     def test_change_title_and_name(self):
-        print "RUNNING: test_change_title_and_name ..."
 
         global tune
         setTune(tune)
@@ -247,17 +233,13 @@ class AppTestCase(unittest.TestCase):
         ly_file = makeLilypondFile(tune2)
         self.assertEqual(str(ly_file.header_block.composer), "\\markup { \"good name, bad name, ok name\" }")
 
-        print "PASSED"
 
 
-    # ALL BELOW HERE IS FOR ITERATION 2
-        #TODO: Iteration 2
-        #upload mp3 -- zakir
+    # ALL BELOW HERE IS FOR ITERATION 2 (MILESTONE 4A)
 
-
-    #clef, key,time signature -- rachel
+    # rachel
     def test_clef(self):
-        print "RUNNING test_clef ... "
+        # set the tune object
         global tune
         tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
 
@@ -265,25 +247,25 @@ class AppTestCase(unittest.TestCase):
             # make a staff from our tune object
             tune.clef = c
             staff = makeStaffFromTune(tune)
-            # make and save lilypond file
+            # make and save lilypond file from the staff
             lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
             saveLilypondForDisplay(lilypond_file)
             abjad.systemtools.IOManager.save_last_ly_as("test.ly")
             file = open("test.ly")
-            #print file.readlines()
             # make sure clef is in lilypond file
             isPresent = ('        \\clef "' + {Tune.Clef.BASS: 'bass', Tune.Clef.TREBLE: 'treble'}.get(c) + '"\n' in file.readlines())
             self.assertEqual(isPresent, True)
-        print "PASSED"
 
+    # rachel
     def test_key(self):
-        print "RUNNING: test_key ..."
-
+        # set the tune object
         global tune
         tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
 
+        # iterature through all combinations of key signature pitches
         for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
             for isMajor in [True,False]:
+                # make a key signature
                 pitch = Tune.Pitch()
                 pitch.letter = letter
                 k = Tune.Key()
@@ -298,21 +280,20 @@ class AppTestCase(unittest.TestCase):
                 saveLilypondForDisplay(lilypond_file)
                 abjad.systemtools.IOManager.save_last_ly_as("test.ly")
                 file = open("test.ly")
-                # make sure key is in lilypond file
+                # make sure correct key is in lilypond file
                 if isMajor:
                     isPresent = ('        \\key ' + letter + ' \\major\n' in file.readlines())
                 else:
                     isPresent = ('        \\key ' + letter + ' \\minor\n' in file.readlines())
                 self.assertEqual(isPresent,True)
-        print "PASSED"
 
-
+    # rachel
     def test_time_signature(self):
-        print "RUNNING test_time_signature ... "
-
+        # set the tune object
         global tune
         tune = Tune.Tune.TuneWrapper("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.mid")
 
+        # iterate through some time signatures
         for t in [(3, 4), (4, 4), (3, 8), (2, 4), (-1, -1)]:
             # make a staff from our tune object
             tune.setTimeSignature(t)
@@ -322,7 +303,7 @@ class AppTestCase(unittest.TestCase):
             saveLilypondForDisplay(lilypond_file)
             abjad.systemtools.IOManager.save_last_ly_as("test.ly")
             file = open("test.ly")
-            # make sure time signature is in lilypond file
+            # check if time signature t is in lilypond file
             isPresent = ('        \\time ' + str(t[0]) + '/' + str(t[1]) + '\n' in file.readlines())
             # make sure invalid key not present
             if t == (-1, -1):
@@ -330,10 +311,9 @@ class AppTestCase(unittest.TestCase):
             # make sure valid key present
             else:
                 self.assertEqual(isPresent, True)
-        print "PASSED"
 
+    # zakir
     def test_delete_notes(self):
-        print "RUNNING: test_delete_notes ..."
         # Below is a comprehensive test tune input (all possible notes)
         testTune1 = Tune.Tune()
         notesInternal1 = []
@@ -382,10 +362,9 @@ class AppTestCase(unittest.TestCase):
             ithPositionDeleted = notesInternal1[:i] + notesInternal1[i + 1:]
             self.assertEqual(tune.getNotesList(), ithPositionDeleted)
 
-        print "PASSED"
 
+    # zakir
     def test_add_notes(self):
-        print "RUNNING: test_delete_notes ..."
         # Below is a comprehensive test tune input (all possible notes)
         testTune1 = Tune.Tune()
         notesInternal1 = []
@@ -440,17 +419,15 @@ class AppTestCase(unittest.TestCase):
                 ithPositionAdded = notesInternal1[:i] + [note] + notesInternal1[i + 1:]
                 self.assertEqual(tune.getNotesList(), ithPositionAdded)
 
-        print "PASSED"
 
-    #chords -- rachel
+    # rachel
     def test_making_chord(self):
-        print "RUNNING test_making_chord ... "
-
         durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
                      Tune.Duration.HALF, Tune.Duration.WHOLE]
 
         testTune = Tune.Tune()
         chords = []
+        # make a chord for all possible durations
         for duration in durations:
             pitch1 = Tune.Pitch()
             pitch1.letter = 'a'
@@ -477,22 +454,21 @@ class AppTestCase(unittest.TestCase):
 
         testTune.setNotesList(chords)
 
-        # test calling tuneToNotes
+        # test calling tuneToNotes and make sure a lilypond file can be created with no error
         notesA = tuneToNotes(testTune)
         staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
-
+############################ EDITING SHEET MUSIC ###################################################
 # User chooses a measure number from a dropdown. Pop up occurs to display the notes in that measure,
 # each with its duration and pitch. Option to delete a note and add a note or edit the duration
-# and pitch of the given notes. We then update the Tune object accordingly and recreate the lilypond
-# file to have abjad display as a pdf.
+# and pitch of the given notes (both given from dropdowns). Then update the Tune object
+# accordingly and recreate the lilypond file to have abjad display it as a pdf.
+####################################################################################################
 
 # entering a measure number returns the right indices of notes in our tune object's note array
 # (test a few measure numbers) -- sofia
-
     def test_get_notes_by_measure(self):
-        print "RUNNING: test_get_notes_by_measure ..."
 
         global tune
         setTune(tune)
@@ -511,12 +487,10 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(None, tune.getNoteNumber(1, -4))
         self.assertEqual(None, tune.getNoteNumber(-1, 4))
 
-        print "PASSED"
 
     # changing duration (will be from a dropdown so can't be invalid) -- rachel
     def test_change_duration(self):
-        print "RUNNING test_change_duration ... "
-        # make notes of all different durations
+        # make notes of all different durations and add to the list notes
         durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
                      Tune.Duration.HALF, Tune.Duration.WHOLE]
         notes = []
@@ -524,7 +498,6 @@ class AppTestCase(unittest.TestCase):
         for duration in durations:
             pitch = Tune.Pitch()
             pitch.letter = "a"
-            #pitch.accidental = Tune.Accidental.SHARP
             pitch.octave = 5
             note = Tune.Note()
             note.pitch = pitch
@@ -534,33 +507,31 @@ class AppTestCase(unittest.TestCase):
         # make test tune object with the notes
         testTune = Tune.Tune()
         testTune.setNotesList(notes)
-        #set the app's tune to be this test tune
+        # set the app's tune to be this test tune
         setTune(testTune)
 
+        # for each note, send a request to edit the duration
         for i in range(0,len(durations)):
             newDuration = durations[len(durations)-i-1]
-            # after making post request to change the duration, make sure new tune object's note list has been updated
             self.app.post('/', data=dict(
                 editDurationInputIndex=i,
                 editDurationInputDuration0=newDuration[0],
                 editDurationInputDuration1=newDuration[1]
             ), follow_redirects=True)
 
+            # after making post request to change the duration, make sure new tune object's note list has been updated
             updatedTune = getTune()
             noteI = updatedTune.notes[i]
             durationI = noteI.duration
 
             self.assertEqual(durationI,newDuration)
-        print "PASSED"
 
 
 
 
     # changing pitch (letter or accidental) (will be from a dropdown so can't be invalid) -- rachel
     def test_change_pitch(self):
-        print "RUNNING test_change_pitch ..."
-        # make notes of all possible pitches
-
+        # make notes of all possible pitches and add to notes list
         letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
         accidentals = [Tune.Accidental.FLAT, Tune.Accidental.SHARP]
         octaves = range(1, 11)
@@ -584,13 +555,13 @@ class AppTestCase(unittest.TestCase):
         # set the app's tune to be this test tune
         setTune(testTune)
 
+        # for each note, send a request to edit the pitch
         for i in range(0, len(notes),15):
             newPitch = Tune.Pitch()
-            newPitch.letter = letters[i % len(letters)]
-            newPitch.accidental = accidentals[i %len(accidentals)]
-            newPitch.octave = octaves[i % len(octaves)]
+            newPitch.letter = letters[i % len(letters)] # just choose some letter in the letters list
+            newPitch.accidental = accidentals[i %len(accidentals)] # just choose some accident in the accidentals list
+            newPitch.octave = octaves[i % len(octaves)] # just choose some octave in the octaves list
 
-            # after making post request to change the duration, make sure new tune object's note list has been updated
             self.app.post('/', data=dict(
                 editPitchInputIndex=i,
                 editPitchInputLetter=newPitch.letter,
@@ -598,6 +569,7 @@ class AppTestCase(unittest.TestCase):
                 editPitchInputOctave=newPitch.octave
             ), follow_redirects=True)
 
+            # after making post request to change the duration, make sure new tune object's note list has been updated
             updatedTune = getTune()
             noteI = updatedTune.notes[i]
             pitchI = noteI.pitch
@@ -606,12 +578,10 @@ class AppTestCase(unittest.TestCase):
 
             self.assertEqual(pitchesEqual, True)
 
-        print "PASSED"
 
-# upload a json file (and that a non-json file doesn't upload) -- sofia
 
+    # upload a json file (and that a non-json file doesn't upload) -- sofia
     def test_json_upload(self):
-        print "RUNNING: test_json_upload ..."
 
         global tune
         setTune(tune)
@@ -644,11 +614,9 @@ class AppTestCase(unittest.TestCase):
         tune = getTune()
         self.assertEqual(tune.jsonfile, "static/uploads/e-flat-major-scale-on-bass-clef.json")
 
-        print "PASSED"
 
-
+    # upload mp3 -- sofia
     def test_mp3_upload(self):
-        print "RUNNING: test_mp3_upload ..."
 
         global tune
         setTune(tune)
@@ -681,7 +649,6 @@ class AppTestCase(unittest.TestCase):
         tune = getTune()
         self.assertEqual(tune.mp3file, "static/uploads/e-flat-major-scale-on-bass-clef.mp3")
 
-        print "PASSED"
 
 if __name__ == '__main__':
     unittest.main()
