@@ -332,9 +332,9 @@ class TestImpromptuBackend(unittest.TestCase):
 		
 		self.assertTrue(tune.getKey().keyEqual(expectedKey))
 
-	def TestTunetoJSON(self):
-		tune = TuneWrapper("../tests/MIDITestFiles/tune-with-chord-rest-note.mid")
-		json_str = TunetoJSON(tune)
+	def testTunetoJSON(self):
+		tune = Tune.TuneWrapper("../tests/MIDITestFiles/tune-with-chord-rest-note.mid")
+		json_str = Tune.TunetoJSON(tune)
 		f = open(json_str, 'r')
 		l1 = f.readline()
 		self.assertEqual(l1, "{\n")
@@ -460,9 +460,9 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertEqual(l61, '}\n')
 
 
-	def TestJSONtoTune(self):
+	def testJSONtoTune(self):
 		# Test a tune with two notes
-		tune = JSONtoTune("../tests/MIDITestFiles/tune.json")
+		tune = Tune.JSONtoTune("../tests/MIDITestFiles/tune.json")
 		tune_keysig = tune.getKey()
 		tune_keysig_pitch = Pitch(letter="b", octave=2, accidental=Accidental.FLAT)
 		tune_keysig_key = Key(isMajor=True, pitch=tune_keysig_pitch)
