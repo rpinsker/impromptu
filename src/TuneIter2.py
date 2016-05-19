@@ -271,6 +271,19 @@ class Tune(object):
     def JSONtoTune(file):
         return NotImplementedError
 
+    def extractOnset(self):
+        return NotImplementedError
+
+    def extractDuration(self):
+        return NotImplementedError
+
+    def extractFrequency(self):
+        return NotImplementedError
+
+    def convertFreqToPitch(list):
+        return NotImplementedError
+    ## SHOULD WE MOVE ticketsToTime and computeOnset methods to Event class?
+
     # turns ticks to time in seconds
     # The formula used is:
     # (# ticks * 60) / (BPM * resolution)

@@ -8,7 +8,7 @@ from TuneIter2 import *
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
 
-	def testChordequal(self):
+	def testChordEqual(self):
 	    pitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
 	    pitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
 	    pitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
@@ -35,7 +35,7 @@ class TestImpromptuBackend(unittest.TestCase):
 	    self.assertFalse(chord.chordEqual(chordDiffOnset))
 
 
-	def testpitchequal(self):
+	def testPitchEqual(self):
 		#Testing equality of the same note
 		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
 		samePitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
@@ -102,93 +102,19 @@ class TestImpromptuBackend(unittest.TestCase):
 	    note.setPitch(samerest)
 	    self.assertTrue(samerestNote.noteEqual(samerestNote))
 
-	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
-	# This instead will be needed for iteration 2 with audio files.
-	# def testComputeFrequency(self):
-	# 	# check frequencies are calculated correctly from computeFrequency
-	# 	# import midi file: first 3 notes of C major scale as all quarter notes (refer to TestComputePitches)
-	# 	# Use Python MIDI library https://github.com/vishnubob/python-midi
-	# 	# MIDI files are an array of integers with a header
-	# 	TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
-	# 	frequencies = [261.63, 293.66, 329.63]
-	# 	# check frequencies and onsets calculated correctly from generateTune
-	# 	for i in xrange(0, 3):
-	# 		self.assertEqual(readFrequency(), frequencies[i])
 
-	def testcomputeOnset(self):
-		# check onsets are calculated correctly from computeOnset
-		TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		for i in xrange(0, 3):
-			self.assertEqual(computeOnset(TuneMIDI[i]), i)
-
-	def testcreateTune(self):
+	def testcreateTunefromMIDI(self):
 		# --- tests if MIDI files are successfully converted to a Tune object ---
-		# import midi file: C major scale with all quarter notes (refer to TestComputePitches)
-		# Use Python MIDI library https://github.com/vishnubob/python-midi
-		# MIDI files are an array of integers with a header
-		TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		# ---- Fail Tune Parameter Constraints ---
-		self.assertFalse(Tune("wrongFileType.txt"), Clef.TREBLE, "", [""])
-		#  timeSignature has to be (int, int) where int > 0
-		self.assertFalse(Tune(TuneMIDI), (-1, 0), Clef.BASS, "Title", ["Contributor"])
-		self.assertFalse(Tune(TuneMIDI, (2.5, 3), Clef.BASS, "Title", ["Contributor"]))
-		tune = Tune(TuneMIDI, (3,4), Clef.TREBLE, "Title", ["Contributor"])
-		# --- test Tune setters and getters ---
-		# If bad input, leave field unchanged
-		tune.setTimeSignature((4,4))
-		self.assertEqual(tune.getTimeSignature(), (4,4))
-		tune.setTimeSignature((-1, 0))
-		self.assertEqual(tune.getTimeSignature(), (4,4))
-		tune.setTitle("new title")
-		self.assertEqual(tune.getTitle(), "new title")
-		tune.setTitle("this is toooooooooooooooooooooooooooooooooooooooooooo long title")
-		self.assertEqual(tune.getTitle(), "new title")
-		tune.setContributors(["person1, person2, person3"])
-		self.assertEqual(tune.getContributors(), ["person1, person2, person3"])
-		tune.setContributors(["this is tooooooooooooooooooooooooooooooooo long contributor name"])
-		self.assertEqual(tune.getContributors(), ["person1, person2, person3"])
-
-		frequencies = [261.63, 293.66, 329.63]
-		# check frequencies and onsets calculated correctly from generateTune
-		for i in xrange(0, 3):
-			self.assertEqual(tune[i].getFrequency(), frequencies[i])
-			self.assertEqual(tune[i].getOnset(), i)
-			self.assertTrue(samerest.noteEqual(samerestNote))
-		
-	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
-	# This instead will be needed for iteration 2 with audio files.
-	# def testcomputeFrequency(self):
-	# 	# check frequencies are calculated correctly from computeFrequency
-		
-	# 	# import midi file: first 3 notes of C major scale as all quarter notes (refer to TestComputePitches)
-	# 	# Use Python MIDI library https://github.com/vishnubob/python-midi
-	# 	# MIDI files are an array of integers with a header
-	# 	TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		
-	# 	frequencies = [261.63, 293.66, 329.63]
-	# 	# check frequencies and onsets calculated correctly from generateTune
-	# 	for i in xrange(0, 3):
-	# 		self.assertEqual(readFrequency(TuneMIDI[i]), frequencies[i])
-		
-	def testcomputeOnset(self):
-		# check onsets are calculated correctly from computeOnset
-		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		for i in xrange(0, 3):
-			self.assertEqual(round(TuneMIDI.getEventsList()[i].onset), i)
-		
-	def testcreateTune(self):
-		# --- tests if MIDI files are successfully converted to a Tune object ---
-		
-		# import midi file: C major scale with all quarter notes (refer to TestComputePitches)
-		# Use Python MIDI library https://github.com/vishnubob/python-midi
-		# MIDI files are an array of integers with a header
-		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		
 		# ---- Fail Tune Parameter Constraints ---
 		self.assertTrue(Tune(midi = "wrongFileType.txt").midifile == None)
 		# ---- Pass Tune Parameter Constraints ---
-		self.assertFalse(Tune(midi = "wrongFileType.mp3").midifile == None)
+		self.assertFalse(Tune(midi = "wrongFileType.mid").midifile == None)
 
+		# import midi file: C major scale with all quarter notes (refer to TestComputePitches)
+		# Use Python MIDI library https://github.com/vishnubob/python-midi
+		# MIDI files are an array of integers with a header
+		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		#  timeSignature has to be (int, int) where int > 0
 		self.assertTrue(Tune(timeSignature = (-1, 0)).timeSignature == (4,4))
 		self.assertTrue(Tune(timeSignature = (2.5, 3)).timeSignature == (4,4))
@@ -207,7 +133,76 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertEqual(TuneMIDI.getContributors(), ["person1, person2, person3"])
 		TuneMIDI.setContributors(["this is toooooooooooooooooooooooooooooooooooooooooooooooooo long contributor name"])
 		self.assertEqual(TuneMIDI.getContributors(), [])
+
+	def testExtractOnset(self):
+		# mp3 file with 8 note onsets at 0, 2, 3, ..., 7
+		mp3Onset = Tune.extractOnset("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+		for i in range(0, 8):
+			self.assertEqual(mp3Onset[i], i)
+
+	def testExtractDuration(self):
+		# mp3 file with 8 note durations, each a quarter note long
+
+		# first get duration in seconds
+		mp3Duration = Tune.extract_s_Duration("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+		# convert to duration enum
+		for i in xrange(0, 8):
+			mp3Duration[i] = Tune.secondsToDuration(mp3Duration[i])
+			self.assertEqual(mp3Duration[i], Duration.QUARTER)
+
+	def testFrequencyEqual(self):
+		# equal
+		self.assertTrue(Note.frequencyEqual(360, 360))
+		# in range
+		self.assertTrue(Note.frequencyEqual(363, 360))
+		# out of range
+		self.assertFalse(Note.frequencyEqual(365, 360))
+		# frequency out of lower bound 20
+		self.assertFalse(Note.frequencyEqual(19, 18))
+		# frequency out of upper bound 4200
+		self.assertFalse(Note.frequencyEqual(4201, 4201))
+
+	def testExtractFrequency(self):
+		# mp3 file of c major chord on treble clef
+		mp3Frequency = Tune.extractFrequency("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+		# refer to http://www.phy.mtu.edu/~suits/notefreqs.html
+		frequency = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
+		for i in xrange(0, 8):
+			self.assertTrue(Note.frequencyEqual(mp3Frequency[i], frequency[i]))
+
+	def testComputePitchFromFrequency(self):
+		# mp3 file of c major chord on treble clef
+		mp3Pitch = Tune.convertFreqToPitch([261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25])
+		pitchC = Pitch(letter='C', octave=4, accidental=Accidental.NATURAL)
+		pitchD = Pitch(letter='D', octave=4, accidental=Accidental.NATURAL)
+		pitchE = Pitch(letter='E', octave=4, accidental=Accidental.NATURAL)
+		pitchF = Pitch(letter='F', octave=4, accidental=Accidental.NATURAL)
+		pitchG = Pitch(letter='G', octave=4, accidental=Accidental.NATURAL)
+		pitchA = Pitch(letter='A', octave=4, accidental=Accidental.NATURAL)
+		pitchB = Pitch(letter='B', octave=4, accidental=Accidental.NATURAL)
+		pitchC5 = Pitch(letter='C', octave=5, accidental=Accidental.NATURAL)
+
+		pitchList = [pitchC, pitchD, pitchE, pitchF, pitchG, pitchA, pitchB, pitchC5]
+		for i in xrange(0, 8):
+			self.assertTrue(pitchList[i].pitchEqual(mp3Pitch[i]))
+
+	def testcreateTunefromMP3(self):
+		# --- tests if MP3 files are successfully converted to a Tune object ---
 		
+		# import mp3 file: C major scale with all quarter notes (refer to TestComputePitches)
+
+		# ---- Pass Tune Parameter Constraints ---
+		self.assertFalse(Tune(midi = "wrongFileType.mp3").midifile == None)
+
+		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mp3")
+
+		
+	def testcomputeOnset(self):
+		# check onsets are calculated correctly from computeOnset
+		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
+		for i in xrange(0, 3):
+			self.assertEqual(round(TuneMIDI.getEventsList()[i].onset), i)
+				
 	def testcalculateRests(self):
 		tune = Tune()
 		PitchC = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
@@ -253,16 +248,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		chord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
 		sameChord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
 		diffChord = Chord(pitches=[pitch1,pitch2,pitch4],duration=Duration.QUARTER, onset=5.0)
-
-		# self.assertTrue(note.eventEqual(sameNote))
-		# self.assertTrue(rest.eventEqual(sameRest))
-		# self.assertTrue(chord.eventEqual(sameChord))
-
-		# self.assetFalse(note.eventEqual(rest))
-		# self.assetFalse(note.eventEqual(chord))
-		# self.assetFalse(note.eventEqual(diffNote))
-		# self.assetFalse(rest.eventEqual(diffRest))
-		# self.assetFalse(chord.eventEqual(diffChord))
 		self.assertTrue(Event.eventEqual(sameNote))
 		self.assertTrue(Event.eventEqual(sameRest))
 		self.assertTrue(Event.eventEqual(sameChord))
@@ -272,8 +257,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assetFalse(Event.eventEqual(diffNote))
 		self.assetFalse(Event.eventEqual(diffRest))
 		self.assetFalse(Event.eventEqual(diffChord))
-
-
 
 	def testeventsListEquals(self):
 		event1 = Note(frequency=261.63,onset= 0.0)
