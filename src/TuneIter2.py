@@ -3,6 +3,7 @@ import midi
 import math
 import itertools
 import sys
+import abc
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -27,42 +28,6 @@ class Accidental(object):
 #         return False
 
 
-class Event(object):
-    def __init__(self, **kwargs):
-        self.duration = kwargs.get('duration', Duration.QUARTER)
-        if (kwargs.get('onset') != None) and (kwargs.get('onset') >= 0):
-            self.onset = kwargs.get('onset')
-        else:
-            self.onset = None
-        self.duration = kwargs.get('duration', Duration.QUARTER)
-        # duration in seconds
-        self.s_duration = kwargs.get('s_duration', None)
-    def getPitch(self):
-        raise NotImplementedError
-    def eventEqual(event):
-        raise NotImplementedError
-    def setPitch(self, pitch):
-        raise NotImplementedError
-
-class Chord(Event):
-    def __init__(self, **kwargs):
-        super(self.__class__, self).__init__(**kwargs)
-        self.pitches = kwargs.get('pitches', [])
-    def getPitch(self):
-        return pitches
-    def chordEqual(self, chord):
-        raise NotImplementedError
-
-
-class Rest(Event):
-    def __init__(self, **kwargs):
-        super(self.__class__, self).__init__(**kwargs)
-    def getPitch(self):
-        return [Pitch(letter= 'r')]
-    def setPitch(self, pitch):
-        raise NotImplementedError
-
-
 class Pitch(object):
 
     # Column index for Note Number, refer to http://www.electronics.dit.ie/staff/tscarff/Music_technology/midi/midi_note_numbers_for_octaves.htm
@@ -71,9 +36,17 @@ class Pitch(object):
     letterNotes = {0 : 'c', 1 : 'c#', 2 : 'd', 3 : 'd#', 4 : 'e', 5 : 'f', 6 : 'f#', 7 : 'g', 8 : 'g#', 9 : 'a', 10 : 'a#', 11 : 'b'}
 
     def __init__(self, **kwargs):
-        self.letter = kwargs.get('letter', None)
-        self.octave = kwargs.get('octave', None)
-        self.accidental = kwargs.get('accidental', Accidental.NATURAL)
+        MIDINote = kwargs.get('MIDINote', None)
+        if MIDINote:
+            returnPitch = self.MIDInotetoPitch(MIDINote) 
+            self.letter = returnPitch.letter
+            self.octave = returnPitch.octave
+            self.accidental = returnPitch.accidental
+
+        else:
+            self.letter = kwargs.get('letter', None)
+            self.octave = kwargs.get('octave', None)
+            self.accidental = kwargs.get('accidental', Accidental.NATURAL)
 
     def pitchEqual(self, p):
         if (p.letter == self.letter) and (p.accidental == self.accidental) and (p.octave == self.octave):
@@ -105,6 +78,64 @@ class Pitch(object):
     def PitchtoString(self):
         acc = {Accidental.NATURAL: '', Accidental.SHARP: '#', Accidental.FLAT: 'Flat'}.get(self.accidental)
         return "Pitch: " + str(self.letter) + str(self.octave) + acc
+
+class Event(object):
+    def __init__(self, **kwargs):
+        self.duration = kwargs.get('duration', Duration.QUARTER)
+        if (kwargs.get('onset') != None) and (kwargs.get('onset') >= 0):
+            self.onset = kwargs.get('onset')
+        else:
+            self.onset = None
+        self.duration = kwargs.get('duration', Duration.QUARTER)
+        # duration in seconds
+        self.s_duration = kwargs.get('s_duration', None)
+
+    @abc.abstractmethod
+    def getPitch(self):
+        """Method that should be implemented in subclasses."""
+
+    def eventEqual(self, event):
+        if type(self) == type(event):
+            if isinstance(self, Chord):
+                return self.chordEqual(event)
+            if isinstance(self, Note):
+                return self.noteEqual(event)
+            else: # is rest
+                return True
+
+    @abc.abstractmethod
+    def setPitch(self, pitch):
+        """Method that should be implemented in subclasses."""
+
+class Chord(Event):
+    def __init__(self, **kwargs):
+        super(self.__class__, self).__init__(**kwargs)
+        self.pitches = kwargs.get('pitches', [])
+    def getPitch(self):
+        return pitches
+
+    def chordEqual(self, chord):
+        lastPitch = min(len(chord.pitches), len(self.pitches))
+        for i in range(0, lastPitch):
+            if self.pitches[i].pitchEqual(chord.pitches[i]) == False:
+                return False
+        return True
+
+    def setPitch(self, listofPitches):
+        lastPitch = min(len(listofPitches), len(self.pitches))
+        for i in ranges(0, lastPitch):
+            self.pitches[i] = listofPitches[i]
+
+
+class Rest(Event):
+    def __init__(self, **kwargs):
+        super(self.__class__, self).__init__(**kwargs)
+    def getPitch(self):
+        return [Pitch(letter= 'r')]
+    def setPitch(self, pitch):
+        raise NotImplementedError
+
+
 
 # Should have Rest as subclass
 class Note(Event):
@@ -143,15 +174,6 @@ class Note(Event):
             return True
         else:
             return False
-
-#    def noteEqual(self, n):
-#         math = Helper()
-#         equal = False
-#         if math.floatComp (n.frequency, self.frequency):
-#             if math.floatComp(n.onset, self.onset):
-#                 if n.duration == self.duration:
-#                     if Pitch.pitchEqual(self.pitch, n.pitch):
-#                         equal = True
 
     def noteEqual(self, n):
         #if math.isclose (n.frequency, self.frequency):
@@ -280,8 +302,16 @@ class Tune(object):
     def extractFrequency(self):
         return NotImplementedError
 
-    def convertFreqToPitch(list):
-        return NotImplementedError
+    @staticmethod
+    def convertFreqToPitch(freqlist):
+        # return list of pitches
+        pitchlist = []
+        for freq in freqlist:
+            # refer to http://stackoverflow.com/questions/20730133/extracting-pitch-features-from-audio-file
+            MIDINote = round(12*math.log(freq/440.0, 2) + 69)
+            pitchlist.append(Pitch(MIDINote=MIDINote))
+        return pitchlist
+
     ## SHOULD WE MOVE ticketsToTime and computeOnset methods to Event class?
 
     # turns ticks to time in seconds
