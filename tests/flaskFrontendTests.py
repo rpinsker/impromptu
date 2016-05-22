@@ -4,7 +4,7 @@ sys.path.insert(0, '../src')
 from app import app
 from app import getTune, setTune, makeLilypondFile, tuneToNotes, makeStaffFromTune, saveLilypondForDisplay
 import unittest
-import Tune
+import TuneIter2 as Tune
 import subprocess
 import glob
 import time
@@ -101,7 +101,7 @@ class AppTestCase(unittest.TestCase):
             notes.append(rest2)
         # test empty note
         notes.append(Tune.Note())
-        testTune.setNotesList(notes)
+        testTune.setEventsList(notes) # changed tuneiter2
         # test calling tuneToNotes
         notesA = tuneToNotes(testTune)
         staff = abjad.Staff(notesA)
@@ -117,7 +117,7 @@ class AppTestCase(unittest.TestCase):
         badNote.pitch = pitch
         badNotes = [badNote]
         badTune = Tune.Tune()
-        badTune.setNotesList(badNotes)
+        badTune.setEventsList(badNotes) # changed tuneiter2
         self.assertRaises(TypeError,tuneToNotes,badTune)
 
     def test_title_and_name_input(self):

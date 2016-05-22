@@ -4,6 +4,14 @@ import math
 import itertools
 import sys
 import abc
+#sys.path.insert(0, '../tests/WAVTestFiles/Test1')
+sys.path.insert(0, '/support/')
+import os
+#from convert import *
+#import convert
+
+
+
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -466,10 +474,22 @@ class Tune(object):
             if Notelist1[i].noteEqual(Notelist2[i]) == False:
                 return False
         return True
-
+    
+    #aubio output array to event list
+    def readWav(self):
+        ofArray=[]
+        f = open('output.txt', 'r+')
+        for line in f.read().splitlines():
+            ofArray = ofArray+[line.split()]
+        events = []
+        for pair in ofArray:
+            events = events+[Event(onset=pair[0], frequency=pair[1])]
+        return events
+                                   
+                                   
 # main function used for testing of Tune.py separate from web integration
 if __name__ == "__main__":
-    # default parameters 
+    # default parameters
     INPUT_FILE = '../tests/MIDITestFiles/c-major-scale-treble.mid'
     # Sets parameters and files
     for i in xrange(1,len(sys.argv)):
@@ -482,4 +502,8 @@ if __name__ == "__main__":
 
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
-    print tune.TunetoString()
+#    print tune.TunetoString()
+#    runConvert('../tests/WAVTestFiles/Test1/')
+    tune.readWav()
+                               
+                                   
