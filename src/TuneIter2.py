@@ -245,7 +245,6 @@ class Tune(object):
         self.events = None
         if kwargs.get('mp3') != None and kwargs.get('mp3').endswith('mp3'):
             raise NotImplementedError
-
         if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
@@ -453,3 +452,7 @@ if __name__ == "__main__":
 #    print dummyInstance.MIDItoPattern(INPUT_FILE)
     tune = Tune.TuneWrapper(INPUT_FILE)
 #    print tune.TunetoString()
+
+    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
+    tune = Tune.TuneWrapper(file1)
+    print tune.TunetoString()
