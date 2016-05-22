@@ -114,11 +114,25 @@ class Event(object):
             else: # is rest
                 return True
 
+    def editEvent(self, event):
+        if event.duration != None:
+            self.duration = event.duration
+        if type(self) == type(event):
+            if isinstance(self, Chord) and isinstance(event, Chord):
+                return self.editChord(event)
+            if isinstance(self, Note) and isinstance(event, Note):
+                return self.editNote(event)
+
     def isRest(self):
         if isinstance(self, Rest):
             return True
         return False
 
+    def setDuration(self, duration):
+        self.duration = duration
+
+    def setOnset(self, onset):
+        if onset >= 0: self.onset = onset
 
     @abc.abstractmethod
     def setPitch(self, pitch):
@@ -141,11 +155,12 @@ class Chord(Event):
                 return False
         return True
 
-    def setPitch(self, listofPitches):
-        lastPitch = min(len(listofPitches), len(self.pitches))
-        for i in ranges(0, lastPitch):
-            self.pitches[i] = listofPitches[i]
+    def editChord(self, chord):
+        if chord.getPitch != None:
+            self.setPitches(chord.getPitch)
 
+    def setPitches(self, listofPitches):
+        self.pitches = listofPitches
 
 class Rest(Event):
     def __init__(self, **kwargs):
@@ -167,23 +182,20 @@ class Note(Event):
     def getPitch(self):
         return [self.pitch]
 
-
     # wrapper constructor to create Rest Note
     @classmethod
     def Rest(cls, **kwargs):
         return cls(duration = kwargs.get('duration'), s_duration = kwargs.get('s_duration'), frequency = 0.0, onset = kwargs.get('onset'), pitch = Pitch(letter = 'r'))
-
-    def setDuration(self, d):
-        self.duration = d
-
-    def setOnset(self, o):
-        self.onset = o
 
     def setPitch(self, p):
         self.pitch = p
     
     def getPitch(self):
         return self.pitch
+
+    def editNote(self, note):
+        if note.pitch != None:
+            self.setPitch(note.pitch)
 
     def NotetoString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
@@ -325,6 +337,17 @@ class Tune(object):
     def getEventsList(self):
         return self.events
 
+    def addEvent(self, idx, event):
+        self.events.insert(idx, event)
+
+    def deleteEvent(self, idx):
+        del self.events[idx]
+
+    def editEvent(self, idx, event):
+        # event contains new information (can be subset), so update original event 
+        # with new info
+        self.events[idx] = self.events[idx].editEvent(event)
+
     def eventsListEquals(self, list1, list2):
         raise NotImplementedError
 
@@ -357,12 +380,14 @@ class Tune(object):
     # turns ticks to time in seconds
     # The formula used is:
     # (# ticks * 60) / (BPM * resolution)
-    def ticksToTime(self, ticks, bpm, resolution):
+    @staticmethod
+    def ticksToTime(ticks, bpm, resolution):
         return (ticks * 60) / (bpm * resolution)
 
     # takes in a duration in seconds, returns Duration enum value
     # 1 second = quarter note
-    def secondsToDuration(self, dur):
+    @staticmethod
+    def secondsToDuration(dur):
         if (dur <= 0):
             return Duration.SIXTEENTH
         approx_power = math.log(1/dur, 2)
@@ -379,6 +404,7 @@ class Tune(object):
     # Reads a MIDI file in, returns a list of Notes
     # Notes are populated with onset and duration
     # assumes a one track MIDI file with notes in chronological order
+
     def computeOnset(self, myfile):
         pattern = self.MIDItoPattern(myfile)
         NotesList = []
@@ -426,7 +452,8 @@ class Tune(object):
         return allNotes
 
     # convert MIDI file to Pattern
-    def MIDItoPattern(self, file):
+    @staticmethod
+    def MIDItoPattern(file):
         return midi.read_midifile(file)
 
     def TunetoString(self):
