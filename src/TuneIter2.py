@@ -115,6 +115,12 @@ class Chord(Event):
         return pitches
 
     def chordEqual(self, chord):
+        if len(chord.pitches) != len(self.pitches):
+            return False
+
+        if chord.duration != self.duration or chord.onset != self.onset:
+            return False
+
         lastPitch = min(len(chord.pitches), len(self.pitches))
         for i in range(0, lastPitch):
             if self.pitches[i].pitchEqual(chord.pitches[i]) == False:
@@ -218,7 +224,7 @@ class Tune(object):
         self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
         self.events = None
-        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid', '.mp3'):
+        if kwargs.get('midi') != None and kwargs.get('midi').endswith(('.mid', '.mp3')):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
             if (pattern.format!=1): # will only look at first track, don't want type 0 MIDI file has all of the channel data on one track
@@ -420,3 +426,7 @@ if __name__ == "__main__":
 #    print dummyInstance.MIDItoPattern(INPUT_FILE)
     tune = Tune.TuneWrapper(INPUT_FILE)
 #    print tune.TunetoString()
+
+    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
+    tune = Tune.TuneWrapper(file1)
+    print tune.TunetoString()
