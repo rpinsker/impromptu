@@ -57,15 +57,12 @@ class TestImpromptuBackend(unittest.TestCase):
 
 	def testIsRest(self):
 		#Testing rest
-		restPitch = Pitch(letter='r')
-		rest = Event()
-		rest.setPitch(restPitch)
+		rest = Rest()
 		self.assertTrue(rest.isRest())
 		
 		#testing note
 		notePitch = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
-		note = Event()
-		note.setPitch(notePitch)
+		note = Note(pitch = notePitch)
 		self.assertFalse(note.isRest())
 	
 	def testNoteEqual(self):
@@ -83,7 +80,8 @@ class TestImpromptuBackend(unittest.TestCase):
 	    self.assertFalse(note.noteEqual(diffPitchNote))
 
 	    diffFreqNote = Note(frequency=350.0, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
-	    self.assertFalse(note.noteEqual(diffFreqNote))
+	    # compare pitch, never frequency
+	    self.assertTrue(note.noteEqual(diffFreqNote))
 	        
 	    diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
 	    sameNote.setPitch(samePitch)
@@ -93,14 +91,10 @@ class TestImpromptuBackend(unittest.TestCase):
 	    sameNote.setPitch(samePitch)
 	    self.assertFalse(note.noteEqual(diffDurationNote))
 
-	    rest = Pitch (letter='r')
-	    restNote = Note(frequency=0, onset=0.0)
-	    note.setPitch(rest)
-
-	    samerest = Pitch (letter='r')
-	    samerestNote = Note(frequency=0, onset=0.0)
-	    note.setPitch(samerest)
-	    self.assertTrue(samerestNote.noteEqual(samerestNote))
+	    restNote = Rest(onset=0.0, duration = Duration.WHOLE)
+	    
+	    samerestNote = Rest(onset=0.0, duration = Duration.WHOLE)
+	    self.assertTrue(samerestNote.eventEqual(samerestNote))
 
 
 	def testcreateTunefromMIDI(self):
@@ -109,7 +103,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		# ---- Fail Tune Parameter Constraints ---
 		self.assertTrue(Tune(midi = "wrongFileType.txt").midifile == None)
 		# ---- Pass Tune Parameter Constraints ---
-		self.assertFalse(Tune(midi = "wrongFileType.mid").midifile == None)
+		self.assertFalse(Tune(midi = "../tests/MIDITestFiles/c-major-scale-treble.mid").midifile == None)
 
 		# import midi file: C major scale with all quarter notes (refer to TestComputePitches)
 		# Use Python MIDI library https://github.com/vishnubob/python-midi
@@ -173,7 +167,7 @@ class TestImpromptuBackend(unittest.TestCase):
 	def testComputePitchFromFrequency(self):
 		# mp3 file of c major chord on treble clef
 		mp3Pitch = Tune.convertFreqToPitch([261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25])
-		pitchC = Pitch(letter='C', octave=4, accidental=Accidental.NATURAL)
+		pitchC = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
 		pitchD = Pitch(letter='D', octave=4, accidental=Accidental.NATURAL)
 		pitchE = Pitch(letter='E', octave=4, accidental=Accidental.NATURAL)
 		pitchF = Pitch(letter='F', octave=4, accidental=Accidental.NATURAL)
@@ -192,7 +186,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		# import mp3 file: C major scale with all quarter notes (refer to TestComputePitches)
 
 		# ---- Pass Tune Parameter Constraints ---
-		self.assertFalse(Tune(midi = "wrongFileType.mp3").midifile == None)
+		self.assertTrue(Tune(midi = "mp3 file.mp3").midifile == None)
 
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mp3")
 
@@ -209,7 +203,7 @@ class TestImpromptuBackend(unittest.TestCase):
 					
 		q1_C4 = Note(frequency=261.63, onset=0, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
 		q_rest = Pitch (letter='r')
-		q_restNote = Note(frequency=0, onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
+		q_restNote = Rest(onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
 		q_restNote.setPitch(q_rest)
 		q2_C4 = Note(frequency=261.63, onset=2, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
 		
@@ -236,7 +230,7 @@ class TestImpromptuBackend(unittest.TestCase):
 
 	def testEventequal(self):
 		note = Note(frequency=261.63,onset= 0.0)
-		diffnote = Note(frequency=241.63,onset= 0.0)
+		diffNote = Note(frequency=241.63,onset= 0.0)
 		sameNote = Note(frequency=261.63,onset= 0.0)
 		rest = Rest(onset=4.0)
 		sameRest = Rest(onset=4.0)
@@ -248,15 +242,15 @@ class TestImpromptuBackend(unittest.TestCase):
 		chord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
 		sameChord = Chord(pitches=[pitch1,pitch2,pitch3],duration=Duration.QUARTER, onset=5.0)
 		diffChord = Chord(pitches=[pitch1,pitch2,pitch4],duration=Duration.QUARTER, onset=5.0)
-		self.assertTrue(Event.eventEqual(sameNote))
-		self.assertTrue(Event.eventEqual(sameRest))
-		self.assertTrue(Event.eventEqual(sameChord))
+		self.assertTrue(note.eventEqual(sameNote))
+		self.assertTrue(rest.eventEqual(sameRest))
+		self.assertTrue(chord.eventEqual(sameChord))
 
-		self.assetFalse(Event.eventEqual(rest))
-		self.assetFalse(Event.eventEqual(chord))
-		self.assetFalse(Event.eventEqual(diffNote))
-		self.assetFalse(Event.eventEqual(diffRest))
-		self.assetFalse(Event.eventEqual(diffChord))
+		self.assertFalse(rest.eventEqual(diffRest))
+		self.assertFalse(chord.eventEqual(diffChord))
+		self.assertFalse(note.eventEqual(diffNote))
+		self.assertFalse(rest.eventEqual(diffRest))
+		self.assertFalse(note.eventEqual(diffChord))
 
 	def testeventsListEquals(self):
 		event1 = Note(frequency=261.63,onset= 0.0)

@@ -18,14 +18,13 @@ class Clef(object):
 class Accidental(object):
     NATURAL, SHARP, FLAT = range(3)
 
-#
-#
-#class Helper(object):
-# def floatComp(self,a,b):
-#     if(abs((a-b)) < 0.00005):
-#         return True
-#     else:
-#         return False
+class Helper(object):
+    @staticmethod
+    def floatComp(a,b, threshold):
+        if(abs((a-b)) < threshold):
+            return True
+        else:
+            return False
 
 
 class Pitch(object):
@@ -45,6 +44,8 @@ class Pitch(object):
 
         else:
             self.letter = kwargs.get('letter', None)
+            if self.letter != None:
+                self.letter = self.letter.lower()
             self.octave = kwargs.get('octave', None)
             self.accidental = kwargs.get('accidental', Accidental.NATURAL)
 
@@ -95,6 +96,8 @@ class Event(object):
         """Method that should be implemented in subclasses."""
 
     def eventEqual(self, event):
+        if self.duration != event.duration or self.onset != event.onset:
+            return False
         if type(self) == type(event):
             if isinstance(self, Chord):
                 return self.chordEqual(event)
@@ -102,6 +105,12 @@ class Event(object):
                 return self.noteEqual(event)
             else: # is rest
                 return True
+
+    def isRest(self):
+        if isinstance(self, Rest):
+            return True
+        return False
+
 
     @abc.abstractmethod
     def setPitch(self, pitch):
@@ -115,8 +124,11 @@ class Chord(Event):
         return pitches
 
     def chordEqual(self, chord):
-        lastPitch = min(len(chord.pitches), len(self.pitches))
-        for i in range(0, lastPitch):
+        if self.duration != chord.duration or self.onset != chord.onset:
+            return False
+        if len(chord.pitches) != len(self.pitches):
+            return False
+        for i in range(0, len(chord.pitches)):
             if self.pitches[i].pitchEqual(chord.pitches[i]) == False:
                 return False
         return True
@@ -133,16 +145,16 @@ class Rest(Event):
     def getPitch(self):
         return [Pitch(letter= 'r')]
     def setPitch(self, pitch):
-        raise NotImplementedError
+        print "Cannot change pitch of a rest. Please delete event."
+        return
 
-
-
-# Should have Rest as subclass
 class Note(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
-        self.pitch = kwargs.get('pitch', Pitch())
+        self.pitch = kwargs.get('pitch', None)
         self.frequency = kwargs.get('frequency', None)
+        if self.pitch == None and self.frequency != None:
+            self.pitch = self.convertFreqToPitch(self.frequency)
     
     def getPitch(self):
         return [self.pitch]
@@ -175,10 +187,23 @@ class Note(Event):
         else:
             return False
 
+    @staticmethod
+    def convertFreqToPitch(freq):
+        # refer to http://stackoverflow.com/questions/20730133/extracting-pitch-features-from-audio-file
+        MIDINote = round(12*math.log(freq/440.0, 2) + 69)
+        return Pitch(MIDINote=MIDINote)
+
+    @staticmethod
+    def frequencyEqual(freq1, freq2):
+        # frequency bounded in [20, 4200] because in human hearing range
+        if min(freq1, freq2) < 20 or max(freq1, freq2) > 4200:
+            return False
+        return Helper.floatComp(freq1, freq2, 4)
+
     def noteEqual(self, n):
         #if math.isclose (n.frequency, self.frequency):
         #if math.isclose (n.onset, self.onset):
-        if (n.s_duration == self.s_duration) and Pitch.pitchEqual(self.pitch, n.pitch) and (self.frequency == n.frequency) and (self.duration == n.duration):
+        if Pitch.pitchEqual(self.pitch, n.pitch) and (self.duration == n.duration):# and (self.onset == n.onset):
             return True
         return False
 
@@ -218,7 +243,10 @@ class Tune(object):
         self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
         self.events = None
-        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid', '.mp3'):
+        if kwargs.get('mp3') != None and kwargs.get('mp3').endswith('mp3'):
+            raise NotImplementedError
+
+        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
             if (pattern.format!=1): # will only look at first track, don't want type 0 MIDI file has all of the channel data on one track
@@ -247,8 +275,11 @@ class Tune(object):
 
     # wrapper constructor with only MIDI file as parameter
     @classmethod
-    def TuneWrapper(cls, midifile):
-        return cls(midi=midifile)
+    def TuneWrapper(cls, file):
+        if file.endswith('.mid'):
+            return cls(midi=file)
+        if file.endswith('.mp3'):
+            return cls(mp3=file)
 
     def getKey(self):
         return self.keySignature
@@ -293,13 +324,16 @@ class Tune(object):
     def JSONtoTune(file):
         return NotImplementedError
 
-    def extractOnset(self):
+    @staticmethod
+    def extractOnset(file):
         return NotImplementedError
 
-    def extractDuration(self):
+    @staticmethod
+    def extractDuration(file):
         return NotImplementedError
 
-    def extractFrequency(self):
+    @staticmethod
+    def extractFrequency(file):
         return NotImplementedError
 
     @staticmethod
@@ -308,8 +342,7 @@ class Tune(object):
         pitchlist = []
         for freq in freqlist:
             # refer to http://stackoverflow.com/questions/20730133/extracting-pitch-features-from-audio-file
-            MIDINote = round(12*math.log(freq/440.0, 2) + 69)
-            pitchlist.append(Pitch(MIDINote=MIDINote))
+            pitchlist.append(Note.convertFreqToPitch(freq))
         return pitchlist
 
     ## SHOULD WE MOVE ticketsToTime and computeOnset methods to Event class?
