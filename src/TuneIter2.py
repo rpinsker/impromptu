@@ -10,6 +10,7 @@ import os
 #from convert import *
 #import convert
 #from pydub import AudioSegment
+#import pyaudio
 
 
 
@@ -488,7 +489,7 @@ class Tune(object):
                 events = events+[Note(onset=float(pair[0]), frequency=float(pair[1]))]
             else:
                 events = events+[Rest(onset=float(pair[0]))]
-        return events
+        self.setEventsList(events)
 
 #    def mp3ToWav(self,fileprefix):
 #        sound = AudioSegment.from_mp3(file)
@@ -511,8 +512,8 @@ if __name__ == "__main__":
 
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
-#    print tune.TunetoString()
 #    runConvert('../tests/WAVTestFiles/Test1/')
     tune.readWav('output.txt')
-                               
+    print tune.TunetoString()
+
                                    
