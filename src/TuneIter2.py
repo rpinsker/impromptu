@@ -456,7 +456,10 @@ class Tune(object):
             ofArray = ofArray+[line.split()]
         events = []
         for pair in ofArray:
-            events = events+[Event(onset=pair[0], frequency=pair[1])]
+            if pair[1] > 0:
+                events = events+[Note(onset=pair[0], frequency=pair[1])]
+            else:
+                events = events+[Rest(onset=pair[0])]
         return events
                                    
                                    
