@@ -476,9 +476,9 @@ class Tune(object):
         return True
     
     #aubio output array to event list
-    def readWav(self):
+    def readWav(self, file):
         ofArray=[]
-        f = open('output.txt', 'r+')
+        f = open(file, 'r+')
         for line in f.read().splitlines():
             ofArray = ofArray+[line.split()]
         events = []
@@ -507,6 +507,6 @@ if __name__ == "__main__":
     tune = Tune.TuneWrapper(file1)
 #    print tune.TunetoString()
 #    runConvert('../tests/WAVTestFiles/Test1/')
-    tune.readWav()
+    tune.readWav('output.txt')
                                
                                    
