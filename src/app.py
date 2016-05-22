@@ -4,7 +4,7 @@ from flask import render_template, Flask, request, redirect, url_for
 from flask import send_from_directory
 from flask import Flask
 from flask import render_template
-import Tune
+import TuneIter2 as Tune
 
 import os, subprocess
 import time
@@ -87,7 +87,7 @@ def tuneToNotes(tune):
     if tune == None:
         return []
     aNotes = []
-    for note in tune.notes:
+    for note in tune.events:# changed tuneiter2
         pitch = note.pitch
         letter = pitch.letter
         accidental = ""
