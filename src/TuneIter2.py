@@ -9,6 +9,7 @@ sys.path.insert(0, '/support/')
 import os
 #from convert import *
 #import convert
+from pydub import AudioSegment
 
 
 
@@ -488,7 +489,12 @@ class Tune(object):
             else:
                 events = events+[Rest(onset=pair[0])]
         return events
-                                   
+
+    def mp3ToWav(self,fileprefix):
+        sound = AudioSegment.from_mp3(file)
+        prefix = file.split(str='.')
+        sound.export(prefix[0], format="wav")
+
                                    
 # main function used for testing of Tune.py separate from web integration
 if __name__ == "__main__":
