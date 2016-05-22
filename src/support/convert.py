@@ -5,6 +5,7 @@ import subprocess, os, glob
 ## Rename wav files using frequency and pitch detection:
 ## GTR_08.wav ---> automated pitch detection & file renaming ---> C - 130.81 Hz - GTR_08.wav
 
+print os.environ['PATH']
 
 WAV_DIR = r"C:/Conversion"
 AUBIO_DIR = r"C:/Conversion"
@@ -48,6 +49,12 @@ def rename_file(filename):
     print "renaming", newfile
     os.rename(full_old, full_new)
 
+def runConvert(location):
+    print 'in run convert'
+    fn = location+"*.wav"
+    for filename in glob.glob("*.wav"):
+        print filename
+        print get_freq_and_note(filename)
+#        rename_file(filename)
 
-for filename in glob.glob("*.wav"):
-    rename_file(filename)
+runConvert('')
