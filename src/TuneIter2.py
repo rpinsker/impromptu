@@ -139,7 +139,7 @@ class Rest(Event):
     def getPitch(self):
         return [Pitch(letter= 'r')]
     def setPitch(self, pitch):
-        raise NotImplementedError
+        self.pitch = pitch
 
 
 
