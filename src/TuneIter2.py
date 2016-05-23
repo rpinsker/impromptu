@@ -162,7 +162,13 @@ class Chord(Event):
         if chord.getPitch != None:
             self.setPitches(chord.getPitch)
 
-    def setPitches(self, listofPitches):
+    def addPitch(self, event):
+        if self.getPitch() != None:
+            self.setPitch(self.getPitch().extend(event))
+        else:
+            self.setPitch(event.getPitch())
+
+    def setPitch(self, listofPitches):
         self.pitches = listofPitches
 
 class Rest(Event):
@@ -183,7 +189,7 @@ class Note(Event):
             self.pitch = self.convertFreqToPitch(self.frequency)
     
     def getPitch(self):
-        return [self.pitch]
+        return self.pitch
 
     # wrapper constructor to create Rest Note
     @classmethod
@@ -356,8 +362,13 @@ class Tune(object):
         # with new info
         self.events[idx] = self.events[idx].editEvent(event)
 
-    def eventsListEquals(self, list1, list2):
-        raise NotImplementedError
+    def eventsListEquals(self, list2):
+        if len(self.getEventsList()) != len(list2):
+            return False
+        for i in range(0, len(list2)):
+            if list2[i].eventEqual(self.getEventsList()[i]) == False:
+                return False
+        return True
 
     def JSONtoTune(file):
         return NotImplementedError
