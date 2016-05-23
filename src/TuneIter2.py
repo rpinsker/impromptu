@@ -343,8 +343,32 @@ class Tune(object):
         return self.events
 
     def eventListToChords(self):
-        raise NotImplementedError
-        
+        for i in range(0,len(self.events)):
+            if floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
+                if isinstance(self.events[i],Chord):
+                    self.events[i].addPitch(self.events[i+1]) #checks chords and notes
+                    self.events.pop(i+1)
+                    i=i-1
+                elif isinstance(self.events[i+1],Chord):
+                    self.events[i+1].addPitch(self.events[i]) #checks chords and notes
+                    self.events.pop(i)
+                    i=i-1
+                elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
+                    self.events[i] = Chord(pitches = [self.events[i],self.events[i+1]] ,duration= self.events[i].duration,onset=self.events[i].onset)
+                    self.events.pop(i+1)
+                    i=i-1
+                elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
+                    self.events[i] = self.events[i+1]
+                    self.events.pop(i+1)
+                    i=i-1
+                elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Rest):
+                    self.events[i+1] = self.events[i]
+                    self.events.pop(i)
+                    i=i-1
+                elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Rest):
+                    self.events.pop(i+1)
+                    i = i-1
+
     def addEvent(self, idx, event):
         self.events.insert(idx, event)
 
