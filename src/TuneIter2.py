@@ -146,7 +146,7 @@ class Chord(Event):
         super(self.__class__, self).__init__(**kwargs)
         self.pitches = kwargs.get('pitches', [])
     def getPitch(self):
-        return pitches
+        return self.pitches
 
     def chordEqual(self, chord):
         if self.duration != chord.duration or self.onset != chord.onset:
@@ -192,9 +192,6 @@ class Note(Event):
 
     def setPitch(self, p):
         self.pitch = p
-    
-    def getPitch(self):
-        return self.pitch
 
     def editNote(self, note):
         if note.pitch != None:

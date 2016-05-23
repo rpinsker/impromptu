@@ -29,6 +29,8 @@ def uploaded_file(filename):
 # later save_last_pdf_as() and save_last_ly_as can be called
 def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
     result = abjad.topleveltools.persist(expr).as_pdf(**kwargs)
+    ## SAVE AS A PNG
+    ##result2 = abjad.topleveltools.persist(expr).as_png('static/currentTune/1.png',**kwargs)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -87,31 +89,33 @@ def tuneToNotes(tune):
     if tune == None:
         return []
     aNotes = []
-    for note in tune.events:# changed tuneiter2
-        pitch = note.pitch
-        letter = pitch.letter
-        accidental = ""
-        if pitch.accidental == Tune.Accidental.FLAT:
-            accidental += "b"
-        elif pitch.accidental == Tune.Accidental.SHARP:
-            accidental += "#"
-        octave = str(pitch.octave)
-        if letter:
-            if not letter == "r":
-               pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
-               if (note.duration):
-                   duration = abjad.Duration(note.duration[0],note.duration[1])
-               else:
-                   duration = (Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
-               aNote = abjad.Note(pitch,duration)
-               aNotes.append(aNote)
-            else: # handle rests
-                if (note.duration):
-                    duration = str(note.duration[1])
-                else:
-                    duration = "4"
-                rest = abjad.scoretools.Rest("r"+duration)
-                aNotes.append(rest)
+
+    for event in tune.events:# changed tuneiter2
+        pitches = event.getPitch()
+        for pitch in pitches:
+            letter = pitch.letter
+            accidental = ""
+            if pitch.accidental == Tune.Accidental.FLAT:
+                accidental += "b"
+            elif pitch.accidental == Tune.Accidental.SHARP:
+                accidental += "#"
+            octave = str(pitch.octave)
+            if letter:
+                if not letter == "r":
+                   pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
+                   if (event.duration):
+                       duration = abjad.Duration(event.duration[0],event.duration[1])
+                   else:
+                       duration = (Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
+                   aNote = abjad.Note(pitch,duration)
+                   aNotes.append(aNote)
+                else: # handle rests
+                    if (event.duration):
+                        duration = str(event.duration[1])
+                    else:
+                        duration = "4"
+                    rest = abjad.scoretools.Rest("r"+duration)
+                    aNotes.append(rest)
     return aNotes
 
 
