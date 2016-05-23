@@ -7,6 +7,7 @@ import abc
 #sys.path.insert(0, '../tests/WAVTestFiles/Test1')
 sys.path.insert(0, '/support/')
 import os
+import subprocess
 #from convert import *
 #import convert
 #from pydub import AudioSegment
@@ -496,9 +497,10 @@ class Tune(object):
     #aubio output array to event list using aubionotes
     def readWav(self, filename):
             ofArray=[]
-#            f= subprocess.check_output(["aubionotes", "-i", filename])
-            f = open('aubionotesoutput.txt', 'r+')
-            raw = f.read().splitlines()
+            f= subprocess.check_output(["aubionotes", "-i", filename])
+#            f = open('aubionotesoutput.txt', 'r+')
+#            raw = f.read().splitlines()
+            raw = f.splitlines()
             raw.pop(0)
             for line in raw:
                 ofArray = ofArray+[line.split()]
@@ -535,7 +537,7 @@ if __name__ == "__main__":
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
-    tune.readWav('test1.wav')
+    tune.readWav('eqt-chromo-sc.wav')
     print tune.TunetoString()
 
                                    
