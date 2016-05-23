@@ -90,7 +90,9 @@ def tuneToNotes(tune):
         return []
     aNotes = []
 
+    print tune.getEventsList()
     for event in tune.events:# changed tuneiter2
+        aChord = None
         pitches = event.getPitch()
         for pitch in pitches:
             letter = pitch.letter
@@ -102,13 +104,16 @@ def tuneToNotes(tune):
             octave = str(pitch.octave)
             if letter:
                 if not letter == "r":
+                   aChord = abjad.Chord([],abjad.Duration(Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1]))
                    pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
                    if (event.duration):
                        duration = abjad.Duration(event.duration[0],event.duration[1])
                    else:
-                       duration = (Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
-                   aNote = abjad.Note(pitch,duration)
-                   aNotes.append(aNote)
+                       duration = abjad.Duration(Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1])
+                   aChord.written_duration = duration
+                   aChord.note_heads.append(abjad.pitchtools.NamedPitch(letter.upper() + accidental + octave))
+                   #aNote = abjad.Note(pitch,duration)
+                   #aNotes.append(aNote)
                 else: # handle rests
                     if (event.duration):
                         duration = str(event.duration[1])
@@ -116,6 +121,9 @@ def tuneToNotes(tune):
                         duration = "4"
                     rest = abjad.scoretools.Rest("r"+duration)
                     aNotes.append(rest)
+
+        if (aChord): # only set if this is a note or a chord
+            aNotes.append(aChord)
     return aNotes
 
 
