@@ -447,12 +447,12 @@ class AppTestCase(unittest.TestCase):
 
             # make a chord in impromptu backend
             chord = Tune.Chord()
-            chord.setPitches(pitches)
-            chord.setDuration(duration)
+            chord.setPitch(pitches)
+            chord.duration = duration
 
             chords.append(chord)
 
-        testTune.setNotesList(chords)
+        testTune.setEventsList(chords)
 
         # test calling tuneToNotes and make sure a lilypond file can be created with no error
         notesA = tuneToNotes(testTune)
