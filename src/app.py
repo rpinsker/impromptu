@@ -77,11 +77,12 @@ def tune():
                 lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
                 lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
+                print tunetoMeasures(tuneObj)
                 return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
     # page was loaded normally (not from a request to update name, contributor, or file upload)
     # so display the tune object created at the beginning of the this method
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
-    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
+    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf', measures=[[1,1,2],[3,4]])
 
 
 # convert a Tune object to an array of notes usable by abjad
@@ -90,7 +91,6 @@ def tuneToNotes(tune):
         return []
     aNotes = []
 
-    print tune.getEventsList()
     for event in tune.events:# changed tuneiter2
         aChord = None
         pitches = event.getPitch()
@@ -125,6 +125,31 @@ def tuneToNotes(tune):
         if (aChord): # only set if this is a note or a chord
             aNotes.append(aChord)
     return aNotes
+
+
+def tunetoMeasures(tune):
+    if tune == None:
+        return []
+    measures = []
+    measureTime = tune.getTimeSignature()[0] / tune.getTimeSignature()[1] + 0.00
+    currentTimeLeft = measureTime
+    currentMeasure = []
+    for note in tune.events:
+        if note.duration:
+            duration = note.duration[0] / note.duration[1] + 0.00
+        else:
+            duration = 1/4
+        if currentTimeLeft == 0:
+            measures.append(currentMeasure)
+            currentTimeLeft = measureTime
+            currentMeasure = []
+        else:
+            currentMeasure.append(note)
+            currentTimeLeft -= duration
+    if len(currentMeasure) > 0:
+        measures.append(currentMeasure)
+    return measures
+
 
 
 # FOR PARSING CHORDS

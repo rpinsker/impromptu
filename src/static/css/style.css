@@ -34,6 +34,11 @@
     margin-left: -50px;
 }
 
+.left-panel {
+    position: absolute;
+    padding: 10px;
+}
+
 .button-box {
     position: fixed;
     background-color: black;
@@ -117,3 +122,4 @@ input[type="button"]:hover {
 }
 
 .modal-body {padding: 2px 16px;}
+
