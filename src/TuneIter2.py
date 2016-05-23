@@ -4,6 +4,7 @@ import math
 import itertools
 import sys
 import abc
+import json
 #sys.path.insert(0, '../tests/WAVTestFiles/Test1')
 sys.path.insert(0, '/support/')
 import os
@@ -359,8 +360,92 @@ class Tune(object):
     def eventsListEquals(self, list1, list2):
         raise NotImplementedError
 
-    def JSONtoTune(file):
-        return NotImplementedError
+    def pitchJSONtoTune(self, pitch):
+        if pitch['accidental'] != '':
+            ksig_pitch_accidental = int(pitch['accidental'])
+        else:
+            ksig_pitch_accidental = ''
+        ksig_pitch_letter = str(pitch['letter'])
+        if pitch['octave'] != '':
+            ksig_pitch_octave = int(pitch['octave'])
+        else:
+            ksig_pitch_octave = ''
+        pitch = Pitch(accidental=ksig_pitch_accidental, letter=ksig_pitch_letter, octave=ksig_pitch_octave)
+        return pitch
+
+    def durationJSONtoTune(self, dur_str):
+        if dur_str == 'SIXTEENTH':
+            dur = Duration.SIXTEENTH
+        elif dur_str == 'EIGHTH':
+            dur = Duration.EIGHTH
+        elif dur_str == 'QUARTER':
+            dur = Duration.QUARTER
+        elif dur_str == 'HALF':
+            dur = Duration.HALF
+        elif dur_str =='WHOLE':
+            dur = Duration.WHOLE
+        return dur
+
+    def eventJSONtoTune(self, event):
+        onset = float(event['onset'])
+        duration = self.durationJSONtoTune(str(event['duration']))   
+        #new_event = Event(duration=duration, onset=onset)
+
+        if event['class'] == 'note':
+            new_event = Note(duration=duration, onset=onset)
+            n_frequency = float(event['frequency'])
+            n_pitch = self.pitchJSONtoTune(event['pitch'])
+            new_event.frequency = n_frequency
+            new_event.setPitch(n_pitch)
+        elif event['class'] == 'rest':
+            new_event = Rest(duration=duration, onset=onset)
+        elif event['class'] == 'chord': 
+            new_event = Chord(duration=duration, onset=onset)
+            pitches = []
+            for p in event['pitches']:
+                pch = pitchJSONtoTune(p)
+                pitches.append(p)
+            new_event.setPitch(pitches)
+        return new_event
+            
+
+    def JSONtoTune(self, json_file):
+        json_data = json.load(json_file)
+        json_tune = json_data['tune']
+
+        tune_title = json_tune['title']
+        
+        tune_contributors = []
+        for contri in json_tune['contributors']:
+            tune_contributors.append(str(contri))
+
+        tune_clef = int(json_tune['clef'])
+
+        tune_tsig1 = int(json_tune['timeSignature'][0])
+        tune_tsig2 = int(json_tune['timeSignature'][1])
+        tune_tsig = (tune_tsig1, tune_tsig2)
+
+        tune_ksig_pitch = self.pitchJSONtoTune(json_tune['keySignature']['pitch'])
+        iMflag = str(json_tune['keySignature']['isMajor'])
+        iMflag.lower()
+        ksigisMajor = True
+        if iMflag == 'true':
+            ksig_isMajor = True
+        if iMflag == 'false':
+            ksigisMajor = False
+        tune_ksig = Key(pitch=tune_ksig_pitch, isMajor=ksigisMajor)
+
+        tune_events = []
+        for event in json_tune['events']:
+            new = self.eventJSONtoTune(event)
+            tune_events.append(new)
+
+        self.setTitle(tune_title)
+        self.setContributors(tune_contributors)
+        self.clef = tune_clef
+        self.setTimeSignature(tune_tsig)
+        self.setKey(tune_ksig)
+        self.setEventsList(tune_events)
 
     @staticmethod
     def convertFreqToPitch(freqlist):

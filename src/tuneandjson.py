@@ -6,15 +6,13 @@ import json
 import pprint
 from TuneIter2 import *
 
-#def TunetoJSON(tune):
-
 def pitchJSONtoTune(pitch):
-	if pitch['accidental'] != '':
+	if str(pitch['accidental']) != '':
 		ksig_pitch_accidental = int(pitch['accidental'])
 	else:
 		ksig_pitch_accidental = ''
 	ksig_pitch_letter = str(pitch['letter'])
-	if pitch['octave'] != '':
+	if str(pitch['octave']) != '':
 		ksig_pitch_octave = int(pitch['octave'])
 	else:
 		ksig_pitch_octave = ''
@@ -38,7 +36,6 @@ def eventJSONtoTune(event):
 	onset = float(event['onset'])
 	duration = durationJSONtoTune(str(event['duration']))	
 	#new_event = Event(duration=duration, onset=onset)
-
 	if event['class'] == 'note':
 		new_event = Note(duration=duration, onset=onset)
 		n_frequency = float(event['frequency'])
@@ -47,8 +44,8 @@ def eventJSONtoTune(event):
 		new_event.setPitch(n_pitch)
 	elif event['class'] == 'rest':
 		new_event = Rest(duration=duration, onset=onset)
-		r_pitch = pitchJSONtoTune(event['pitch'])
-		new_event.setPitch(r_pitch)
+		#r_pitch = pitchJSONtoTune(event['pitch'])
+		#new_event.setPitch(r_pitch)
 	elif event['class'] == 'chord':	
 		new_event = Chord(duration=duration, onset=onset)
 		pitches = []
@@ -98,7 +95,7 @@ def JSONtoTune(json_file):
 	tune.setKey(tune_ksig)
 	tune.setEventsList(tune_events)
 
-	tune.TunetoString()
+	#tune.TunetoString()
 
 fp = open("../tests/MIDITestFiles/tune.json")
 JSONtoTune(fp)

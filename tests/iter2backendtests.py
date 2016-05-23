@@ -459,9 +459,11 @@ class TestImpromptuBackend(unittest.TestCase):
 
 	def testJSONtoTune(self):
 		# Test a tune with two notes
-		tune = Tune.JSONtoTune("../tests/MIDITestFiles/tune.json")
+		fp = open("../tests/MIDITestFiles/tune.json")
+		tune = Tune()
+		tune.JSONtoTune(fp)
 		tune_keysig = tune.getKey()
-		tune_keysig_pitch = Pitch(letter="b", octave=2, accidental=Accidental.FLAT)
+		tune_keysig_pitch = Pitch(letter="b", octave='', accidental=Accidental.FLAT)
 		tune_keysig_key = Key(isMajor=True, pitch=tune_keysig_pitch)
 		self.assertTrue(isinstance(tune_keysig, Key))
 		self.assertTrue(tune_keysig.keyEqual(tune_keysig_key))
@@ -483,9 +485,9 @@ class TestImpromptuBackend(unittest.TestCase):
 		pitch1 = Pitch(letter='b', octave=2, accidental=2)
 		note1 = Note(duration=Duration.QUARTER, frequency=25.0, onset=5.67, pitch=pitch1)
 		pitch2 = Pitch(letter='r')
-		note2 = Note(duration=Duration.WHOLE, frequency=105.0, onset=6.67, pitch=pitch2)
-		self.assertTrue(note.eventEqual(tune_events[0]))
-		self.assertTrue(note.eventEqual(tune_events[1]))
+		rest1 = Rest(duration=Duration.WHOLE, onset=6.67, pitch=pitch2)
+		self.assertTrue(note1.eventEqual(tune_events[0]))
+		self.assertTrue(rest1.eventEqual(tune_events[1]))
 
 if __name__ == '__main__':
 	unittest.main()
