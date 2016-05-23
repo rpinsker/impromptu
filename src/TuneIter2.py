@@ -477,19 +477,41 @@ class Tune(object):
                 return False
         return True
     
-    #aubio output array to event list
-    def readWav(self, file):
-        ofArray=[]
-        f = open(file, 'r+')
-        for line in f.read().splitlines():
-            ofArray = ofArray+[line.split()]
-        events = []
-        for pair in ofArray:
-            if float(pair[1]) > 0:
-                events = events+[Note(onset=float(pair[0]), frequency=float(pair[1]))]
-            else:
-                events = events+[Rest(onset=float(pair[0]))]
-        self.setEventsList(events)
+    #aubio output array to event list using pitches
+#    def readWav(self, file):
+#        ofArray=[]
+#        f = open(file, 'r+')
+#        for line in f.read().splitlines():
+#            ofArray = ofArray+[line.split()]
+#        events = []
+#        for pair in ofArray:
+#            if float(pair[1]) > 0:
+#                events = events+[Note(onset=float(pair[0]), frequency=float(pair[1]))]
+#            else:
+#                events = events+[Rest(onset=float(pair[0]))]
+#        self.setEventsList(events)
+
+
+
+    #aubio output array to event list using aubionotes
+    def readWav(self, filename):
+            ofArray=[]
+#            f= subprocess.check_output(["aubionotes", "-i", filename])
+            f = open('aubionotesoutput.txt', 'r+')
+            raw = f.read().splitlines()
+            raw.pop(0)
+            for line in raw:
+                ofArray = ofArray+[line.split()]
+            events = []
+            print raw
+            for tuple in ofArray:
+                sdur = float(tuple[2]) - float(tuple[1])
+                p = Pitch()
+                p = p.MIDInotetoPitch(math.floor(float(tuple[0])))
+                events = events+[Note(pitch=p, onset=float(tuple[1]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
+            self.setEventsList(events)
+
+
 
 #    def mp3ToWav(self,fileprefix):
 #        sound = AudioSegment.from_mp3(file)
@@ -513,7 +535,7 @@ if __name__ == "__main__":
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
-    tune.readWav('output.txt')
+    tune.readWav('test1.wav')
     print tune.TunetoString()
 
                                    
