@@ -190,7 +190,7 @@ class Note(Event):
             self.pitch = self.convertFreqToPitch(self.frequency)
     
     def getPitch(self):
-        return self.pitch
+        return [self.pitch]
 
     # wrapper constructor to create Rest Note
     @classmethod

@@ -131,21 +131,21 @@ def tunetoMeasures(tune):
     if tune == None:
         return []
     measures = []
-    measureTime = tune.getTimeSignature()[0] / tune.getTimeSignature()[1] + 0.00
+    measureTime = float(tune.getTimeSignature()[0]) / float(tune.getTimeSignature()[1])
+    print "measure time: " + str(measureTime)
     currentTimeLeft = measureTime
     currentMeasure = []
     for note in tune.events:
-        if note.duration:
-            duration = note.duration[0] / note.duration[1] + 0.00
-        else:
-            duration = 1/4
-        if currentTimeLeft == 0:
+        if currentTimeLeft <= 0:
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
             currentMeasure = []
+        if note.duration:
+            duration = float(note.duration[0]) / float(note.duration[1])
         else:
-            currentMeasure.append(note)
-            currentTimeLeft -= duration
+            duration = 0.25
+        currentMeasure.append(note)
+        currentTimeLeft -= duration
     if len(currentMeasure) > 0:
         measures.append(currentMeasure)
     return measures
