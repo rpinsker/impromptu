@@ -345,6 +345,9 @@ class Tune(object):
     def getEventsList(self):
         return self.events
 
+    def eventListToChords(self):
+        raise NotImplementedError
+        
     def addEvent(self, idx, event):
         self.events.insert(idx, event)
 
@@ -360,18 +363,6 @@ class Tune(object):
         raise NotImplementedError
 
     def JSONtoTune(file):
-        return NotImplementedError
-
-    @staticmethod
-    def extractOnset(file):
-        return NotImplementedError
-
-    @staticmethod
-    def extractDuration(file):
-        return NotImplementedError
-
-    @staticmethod
-    def extractFrequency(file):
         return NotImplementedError
 
     @staticmethod

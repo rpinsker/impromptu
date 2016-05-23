@@ -128,21 +128,23 @@ class TestImpromptuBackend(unittest.TestCase):
 		TuneMIDI.setContributors(["this is toooooooooooooooooooooooooooooooooooooooooooooooooo long contributor name"])
 		self.assertEqual(TuneMIDI.getContributors(), [])
 
-	def testExtractOnset(self):
-		# mp3 file with 8 note onsets at 0, 2, 3, ..., 7
-		mp3Onset = Tune.extractOnset("../tests/MP3TestFiles/c-major-scale-treble.mp3")
-		for i in range(0, 8):
-			self.assertEqual(mp3Onset[i], i)
+	# aubio does this functionality for us
+	# def testExtractOnset(self):
+	# 	# mp3 file with 8 note onsets at 0, 2, 3, ..., 7
+	# 	mp3Onset = Tune.extractOnset("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+	# 	for i in range(0, 8):
+	# 		self.assertEqual(mp3Onset[i], i)
 
-	def testExtractDuration(self):
-		# mp3 file with 8 note durations, each a quarter note long
+	# aubio does this functionality for us
+	# def testExtractDuration(self):
+	# 	# mp3 file with 8 note durations, each a quarter note long
 
-		# first get duration in seconds
-		mp3Duration = Tune.extract_s_Duration("../tests/MP3TestFiles/c-major-scale-treble.mp3")
-		# convert to duration enum
-		for i in xrange(0, 8):
-			mp3Duration[i] = Tune.secondsToDuration(mp3Duration[i])
-			self.assertEqual(mp3Duration[i], Duration.QUARTER)
+	# 	# first get duration in seconds
+	# 	mp3Duration = Tune.extract_s_Duration("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+	# 	# convert to duration enum
+	# 	for i in xrange(0, 8):
+	# 		mp3Duration[i] = Tune.secondsToDuration(mp3Duration[i])
+	# 		self.assertEqual(mp3Duration[i], Duration.QUARTER)
 
 	def testFrequencyEqual(self):
 		# equal
@@ -156,13 +158,14 @@ class TestImpromptuBackend(unittest.TestCase):
 		# frequency out of upper bound 4200
 		self.assertFalse(Note.frequencyEqual(4201, 4201))
 
-	def testExtractFrequency(self):
-		# mp3 file of c major chord on treble clef
-		mp3Frequency = Tune.extractFrequency("../tests/MP3TestFiles/c-major-scale-treble.mp3")
-		# refer to http://www.phy.mtu.edu/~suits/notefreqs.html
-		frequency = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
-		for i in xrange(0, 8):
-			self.assertTrue(Note.frequencyEqual(mp3Frequency[i], frequency[i]))
+	# aubio does this functionality for us
+	# def testExtractFrequency(self):
+	# 	# mp3 file of c major chord on treble clef
+	# 	mp3Frequency = Tune.extractFrequency("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+	# 	# refer to http://www.phy.mtu.edu/~suits/notefreqs.html
+	# 	frequency = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
+	# 	for i in xrange(0, 8):
+	# 		self.assertTrue(Note.frequencyEqual(mp3Frequency[i], frequency[i]))
 
 	def testComputePitchFromFrequency(self):
 		# mp3 file of c major chord on treble clef
@@ -310,10 +313,10 @@ class TestImpromptuBackend(unittest.TestCase):
 		spitch3 = Pitch(letter='a', octave=4, accidental=Accidental.FLAT)
 		sameevent6 = Chord(pitches=[spitch1,spitch2,spitch3],duration=Duration.QUARTER, onset=5.0)
 		sameEvents = [sameevent1, sameevent2, sameevent3, sameevent4, sameevent5, sameevent6]
-		tune=Tune()
+		tune=Tune(events = events)
 
-		self.assertTrue(tune.eventsListEquals(tune.noteListToChords(events), sameEvents))
-		self.assertFalse(tune.eventsListEquals(tune.noteListToChords(events), events))
+		self.assertTrue(tune.eventsListEquals(tune.eventListToChords().getEventsList(), sameEvents))
+		self.assertFalse(tune.eventsListEquals(tune.eventListToChords().getEventsList(), events))
 
 
 	def testTuneGetterSetter(self):
