@@ -503,8 +503,6 @@ class Tune(object):
     def readWav(self, filename):
             ofArray=[]
             f= subprocess.check_output(["aubionotes", "-i", filename])
-#            f = open('aubionotesoutput.txt', 'r+')
-#            raw = f.read().splitlines()
             raw = f.splitlines()
             raw.pop(0)
             for line in raw:
