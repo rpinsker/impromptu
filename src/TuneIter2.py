@@ -163,7 +163,13 @@ class Chord(Event):
         if chord.getPitch != None:
             self.setPitches(chord.getPitch)
 
-    def setPitches(self, listofPitches):
+    def addPitch(self, event):
+        if self.getPitch() != None:
+            self.setPitch(self.getPitch().extend(event))
+        else:
+            self.setPitch(event.getPitch())
+
+    def setPitch(self, listofPitches):
         self.pitches = listofPitches
 
 class Rest(Event):
@@ -184,7 +190,7 @@ class Note(Event):
             self.pitch = self.convertFreqToPitch(self.frequency)
     
     def getPitch(self):
-        return [self.pitch]
+        return self.pitch
 
     # wrapper constructor to create Rest Note
     @classmethod
@@ -344,8 +350,32 @@ class Tune(object):
         return self.events
 
     def eventListToChords(self):
-        raise NotImplementedError
-        
+        for i in range(0,len(self.events)):
+            if floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
+                if isinstance(self.events[i],Chord):
+                    self.events[i].addPitch(self.events[i+1]) #checks chords and notes
+                    self.events.pop(i+1)
+                    i=i-1
+                elif isinstance(self.events[i+1],Chord):
+                    self.events[i+1].addPitch(self.events[i]) #checks chords and notes
+                    self.events.pop(i)
+                    i=i-1
+                elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
+                    self.events[i] = Chord(pitches = [self.events[i],self.events[i+1]] ,duration= self.events[i].duration,onset=self.events[i].onset)
+                    self.events.pop(i+1)
+                    i=i-1
+                elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
+                    self.events[i] = self.events[i+1]
+                    self.events.pop(i+1)
+                    i=i-1
+                elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Rest):
+                    self.events[i+1] = self.events[i]
+                    self.events.pop(i)
+                    i=i-1
+                elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Rest):
+                    self.events.pop(i+1)
+                    i = i-1
+
     def addEvent(self, idx, event):
         self.events.insert(idx, event)
 
@@ -357,8 +387,13 @@ class Tune(object):
         # with new info
         self.events[idx] = self.events[idx].editEvent(event)
 
-    def eventsListEquals(self, list1, list2):
-        raise NotImplementedError
+    def eventsListEquals(self, list2):
+        if len(self.getEventsList()) != len(list2):
+            return False
+        for i in range(0, len(list2)):
+            if list2[i].eventEqual(self.getEventsList()[i]) == False:
+                return False
+        return True
 
     def pitchJSONtoTune(self, pitch):
         if pitch['accidental'] != '':

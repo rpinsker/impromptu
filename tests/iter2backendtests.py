@@ -53,6 +53,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
 		note = Note(frequency=493.88, onset=0.0)
 		note.setPitch(pitch)
+		print pitch, note.getPitch()
 		self.assertTrue(pitch.pitchEqual(note.getPitch()))
 
 	def testIsRest(self):
@@ -285,11 +286,11 @@ class TestImpromptuBackend(unittest.TestCase):
 
 		tune = Tune()
 
-		tune.setNotesList(events)
-		self.assertTrue(tune.eventsListEquals(tune.getNotesList(), sameEvents))
-		self.assertTrue(tune.eventsListEquals(tune.getNotesList(), diffOrderEvents))
-		self.assertFalse(tune.eventsListEquals(tune.getNotesList(), lessEvents))
-		self.assertFalse(tune.eventsListEquals(tune.getNotesList(), diffEvents))
+		tune.setEventsList(events)
+		self.assertTrue(tune.eventsListEquals(sameEvents))
+		self.assertFalse(tune.eventsListEquals(diffOrderEvents))
+		self.assertFalse(tune.eventsListEquals(lessEvents))
+		self.assertFalse(tune.eventsListEquals(diffEvents))
 
 	def testNotesListToChords(self):
 		event1 = Note(frequency=261.63,onset= 0.0)
