@@ -266,9 +266,11 @@ class Tune(object):
         self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
         self.events = None
-        if kwargs.get('mp3') != None and kwargs.get('mp3').endswith('mp3'):
+        if kwargs.get('wav') != None and kwargs.get('wav').endswith('wav'):
+            self.readWav(kwargs.get('wav'))
+        elif kwargs.get('mp3') != None and kwargs.get('mp3').endswith('mp3'):
             raise NotImplementedError
-        if kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
+        elif kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
             if (pattern.format!=1): # will only look at first track, don't want type 0 MIDI file has all of the channel data on one track
@@ -300,8 +302,11 @@ class Tune(object):
     def TuneWrapper(cls, file):
         if file.endswith('.mid'):
             return cls(midi=file)
-        if file.endswith('.mp3'):
+        elif file.endswith('.mp3'):
             return cls(mp3=file)
+        elif file.endswith('.wav'):
+            return cls(wav=file)
+
 
     def getKey(self):
         return self.keySignature
@@ -537,7 +542,7 @@ if __name__ == "__main__":
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
-    tune.readWav('eqt-chromo-sc.wav')
-    print tune.TunetoString()
+    tuneWav = Tune(wav = 'test1.wav')
+    print tuneWav.TunetoString()
 
                                    
