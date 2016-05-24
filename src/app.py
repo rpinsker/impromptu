@@ -103,6 +103,7 @@ def tuneToNotes(tune):
         for event in measure:# changed tuneiter2
             aChord = None
             pitches = event.getPitch()
+            pitches = [p for p in pitches if p is not None]
             for pitch in pitches:
                 letter = pitch.letter
                 accidental = ""
@@ -143,7 +144,6 @@ def tunetoMeasures(tune):
         return []
     measures = []
     measureTime = float(tune.getTimeSignature()[0]) / float(tune.getTimeSignature()[1])
-    print "measure time: " + str(measureTime)
     currentTimeLeft = measureTime
     currentMeasure = []
     for note in tune.events:
@@ -163,11 +163,9 @@ def tunetoMeasures(tune):
             currentMeasure.append(note)
             currentTimeLeft -= duration
         else:
-            # split the note and add the first one to the current measure
-            splitNote1 = Tune.Note()
-            splitNote1.pitch = note.pitch
-            splitNote1.duration = (1,float(1/currentTimeLeft))
-            currentMeasure.append(splitNote1)
+            # change the note's duration!
+            note.duration = (1,float(1/currentTimeLeft))
+            currentMeasure.append(note)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
             currentMeasure = []
