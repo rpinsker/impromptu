@@ -142,6 +142,9 @@ class Event(object):
     def setPitch(self, pitch):
         """Method that should be implemented in subclasses."""
 
+    def NotetoString(self):
+        raise NotImplementedError
+
 class Chord(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
@@ -171,6 +174,13 @@ class Chord(Event):
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
+
+    def NotetoString(self):
+        durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
+        pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
+        for pitch in self.pitches:
+            pitchstr += pitch.NotetoString() + " "
+        return pitchstr
 
 class Rest(Event):
     def __init__(self, **kwargs):
@@ -302,6 +312,7 @@ class Tune(object):
             self.events = self.calculateRests(self.events)
             # lastly, compute chords
 #            self.events = self.calculateRests(self.events)
+            self.sortEventListByOnset()
             self.eventListToChords()
 
 
@@ -352,6 +363,12 @@ class Tune(object):
 
     def getEventsList(self):
         return self.events
+
+
+    def sortEventListByOnset(self):
+        print self.events
+        self.events = sorted(self.events, key=lambda event: event.onset)
+        print self.events
 
     def eventListToChords(self):
         i = 0
@@ -796,12 +813,12 @@ if __name__ == "__main__":
     dummyInstance = Tune()
 #    print dummyInstance.MIDItoPattern(INPUT_FILE)
     tune = Tune.TuneWrapper(INPUT_FILE)
-#    print tune.TunetoString()
 
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
-    tuneWav = Tune(wav = 'test1.wav')
-    print tuneWav.TunetoString()
+#    tuneWav = Tune(wav = 'eqt-chromo-sc.wav')
+#    print tuneWav.TunetoString()
+    print tune.TunetoString()
 
                                    
