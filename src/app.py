@@ -12,7 +12,7 @@ import time
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = set(['mid', 'midi'])
+ALLOWED_EXTENSIONS = set(['mid', 'midi', 'mp3', 'wav'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 tuneObj = None

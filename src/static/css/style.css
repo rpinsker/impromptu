@@ -62,6 +62,17 @@ button:hover {
     padding: 5px;
 }
 
+a.button {
+    background-color: white;
+}
+
+a.button:hover {
+    /*background-color: #555;
+    border-color: black;
+    color: #F1F1F1;*/
+    background-color: #E1E1E1;
+}
+
 input[type="submit"]:hover,
 input[type="button"]:hover {
     background-color: #E1E1E1;
@@ -122,4 +133,17 @@ input[type="button"]:hover {
 }
 
 .modal-body {padding: 2px 16px;}
+
+
+#record { height: 6vh; width: 250px}
+	#record.recording {
+		background: red;
+		background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%);
+		background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%);
+		background: radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%);
+	}
+
+#save { height: 6vh; width: 250px}
+	#save.button { opacity: 0.25;}
+	#save[download] { opacity: 1;  }
 
