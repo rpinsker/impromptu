@@ -304,7 +304,7 @@ class AppTestCase(unittest.TestCase):
             abjad.systemtools.IOManager.save_last_ly_as("test.ly")
             file = open("test.ly")
             # check if time signature t is in lilypond file
-            isPresent = ('        \\time ' + str(t[0]) + '/' + str(t[1]) + '\n' in file.readlines())
+            isPresent = ('            \\time ' + str(t[0]) + '/' + str(t[1]) + '\n' in file.readlines())
             # make sure invalid key not present
             if t == (-1, -1):
                 self.assertEqual(isPresent, False)
