@@ -5,6 +5,7 @@ from flask import send_from_directory
 from flask import Flask
 from flask import render_template
 import TuneIter2 as Tune
+import glob
 
 import os, subprocess
 import time
@@ -29,8 +30,13 @@ def uploaded_file(filename):
 # later save_last_pdf_as() and save_last_ly_as can be called
 def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
     result = abjad.topleveltools.persist(expr).as_pdf(**kwargs)
-    ## SAVE AS A PNG
-    ##result2 = abjad.topleveltools.persist(expr).as_png('static/currentTune/1.png',**kwargs)
+
+def save_measure_as_png(expr, i, return_timing=False, **kwargs):
+    if i == 0:
+        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
+        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
+    # SAVE AS A PNG
+    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i+1) + '.png',**kwargs)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -119,7 +125,7 @@ def tuneToNotes(tune):
                        #aNotes.append(aNote)
                     else: # handle rests
                         if (event.duration):
-                            duration = str(event.duration[1])
+                            duration = str(int(event.duration[1]))
                         else:
                             duration = "4"
                         rest = abjad.scoretools.Rest("r"+duration)
@@ -141,6 +147,7 @@ def tunetoMeasures(tune):
     currentTimeLeft = measureTime
     currentMeasure = []
     for note in tune.events:
+        #print note.duration
         if currentTimeLeft == 0:
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
@@ -149,7 +156,9 @@ def tunetoMeasures(tune):
             duration = float(note.duration[0]) / float(note.duration[1])
         else:
             duration = 0.25
-            note.duration = Tune.Duration(1,4)
+            note.duration = Tune.Duration.QUARTER
+        #print (currentTimeLeft - duration)
+        #print (currentTimeLeft - duration >= 0)
         if (currentTimeLeft - duration >= 0):
             currentMeasure.append(note)
             currentTimeLeft -= duration
@@ -157,19 +166,20 @@ def tunetoMeasures(tune):
             # split the note and add the first one to the current measure
             splitNote1 = Tune.Note()
             splitNote1.pitch = note.pitch
-            splitNote1.duration = (1,int(1/currentTimeLeft))
+            splitNote1.duration = (1,float(1/currentTimeLeft))
             currentMeasure.append(splitNote1)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
             currentMeasure = []
             # add the second one to the next measure
-            splitNote2 = Tune.Note()
-            splitNote2.pitch = note.pitch
+            #splitNote2 = Tune.Note()
+            #splitNote2.pitch = note.pitch
             # 1.duration + 2.duration = note.duration
-            dur2 = duration - float(splitNote1.duration[0])/float(splitNote1.duration[1])
-            splitNote2.duration = (1, int(1 / dur2))
-            currentMeasure.append(splitNote2)
-            currentTimeLeft -= dur2
+            #dur2 = duration - float(splitNote1.duration[0])/float(splitNote1.duration[1])
+            #if dur2 > 0:
+            #    splitNote2.duration = (1, float(1 / dur2))
+            #    currentMeasure.append(splitNote2)
+            #    currentTimeLeft -= dur2
 
 
     if len(currentMeasure) > 0:
@@ -229,12 +239,15 @@ def makeStaffFromTune(tune):
     # now coming as a list of lists so notes separated by measure
     notes = tuneToNotes(tune)
     staff = abjad.Staff()
-    print time_signature
+    counter = 0
     for measure in notes:
             #print aEvent.written_duration
             m = abjad.Measure(time_signature, measure)
-            staff.append(m)
-            print m
+            d = m._preprolated_duration
+            if d == time_signature.duration:
+                staff.append(m)
+                save_measure_as_png(m,counter)
+                counter += 1
         #staff.append(abjad.Measure(abjad.Measure(time_signature,measure)))
 
 
