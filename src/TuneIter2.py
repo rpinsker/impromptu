@@ -9,13 +9,6 @@ import json
 sys.path.insert(0, '/support/')
 import os
 import subprocess
-#from convert import *
-#import convert
-#from pydub import AudioSegment
-#import pyaudio
-
-
-
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -760,21 +753,6 @@ class Tune(object):
             if Notelist1[i].noteEqual(Notelist2[i]) == False:
                 return False
         return True
-    
-    #aubio output array to event list using pitches
-#    def readWav(self, file):
-#        ofArray=[]
-#        f = open(file, 'r+')
-#        for line in f.read().splitlines():
-#            ofArray = ofArray+[line.split()]
-#        events = []
-#        for pair in ofArray:
-#            if float(pair[1]) > 0:
-#                events = events+[Note(onset=float(pair[0]), frequency=float(pair[1]))]
-#            else:
-#                events = events+[Rest(onset=float(pair[0]))]
-#        self.setEventsList(events)
-
 
 
     #aubio output array to event list using aubionotes
@@ -793,13 +771,6 @@ class Tune(object):
                 p = p.MIDInotetoPitch(math.floor(float(tuple[0])))
                 events = events+[Note(pitch=p, onset=float(tuple[1]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
             self.setEventsList(events)
-
-
-
-#    def mp3ToWav(self,fileprefix):
-#        sound = AudioSegment.from_mp3(file)
-#        prefix = file.split(str='.')
-#        sound.export(prefix[0], format="wav")
 
                                    
 # main function used for testing of Tune.py separate from web integration
