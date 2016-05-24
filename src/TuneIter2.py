@@ -180,6 +180,9 @@ class Rest(Event):
     def setPitch(self, pitch):
         print "Cannot change pitch of a rest. Please delete event."
         return
+    def NotetoString(self):
+        durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
+        return "Rest: Duration (seconds) - %s, Duration - %s, Onset - %s \n" %(str(self.s_duration), durationstring, str(self.onset))        
 
 class Note(Event):
     def __init__(self, **kwargs):
@@ -395,6 +398,156 @@ class Tune(object):
                 return False
         return True
 
+    def durationTunetoJSON(self, tup):
+        if tup == (1,1):
+            return 'WHOLE'
+        elif tup == (1,2):
+            return 'HALF'
+        elif tup == (1,4):
+            return 'QUARTER'
+        elif tup == (1,8):
+            return 'EIGHTH'
+        elif tup == (1,16):
+            return 'SIXTEENTH'
+
+    def writePitchtoFile(self, pitch, myfile):
+        letter = ''
+        octave = ''
+        accidental = ''
+        if pitch.letter != None:
+            letter = pitch.letter
+        if pitch.octave != None:
+            octave = str(pitch.octave)
+        if pitch.accidental != None:
+            accidental = str(pitch.accidental)
+        myfile.write('\t\t\t\t"pitch":{\n\t\t\t\t\t"letter":"%c",\n\t\t\t\t\t"octave":"%s",\n\t\t\t\t\t"accidental":"%s"\n\t\t\t\t}\n' %(letter, octave, accidental))
+
+    def TunetoJSON(self):
+        if self.title != None:
+            filename = 'tune-' + self.title + '.json'
+        else:
+            filename = 'tune-generic.json'
+        f = open(filename, 'w')
+        
+        f.write('{\n')
+        f.write('\t"tune": {\n')
+        
+        f.write('\t\t"timeSignature": ["%d","%d"],\n' %(self.timeSignature[0], self.timeSignature[1]))
+        
+        f.write('\t\t"clef": "%d",\n' %(self.clef))
+        
+        if self.title != None:
+            f.write('\t\t"title": "%s",\n' %(self.title))
+        else:
+            f.write('\t\t"title": "",\n')
+
+        f.write('\t\t"contributors": [')
+        if self.contributors != None:
+            n_contributors = len(self.contributors)
+            for num in (0, n_contributors - 1):
+                f.write('"%s"' %(self.contributors[num]))
+                if num != n_contributors - 1:
+                    f.write(',')
+        f.write('],\n')
+
+        f.write('\t\t"events":[\n')
+        events = self.getEventsList()
+        e_len = len(events)
+        for x in range(0, e_len):
+            event = events[x]
+            f.write('\t\t\t{\n')
+            if isinstance(event, Chord):
+                f.write('\t\t\t\t"class":"chord",\n')
+                f.write('\t\t\t\t"duration":"%lf",\n' %(event.duration))
+                f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
+                f.write('\t\t\t\t"frequency":"%lf",\n' %(event.frequency))
+                f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
+                
+                f.write('\t\t\t\t"pitches":[\n')
+                pitches = event.getPitch()
+                n_pitches = len(pitches)
+                for n in range(0, n_pitches):
+                    f.write('\t\t\t\t\t{\n')
+                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n].letter))
+                    f.write('\t\t\t\t\t"octave":"%d",\n' %(pitches[n].octave))
+                    f.write('\t\t\t\t\t"accidental":"%d",\n' %(pitches[n].accidental))
+                    f.write('\t\t\t\t\t}')
+                    if n != n_pitches-1:
+                        f.write(',\n')
+                    else:
+                        f.write('\n')
+                f.write('\t\t\t\t],\n')
+                f.write('\t\t\t}')
+            elif isinstance(event, Note):
+                f.write('\t\t\t\t"class":"note",\n')
+
+                if event.duration != None:
+                    dur_str = self.durationTunetoJSON(event.duration)
+                    f.write('\t\t\t\t"duration":"%s",\n' %(dur_str))
+                else:
+                    f.write('\t\t\t\t"duration":"",\n')
+
+                if event.duration != None:
+                    f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
+                else:
+                    f.write('\t\t\t\t"s_duration":"",\n')
+
+                if event.frequency != None:
+                    f.write('\t\t\t\t"frequency":"%lf",\n' %(event.frequency))
+                else:
+                    f.write('\t\t\t\t"frequency":"",\n')
+
+                f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
+
+                self.writePitchtoFile(event.pitch, f)
+            elif isinstance(event, Rest):
+                f.write('\t\t\t\t"class":"rest",\n')
+
+                if event.duration != None:
+                    dur_str = self.durationTunetoJSON(event.duration)
+                    f.write('\t\t\t\t"duration":"%s",\n' %(dur_str))
+                else:
+                    f.write('\t\t\t\t"duration":"",\n')
+
+                if event.duration != None:
+                    f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
+                else:
+                    f.write('\t\t\t\t"s_duration":"",\n')
+
+                f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
+
+                f.write('\t\t\t\t"pitch":{\n')  
+                f.write('\t\t\t\t\t"letter":"r",\n') 
+                f.write('\t\t\t\t\t"octave":"",\n') 
+                f.write('\t\t\t\t\t"accidental":""\n')  
+                f.write('\t\t\t\t}\n')      
+
+            f.write('\t\t\t}')
+            if x != e_len-1:
+                f.write(',\n')
+            else:
+                f.write('\n')           
+
+        f.write('\t\t],\n')
+
+        keysig = self.keySignature
+        if keysig == None:
+            f.write('\t\t"keySignature": {}\n')
+        else:
+            f.write('\t\t"keySignature": {\n')
+            if keysig.isMajor != None:
+                f.write('\t\t\t"isMajor":"%s",\n' %(keysig.isMajor))
+            else:
+                f.write('\t\t\t"isMajor":"",\n')
+            f.write('\t\t\t')
+            writePitchtoFile(keysig.pitch, f)
+            f.write('\t\t}\n')
+
+        f.write('\t}\n')
+        f.write('}\n')
+
+        f.close
+
     def pitchJSONtoTune(self, pitch):
         if pitch['accidental'] != '':
             ksig_pitch_accidental = int(pitch['accidental'])
@@ -561,7 +714,8 @@ class Tune(object):
             s_duration = list_of_notes[i+1].onset - onset
             duration = self.secondsToDuration(s_duration)
             if (duration != None): # duration is too small to consider as a rest
-                rest = Note.Rest(duration=duration, s_duration=s_duration, onset=onset)
+                #r_pitch = Pitch(letter="r")
+                rest = Rest(duration=duration, s_duration=s_duration, onset=onset)
                 allNotes.append(rest)
             if i == n_notes-2:
                 allNotes.append(list_of_notes[n_notes-1])

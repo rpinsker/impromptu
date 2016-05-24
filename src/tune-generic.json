@@ -18,39 +18,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"0.505050",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"0.505050",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"1.010100",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
@@ -66,39 +63,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"1.515150",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"1.515150",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"2.020200",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
@@ -114,39 +108,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"2.525250",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"2.525250",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"3.030300",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
@@ -162,39 +153,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"3.535350",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"3.535350",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"4.040400",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
@@ -210,39 +198,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"4.545450",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"4.545450",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"5.050500",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
@@ -258,39 +243,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"5.555550",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"5.555550",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"6.060600",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
@@ -306,39 +288,36 @@
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"6.565650",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"EIGHTH",
 				"s_duration":"0.505050",
-				"frequency":"0.000000",
 				"onset":"6.565650",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{
-				"class":"note",
+				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"frequency":"0.000000",
 				"onset":"7.070700",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
-					"accidental":"0"
+					"accidental":""
 				}
 			},
 			{

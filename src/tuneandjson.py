@@ -102,12 +102,13 @@ def TunetoJSON(tune):
 				f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
 			else:
 				f.write('\t\t\t\t"s_duration":"",\n')
-			if event.frequency != None:
+			if isinstance(event, Note) and event.frequency != None:
 				f.write('\t\t\t\t"frequency":"%lf",\n' %(event.frequency))
 			else:
 				f.write('\t\t\t\t"frequency":"",\n')
 			f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
-			writePitchtoFile(event.pitch, f)
+			if isinstance(event, Note):
+				writePitchtoFile(event.pitch, f)
 
 
 		f.write('\t\t\t}')
@@ -137,9 +138,9 @@ def TunetoJSON(tune):
 	f.close
 
 tune = Tune.TuneWrapper('../tests/MIDITestFiles/c-major-scale-treble.mid')
-#print tune.TunetoString()
-TunetoJSON(tune)
-
+print tune.TunetoString()
+tune.TunetoJSON()
+pprint.pprint(tune.events)
 
 ###########################################################################
 def pitchJSONtoTune(pitch):
@@ -235,6 +236,8 @@ def JSONtoTune(json_file):
 
 #fp = open("../tests/MIDITestFiles/tune.json")
 #JSONtoTune(fp)
-#file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
-#tune = Tune.TuneWrapper(file1)
-#print tune.TunetoString()
+file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
+tune = Tune.TuneWrapper(file1)
+print tune.TunetoString()
+
+
