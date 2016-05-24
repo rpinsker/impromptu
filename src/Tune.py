@@ -420,8 +420,10 @@ class Tune(object):
         approx_power = math.log(1/dur, 2)
         note_val = 4 - (round(approx_power) + 2)
         Dur_array = [Duration.SIXTEENTH, Duration.EIGHTH, Duration.QUARTER, Duration.HALF, Duration.WHOLE]
+        print 'note val ' + str(note_val)
         if note_val < 0:
-            return None
+#            return None
+            return Duration.SIXTEENTH
         if note_val >= 4:
             # next iteration: add greater variety of note durations, e.g. combination of notes
             return Duration.WHOLE
@@ -450,9 +452,9 @@ class Tune(object):
                         endset = self.ticksToTime(event.tick, bpm, resolution)
                         currNote = NotesList[index]
                         s_duration = endset - currNote.onset
+                        print 'index ' + str(index)
                         currNote.s_duration = s_duration
                         currNote.duration = self.secondsToDuration(s_duration)
-                        print 'doing duration'
                         index += 1
                     else:
                         onset = self.ticksToTime(event.tick, bpm, resolution)
