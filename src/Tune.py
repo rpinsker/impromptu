@@ -518,11 +518,12 @@ if __name__ == "__main__":
             INPUT_FILE = sys.argv[i+1]
     # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
-    print INPUT_FILE
-    tune = Tune.TuneWrapper(INPUT_FILE)
-    print tune.toString()
+#    print INPUT_FILE
+#    tune = Tune.TuneWrapper(INPUT_FILE)
+#    print tune.toString()
 
     file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
+#    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
     # tuneWav = Tune(wav = 'test1.wav')
