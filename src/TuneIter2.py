@@ -169,11 +169,11 @@ class Chord(Event):
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
 
-    def NotetoString(self):
+    def toString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
         pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
         for pitch in self.pitches:
-            pitchstr += '>>>>>>>' + pitch.NotetoString() + "\n"
+            pitchstr += '>>>>>>>' + pitch.toString() + "\n"
         return pitchstr
 
 class Rest(Event):
@@ -290,11 +290,9 @@ class Tune(object):
                 if isinstance(event, midi.TimeSignatureEvent):
                 # [nn dd cc bb] refer to http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midifile/time.htm
                     self.timeSignature = (event.data[0], 2<<(event.data[1] - 1))
-                    print event
             # override time sig in MIDI file
             if 'timeSignature' in kwargs:
                 self.timeSignature = self.setTimeSignature(kwargs.get('timeSignature'))
-            print self.timeSignature
             # first compute onset of Notes to construct list of Notes
             self.events = self.computeOnset(self.midifile)
             # then compute pitches of Notes
@@ -361,9 +359,7 @@ class Tune(object):
 
 
     def sortEventListByOnset(self):
-        print self.events
         self.events = sorted(self.events, key=lambda event: event.onset)
-        print self.events
 
     def eventListToChords(self):
         i = 0
@@ -670,6 +666,7 @@ class Tune(object):
     # 1 second = quarter note
     @staticmethod
     def secondsToDuration(dur):
+        print dur
         if (dur <= 0):
             return Duration.SIXTEENTH
         approx_power = math.log(1/dur, 2)
@@ -785,14 +782,15 @@ if __name__ == "__main__":
         if (sys.argv[i] == '-f'): # input flag: sets input file name
             INPUT_FILE = sys.argv[i+1]
     dummyInstance = Tune()
-#    print dummyInstance.MIDItoPattern(INPUT_FILE)
+    # print dummyInstance.MIDItoPattern(INPUT_FILE)
+    print INPUT_FILE
     tune = Tune.TuneWrapper(INPUT_FILE)
-#    print tune.toString()
+    print tune.toString()
 
-    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
-    tune = Tune.TuneWrapper(file1)
+#     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
+    # tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
-    tuneWav = Tune(wav = 'test1.wav')
+    # tuneWav = Tune(wav = 'test1.wav')
 #    tuneWav = Tune(wav = 'eqt-chromo-sc.wav')
 #    print tuneWav.TunetoString()
-    print tune.TunetoString()
+#     print tune.toString()
