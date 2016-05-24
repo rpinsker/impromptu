@@ -16,6 +16,7 @@ ALLOWED_EXTENSIONS = set(['mid', 'midi', 'mp3', 'wav'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 tuneObj = None
+measuresObj = None
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -36,7 +37,7 @@ def save_measure_as_png(expr, i, return_timing=False, **kwargs):
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
     # SAVE AS A PNG
-    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i+1) + '.png',**kwargs)
+    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i) + '.png',**kwargs)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -84,9 +85,18 @@ def tune():
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
                 return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
     # page was loaded normally (not from a request to update name, contributor, or file upload)
+
     # so display the tune object created at the beginning of the this method
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
     return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf', measures=[[1,1,2],[3,4]])
+
+
+def measureIndexToPNGFilepath(i):
+    if i < len(measuresObj) and i >= 0:
+        m = measuresObj[i]
+        return save_measure_as_png(m,i)
+    else:
+        "bad index!"
 
 
 # convert a Tune object to an array of notes usable by abjad
@@ -230,24 +240,26 @@ def makeLilypondFile(tune):
 def makeStaffFromTune(tune):
     # TODO milestone 4b Rachel
 
+    global measuresObj
+
     time_signature = abjad.TimeSignature(tune.getTimeSignature())
     if time_signature is None:
         time_signature = abjad.TimeSignature(4,4)
 
     # now coming as a list of lists so notes separated by measure
     notes = tuneToNotes(tune)
+    savedMeasures = []
     staff = abjad.Staff()
-    counter = 0
     for measure in notes:
             #print aEvent.written_duration
             m = abjad.Measure(time_signature, measure)
             d = m._preprolated_duration
             if d == time_signature.duration:
                 staff.append(m)
-                save_measure_as_png(m,counter)
-                counter += 1
+                savedMeasures.append(m)
         #staff.append(abjad.Measure(abjad.Measure(time_signature,measure)))
-
+    measuresObj = savedMeasures
+    ret = measureIndexToPNGFilepath(5)
 
     #c = abjad.Chord("<c'>8")
     #measure = abjad.Measure(abjad.TimeSignature((1,8)),[c])
