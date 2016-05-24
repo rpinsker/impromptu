@@ -163,8 +163,6 @@ class Chord(Event):
         print self, event
         if self.getPitch() != None:
             self.setPitch(self.getPitch().extend(event.getPitch()))
-        else:
-            self.setPitch(event.getPitch())
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
