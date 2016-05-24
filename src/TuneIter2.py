@@ -179,7 +179,7 @@ class Chord(Event):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
         pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
         for pitch in self.pitches:
-            pitchstr += pitch.NotetoString() + " "
+            pitchstr += '>>>>>>>' + pitch.NotetoString() + "\n"
         return pitchstr
 
 class Rest(Event):
