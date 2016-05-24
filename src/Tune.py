@@ -9,6 +9,7 @@ import json
 sys.path.insert(0, '/support/')
 import os
 import subprocess
+from TuneSubclasses import *
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -264,7 +265,6 @@ class Key(object):
             buf = buf + 'Minor'
         return buf
 
-
 # refer to vartec's answer at http://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
 class Tune(object):
 
@@ -305,7 +305,6 @@ class Tune(object):
             # then, insert rests
             self.events = self.calculateRests(self.events)
             # lastly, compute chords
-#            self.events = self.calculateRests(self.events)
             self.sortEventListByOnset()
             self.eventListToChords()
 
@@ -672,8 +671,10 @@ class Tune(object):
         approx_power = math.log(1/dur, 2)
         note_val = 4 - (round(approx_power) + 2)
         Dur_array = [Duration.SIXTEENTH, Duration.EIGHTH, Duration.QUARTER, Duration.HALF, Duration.WHOLE]
+        print 'note val ' + str(note_val)
         if note_val < 0:
-            return None
+#            return None
+            return Duration.SIXTEENTH
         if note_val >= 4:
             # next iteration: add greater variety of note durations, e.g. combination of notes
             return Duration.WHOLE
@@ -702,6 +703,7 @@ class Tune(object):
                         endset = self.ticksToTime(event.tick, bpm, resolution)
                         currNote = NotesList[index]
                         s_duration = endset - currNote.onset
+                        print 'index ' + str(index)
                         currNote.s_duration = s_duration
                         currNote.duration = self.secondsToDuration(s_duration)
                         index += 1
@@ -764,7 +766,6 @@ class Tune(object):
             for line in raw:
                 ofArray = ofArray+[line.split()]
             events = []
-            print raw
             for tuple in ofArray:
                 sdur = float(tuple[2]) - float(tuple[1])
                 p = Pitch()
