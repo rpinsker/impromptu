@@ -430,18 +430,18 @@ class Tune(object):
         f = open(filename, 'w')
         
         f.write('{\n')
-        f.write('\t"tune": {\n')
+        f.write('\t"tune":{\n')
         
-        f.write('\t\t"timeSignature": ["%d","%d"],\n' %(self.timeSignature[0], self.timeSignature[1]))
+        f.write('\t\t"timeSignature":["%d","%d"],\n' %(self.timeSignature[0], self.timeSignature[1]))
         
-        f.write('\t\t"clef": "%d",\n' %(self.clef))
+        f.write('\t\t"clef":"%d",\n' %(self.clef))
         
         if self.title != None:
-            f.write('\t\t"title": "%s",\n' %(self.title))
+            f.write('\t\t"title":"%s",\n' %(self.title))
         else:
-            f.write('\t\t"title": "",\n')
+            f.write('\t\t"title":"",\n')
 
-        f.write('\t\t"contributors": [')
+        f.write('\t\t"contributors":[')
         if self.contributors != None:
             n_contributors = len(self.contributors)
             for num in (0, n_contributors - 1):
@@ -547,6 +547,8 @@ class Tune(object):
         f.write('}\n')
 
         f.close
+
+        return filename
 
     def pitchJSONtoTune(self, pitch):
         if pitch['accidental'] != '':

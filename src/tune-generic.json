@@ -1,109 +1,19 @@
 {
-	"tune": {
-		"timeSignature": ["4","8"],
-		"clef": "0",
-		"title": "",
-		"contributors": [],
+	"tune":{
+		"timeSignature":["4","8"],
+		"clef":"0",
+		"title":"",
+		"contributors":[],
 		"events":[
 			{
 				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
+				"duration":"",
+				"s_duration":"",
 				"frequency":"",
-				"onset":"0.000000",
-				"pitch":{
-					"letter":"c",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"0.505050",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"0.505050",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"1.010100",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"frequency":"",
-				"onset":"1.010100",
-				"pitch":{
-					"letter":"d",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"1.515150",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"1.515150",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"2.020200",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"frequency":"",
-				"onset":"2.020200",
+				"onset":"0.136363",
 				"pitch":{
 					"letter":"e",
-					"octave":"4",
+					"octave":"3",
 					"accidental":"0"
 				}
 			},
@@ -111,7 +21,7 @@
 				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"onset":"2.525250",
+				"onset":"0.272727",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
@@ -120,9 +30,9 @@
 			},
 			{
 				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"2.525250",
+				"duration":"SIXTEENTH",
+				"s_duration":"-0.136363",
+				"onset":"0.272727",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
@@ -133,7 +43,7 @@
 				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"onset":"3.030300",
+				"onset":"0.136363",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
@@ -142,66 +52,21 @@
 			},
 			{
 				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
+				"duration":"",
+				"s_duration":"",
 				"frequency":"",
-				"onset":"3.030300",
-				"pitch":{
-					"letter":"f",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"3.535350",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"3.535350",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"4.040400",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"frequency":"",
-				"onset":"4.040400",
+				"onset":"0.136363",
 				"pitch":{
 					"letter":"g",
-					"octave":"4",
-					"accidental":"0"
+					"octave":"3",
+					"accidental":"1"
 				}
 			},
 			{
 				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"onset":"4.545450",
+				"onset":"0.272727",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
@@ -210,9 +75,9 @@
 			},
 			{
 				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"4.545450",
+				"duration":"QUARTER",
+				"s_duration":"0.818181",
+				"onset":"0.272727",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
@@ -223,7 +88,7 @@
 				"class":"rest",
 				"duration":"SIXTEENTH",
 				"s_duration":"0.000000",
-				"onset":"5.050500",
+				"onset":"1.090908",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
@@ -232,103 +97,13 @@
 			},
 			{
 				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
+				"duration":"",
+				"s_duration":"",
 				"frequency":"",
-				"onset":"5.050500",
+				"onset":"1.090908",
 				"pitch":{
 					"letter":"a",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"5.555550",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"5.555550",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"6.060600",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"frequency":"",
-				"onset":"6.060600",
-				"pitch":{
-					"letter":"b",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"6.565650",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"onset":"6.565650",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"rest",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.000000",
-				"onset":"7.070700",
-				"pitch":{
-					"letter":"r",
-					"octave":"",
-					"accidental":""
-				}
-			},
-			{
-				"class":"note",
-				"duration":"EIGHTH",
-				"s_duration":"0.505050",
-				"frequency":"",
-				"onset":"7.070700",
-				"pitch":{
-					"letter":"c",
-					"octave":"5",
+					"octave":"3",
 					"accidental":"0"
 				}
 			}
