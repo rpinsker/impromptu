@@ -53,7 +53,6 @@ class Tune(object):
         elif file.endswith('.wav'):
             return cls(wav=file)
 
-
     def getKey(self):
         return self.keySignature
 
@@ -99,6 +98,7 @@ class Tune(object):
         i = 0
         while(i<len(self.events)-1):
             if Helper.floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
+                # Chord, Event
                 if isinstance(self.events[i],Chord):
                     self.events[i].addPitch(self.events[i+1]) #checks chords and notes
                     self.events.pop(i+1)
@@ -286,7 +286,6 @@ class Tune(object):
 
         f.write('\t}\n')
         f.write('}\n')
-
         f.close
 
         return filename
@@ -400,15 +399,12 @@ class Tune(object):
     # 1 second = quarter note
     @staticmethod
     def secondsToDuration(dur):
-        print dur
         if (dur <= 0):
-            return Duration.SIXTEENTH
+            return None
         approx_power = math.log(1/dur, 2)
         note_val = 4 - (round(approx_power) + 2)
         Dur_array = [Duration.SIXTEENTH, Duration.EIGHTH, Duration.QUARTER, Duration.HALF, Duration.WHOLE]
-        print 'note val ' + str(note_val)
         if note_val < 0:
-#            return None
             return Duration.SIXTEENTH
         if note_val >= 4:
             # next iteration: add greater variety of note durations, e.g. combination of notes
@@ -438,15 +434,17 @@ class Tune(object):
                         endset = self.ticksToTime(event.tick, bpm, resolution)
                         currNote = NotesList[index]
                         s_duration = endset - currNote.onset
-                        print 'index ' + str(index)
                         currNote.s_duration = s_duration
                         currNote.duration = self.secondsToDuration(s_duration)
+                        # print "currNote", currNote.duration
                         index += 1
                     else:
                         onset = self.ticksToTime(event.tick, bpm, resolution)
                         # print onset
                         newNote = Note(onset = onset)
-                        NotesList.append(newNote)
+                        # print "newNote", newNote.duration
+                        if newNote.duration != None:
+                            NotesList.append(newNote)
         return NotesList
 
     # Takes a list of pitched Notes, returns a list of Notes with the included rests
@@ -480,8 +478,9 @@ class Tune(object):
         else:
             keystring = self.getKey().toString()
         buf = "Tune: \nTitle - %s, Contributors - %s \n\tTime Sig - %s, %s, Clef - %s\nList of Notes:\n" %(self.title, str(self.contributors), str(self.timeSignature), keystring, clefstring)
-        for note in self.getEventsList():
-            buf = buf + "%s\n" %(note.toString())
+        if self.getEventsList() != None:
+            for event in self.getEventsList():
+                buf = buf + "%s\n" %(event.toString())
         return buf
 
     def notesListEquals(self, Notelist1, Notelist2):
@@ -517,7 +516,7 @@ if __name__ == "__main__":
     for i in xrange(1,len(sys.argv)):
         if (sys.argv[i] == '-f'): # input flag: sets input file name
             INPUT_FILE = sys.argv[i+1]
-    dummyInstance = Tune()
+    # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
     print INPUT_FILE
     tune = Tune.TuneWrapper(INPUT_FILE)
