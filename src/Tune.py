@@ -522,10 +522,10 @@ if __name__ == "__main__":
     tune = Tune.TuneWrapper(INPUT_FILE)
     print tune.toString()
 
-#     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
-    # tune = Tune.TuneWrapper(file1)
+    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
+    tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
     # tuneWav = Tune(wav = 'test1.wav')
-#    tuneWav = Tune(wav = 'eqt-chromo-sc.wav')
+#    tuneWav = Tune(wav = '../tests/WAVTestFiles/eqt-chromo-sc.wav')
 #    print tuneWav.TunetoString()
-#     print tune.toString()
+    print tune.toString()
