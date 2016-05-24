@@ -53,8 +53,8 @@ class TestImpromptuBackend(unittest.TestCase):
 		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
 		note = Note(frequency=493.88, onset=0.0)
 		note.setPitch(pitch)
-		print pitch, note.getPitch()
-		self.assertTrue(pitch.pitchEqual(note.getPitch()))
+		print pitch, note.getPitch()[0]
+		self.assertTrue(pitch.pitchEqual(note.getPitch()[0]))
 
 	def testIsRest(self):
 		#Testing rest
@@ -184,15 +184,13 @@ class TestImpromptuBackend(unittest.TestCase):
 		for i in xrange(0, 8):
 			self.assertTrue(pitchList[i].pitchEqual(mp3Pitch[i]))
 
-	def testcreateTunefromMP3(self):
+	def testcreateTunefromWav(self):
 		# --- tests if MP3 files are successfully converted to a Tune object ---
 		
-		# import mp3 file: C major scale with all quarter notes (refer to TestComputePitches)
+		# import wav file: C major scale with all quarter notes (refer to TestComputePitches)
 
-		# ---- Pass Tune Parameter Constraints ---
-		self.assertTrue(Tune(midi = "mp3 file.mp3").midifile == None)
 
-		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mp3")
+		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.wav")
 
 		
 	def testcomputeOnset(self):

@@ -88,7 +88,7 @@ class Pitch(object):
             accidentalTemp = Accidental.NATURAL
         return cls(octave=octaveTemp, letter=letterTemp, accidental = accidentalTemp)
 
-    def PitchtoString(self):
+    def toString(self):
         acc = {Accidental.NATURAL: '', Accidental.SHARP: '#', Accidental.FLAT: 'Flat'}.get(self.accidental)
         return "Pitch: " + str(self.letter) + str(self.octave) + acc
 
@@ -142,6 +142,10 @@ class Event(object):
     def setPitch(self, pitch):
         """Method that should be implemented in subclasses."""
 
+    @abc.abstractmethod
+    def toString(self):
+        """Method that should be implemented in subclasses."""
+
 class Chord(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
@@ -180,7 +184,7 @@ class Rest(Event):
     def setPitch(self, pitch):
         print "Cannot change pitch of a rest. Please delete event."
         return
-    def NotetoString(self):
+    def toString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
         return "Rest: Duration (seconds) - %s, Duration - %s, Onset - %s \n" %(str(self.s_duration), durationstring, str(self.onset))        
 
@@ -207,9 +211,9 @@ class Note(Event):
         if note.pitch != None:
             self.setPitch(note.pitch)
 
-    def NotetoString(self):
+    def toString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
-        return "Note: Freq - %s, Duration (seconds) - %s, Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), durationstring, str(self.onset), self.pitch.PitchtoString())
+        return "Note: Freq - %s, Duration (seconds) - %s, Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), durationstring, str(self.onset), self.pitch.toString())
 
     def isRest(self):
         if self.pitch.letter == 'r':
@@ -252,8 +256,8 @@ class Key(object):
             return True
         return False
 
-    def KeytoString(self):
-        buf = 'Key Signature - %s ' %(self.pitch.PitchtoString())
+    def toString(self):
+        buf = 'Key Signature - %s ' %(self.pitch.toString())
         if (self.isMajor):
             buf = buf + 'Major'
         else:
@@ -285,10 +289,12 @@ class Tune(object):
             for event in pattern[0]: # looking through midi header
                 if isinstance(event, midi.TimeSignatureEvent):
                 # [nn dd cc bb] refer to http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midifile/time.htm
-                    self.timeSignature = (event.data[0], 2<<event.data[1])
+                    self.timeSignature = (event.data[0], 2<<(event.data[1] - 1))
+                    print event
             # override time sig in MIDI file
             if 'timeSignature' in kwargs:
                 self.timeSignature = self.setTimeSignature(kwargs.get('timeSignature'))
+            print self.timeSignature
             # first compute onset of Notes to construct list of Notes
             self.events = self.computeOnset(self.midifile)
             # then compute pitches of Notes
@@ -726,15 +732,15 @@ class Tune(object):
     def MIDItoPattern(file):
         return midi.read_midifile(file)
 
-    def TunetoString(self):
+    def toString(self):
         clefstring = {Clef.BASS: 'Bass', Clef.TREBLE: 'Treble'}.get(self.clef)
         if (self.getKey() == None):
             keystring = 'None'
         else:
-            keystring = self.getKey().KeytoString()
+            keystring = self.getKey().toString()
         buf = "Tune: \nTitle - %s, Contributors - %s \n\tTime Sig - %s, %s, Clef - %s\nList of Notes:\n" %(self.title, str(self.contributors), str(self.timeSignature), keystring, clefstring)
         for note in self.getEventsList():
-            buf = buf + "%s\n" %(note.NotetoString())
+            buf = buf + "%s\n" %(note.toString())
         return buf
 
     def notesListEquals(self, Notelist1, Notelist2):
@@ -758,8 +764,6 @@ class Tune(object):
 #            else:
 #                events = events+[Rest(onset=float(pair[0]))]
 #        self.setEventsList(events)
-
-
 
     #aubio output array to event list using aubionotes
     def readWav(self, filename):
@@ -797,12 +801,12 @@ if __name__ == "__main__":
     dummyInstance = Tune()
 #    print dummyInstance.MIDItoPattern(INPUT_FILE)
     tune = Tune.TuneWrapper(INPUT_FILE)
-#    print tune.TunetoString()
+#    print tune.toString()
 
     file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
     tuneWav = Tune(wav = 'test1.wav')
-    print tuneWav.TunetoString()
+    print tuneWav.toString()
 
                                    
