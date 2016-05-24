@@ -9,13 +9,6 @@ import json
 sys.path.insert(0, '/support/')
 import os
 import subprocess
-#from convert import *
-#import convert
-#from pydub import AudioSegment
-#import pyaudio
-
-
-
 
 class Duration(object):
     SIXTEENTH = (1,16)
@@ -176,6 +169,13 @@ class Chord(Event):
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
 
+    def NotetoString(self):
+        durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
+        pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
+        for pitch in self.pitches:
+            pitchstr += '>>>>>>>' + pitch.NotetoString() + "\n"
+        return pitchstr
+
 class Rest(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
@@ -307,8 +307,9 @@ class Tune(object):
             # then, insert rests
             self.events = self.calculateRests(self.events)
             # lastly, compute chords
-            self.events = self.calculateRests(self.events)
-
+#            self.events = self.calculateRests(self.events)
+            self.sortEventListByOnset()
+            self.eventListToChords()
 
     # wrapper constructor with only MIDI file as parameter
     @classmethod
@@ -358,32 +359,36 @@ class Tune(object):
     def getEventsList(self):
         return self.events
 
+
+    def sortEventListByOnset(self):
+        print self.events
+        self.events = sorted(self.events, key=lambda event: event.onset)
+        print self.events
+
     def eventListToChords(self):
-        for i in range(0,len(self.events)):
-            if floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
+        i = 0
+        while(i<len(self.events)-1):
+            if Helper.floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
                 if isinstance(self.events[i],Chord):
                     self.events[i].addPitch(self.events[i+1]) #checks chords and notes
                     self.events.pop(i+1)
-                    i=i-1
                 elif isinstance(self.events[i+1],Chord):
                     self.events[i+1].addPitch(self.events[i]) #checks chords and notes
                     self.events.pop(i)
-                    i=i-1
                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
                     self.events[i] = Chord(pitches = [self.events[i],self.events[i+1]] ,duration= self.events[i].duration,onset=self.events[i].onset)
                     self.events.pop(i+1)
-                    i=i-1
                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
                     self.events[i] = self.events[i+1]
                     self.events.pop(i+1)
-                    i=i-1
                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Rest):
                     self.events[i+1] = self.events[i]
                     self.events.pop(i)
-                    i=i-1
                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Rest):
                     self.events.pop(i+1)
-                    i = i-1
+            else:
+                i=i+1
+
 
     def addEvent(self, idx, event):
         self.events.insert(idx, event)
@@ -751,20 +756,6 @@ class Tune(object):
                 return False
         return True
     
-    #aubio output array to event list using pitches
-#    def readWav(self, file):
-#        ofArray=[]
-#        f = open(file, 'r+')
-#        for line in f.read().splitlines():
-#            ofArray = ofArray+[line.split()]
-#        events = []
-#        for pair in ofArray:
-#            if float(pair[1]) > 0:
-#                events = events+[Note(onset=float(pair[0]), frequency=float(pair[1]))]
-#            else:
-#                events = events+[Rest(onset=float(pair[0]))]
-#        self.setEventsList(events)
-
     #aubio output array to event list using aubionotes
     def readWav(self, filename):
             ofArray=[]
@@ -781,13 +772,6 @@ class Tune(object):
                 p = p.MIDInotetoPitch(math.floor(float(tuple[0])))
                 events = events+[Note(pitch=p, onset=float(tuple[1]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
             self.setEventsList(events)
-
-
-
-#    def mp3ToWav(self,fileprefix):
-#        sound = AudioSegment.from_mp3(file)
-#        prefix = file.split(str='.')
-#        sound.export(prefix[0], format="wav")
 
                                    
 # main function used for testing of Tune.py separate from web integration
@@ -807,6 +791,6 @@ if __name__ == "__main__":
     tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
     tuneWav = Tune(wav = 'test1.wav')
-    print tuneWav.toString()
-
-                                   
+#    tuneWav = Tune(wav = 'eqt-chromo-sc.wav')
+#    print tuneWav.TunetoString()
+    print tune.TunetoString()
