@@ -81,22 +81,23 @@
                         <span class="close">x</span>
                         <h4 id="edit-title"></h4>
                         {% for m in range(measures|length) %}
-                            <h5>Choose a Note</h5>
-                            <select class="note-select" id={{ "ns-" + m|string }} hidden>
-                            {% for n in range(measures[m]|length) %}
-                                <option value={{ n + 1 }}>{{ n + 1 }}</option>
-                            {% endfor %}
-                            </select>
-                            {% for n in range(measures[m]|length) %}
-                                <div class="note-info" id={{ "ni-" + n|string}} hidden>
-                                    <p>Pitch: {{ measures[m][n] }}</p>
-                                </div>
-                            {% endfor %}
+                            <div class="noteEditor" id={{ "ne-" + (m + 1)|string }} style="display: none">
+                                <h5>Choose a Note</h5>
+                                <select class="note-select" id={{ "ns-" + (m + 1)|string }}>
+                                {% for n in range(measures[m]|length) %}
+                                    <option value={{ n + 1 }}>{{ n + 1 }}</option>
+                                {% endfor %}
+                                </select>
+                                {% for n in range(measures[m]|length) %}
+                                    <div class="note-info" id={{ "ni-" + (n + 1)|string}}>
+                                        <p>Pitch: {{ measures[m][n] }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
-
             <div class="button-box">
                 <button id="upload">Upload a MIDI File &#9834;</button>
                 <div class="modal" id="uploadModal">

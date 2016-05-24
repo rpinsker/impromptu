@@ -77,12 +77,12 @@ def tune():
                 lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
                 lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
-                print tunetoMeasures(tuneObj)
-                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
+                listOfMeasures = tunetoMeasures(tuneObj)
+                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures)
     # page was loaded normally (not from a request to update name, contributor, or file upload)
     # so display the tune object created at the beginning of the this method
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
-    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf', measures=[[1,1,2],[3,4]])
+    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
 
 
 # convert a Tune object to an array of notes usable by abjad
