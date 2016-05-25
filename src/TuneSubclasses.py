@@ -82,7 +82,7 @@ class Pitch(object):
 
     def toString(self):
         acc = {Accidental.NATURAL: '', Accidental.SHARP: '#', Accidental.FLAT: 'Flat'}.get(self.accidental)
-        return "Pitch: " + ("None" if self.letter==None else str(self.letter)) + ("None" if self.octave==None else str(self.octave)) + acc
+        return "Pitch: " + ("None" if self.letter==None else str(self.letter)) + ("None" if self.octave==None else str(self.octave)) + str(acc)
 
 class Event(object):
     def __init__(self, **kwargs):
@@ -271,7 +271,7 @@ class Note(Event):
 class Key(object):
     def __init__(self, **kwargs):
         self.isMajor = kwargs.get('isMajor', True)
-        self.pitch = kwargs.get('pitch', Pitch())
+        self.pitch = kwargs.get('pitch', Pitch(letter='C', octave=0, accidental = Accidental.NATURAL))
 
     def keyEqual(self, k):
         if (k.isMajor == self.isMajor) and Pitch.pitchEqual(self.pitch, k.pitch):
