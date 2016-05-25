@@ -681,8 +681,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertEqual(l29, '\t\t\t\t"duration":"QUARTER",\n')
 		l30 = f.readline()
 		self.assertEqual(l30, '\t\t\t\t"s_duration":"0.818181",\n')
-		#l31 = f.readline()
-		#self.assertEqual(l31, '\t\t\t\t"frequency":"",\n')
 		l32 = f.readline()
 		self.assertEqual(l32, '\t\t\t\t"onset":"0.272727",\n')
 		l33 = f.readline()
