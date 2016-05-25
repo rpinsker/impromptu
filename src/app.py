@@ -17,6 +17,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 tuneObj = None
 measuresObj = None
+notesObj = None
+impromptuMeasuresObj = None
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -110,6 +112,23 @@ def tune():
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
                 return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
 
+        if request.form.has_key('editDurationInputMeasureIndex') and request.form.has_key('editDurationInputIndex') and request.form.has_key('editDurationInputDuration0') and request.form.has_key('editDurationInputDuration1'):
+            measureIndex = int(request.form['editDurationInputMeasureIndex'])
+            noteIndex = int(request.form['editDurationInputIndex'])
+            dur0 = int(request.form['editDurationInputDuration0'])
+            dur1 = int(request.form['editDurationInputDuration1'])
+            editDurationUpdateTuneObj(measureIndex,noteIndex,dur0,dur1)
+            tune = tuneObj
+            # convert our tune object to notes for abjad and then to a staff
+            staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
+            # make lilypond file, setting title and contributors, and then make the PDF
+            lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+            lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
+            lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
+            filenamePDF = updatePDFWithNewLY(lilypond_file)
+            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
+
+
     # page was loaded normally (not from a request to update name, contributor, or file upload)
 
     # so display the tune object created at the beginning of the this method
@@ -131,12 +150,41 @@ def measureIndexToPNGFilepath(i):
         return "bad index!"
 
 
+def editDurationUpdateTuneObj(measureIndex,noteIndex,newDuration0,newDuration1):
+    global tuneObj
+
+    makeStaffFromTune(tuneObj)
+    # update the note in measuresObj
+    m = impromptuMeasuresObj[measureIndex]
+    e = m[noteIndex]
+    e.setDuration((newDuration0,newDuration1))
+    m[noteIndex] = e
+    impromptuMeasuresObj[measureIndex] = m
+
+    # make an array of all notes and recompute everything
+    events = []
+    for measure in impromptuMeasuresObj:
+        for event in measure:
+            events.append(event)
+
+    tuneObj.setEventsList(events)
+
+
+
+
+
+
 # convert a Tune object to an array of notes usable by abjad
 def tuneToNotes(tune):
+
+    global impromptuMeasuresObj
+
     if tune == None:
         return []
 
     listOfMeasures = tunetoMeasures(tune)
+
+    impromptuMeasuresObj = listOfMeasures
 
     aNotes = [] # holds lists of notes corresponding to measures
 
@@ -290,6 +338,8 @@ def makeStaffFromTune(tune):
     # TODO milestone 4b Rachel
 
     global measuresObj
+
+    measuresObj = []
 
     time_signature = abjad.TimeSignature(tune.getTimeSignature())
     if time_signature is None:
