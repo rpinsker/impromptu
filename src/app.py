@@ -402,6 +402,7 @@ def makeStaffFromTune(tune):
             staff.append(m)
             savedMeasures.append(m)
     measuresObj = savedMeasures
+    print staff.format
 
     # set key and clef
     key = tune.getKey()
