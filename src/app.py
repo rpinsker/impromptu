@@ -177,7 +177,6 @@ def tunetoMeasures(tune):
     currentTimeLeft = measureTime
     currentMeasure = []
     for note in tune.events:
-        #print note.duration
         if currentTimeLeft == 0:
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
@@ -187,15 +186,16 @@ def tunetoMeasures(tune):
         else:
             duration = 0.25
             note.duration = Tune.Duration.QUARTER
-        #print (currentTimeLeft - duration)
-        #print (currentTimeLeft - duration >= 0)
         if (currentTimeLeft - duration >= 0):
             currentMeasure.append(note)
             currentTimeLeft -= duration
         else:
             # change the note's duration!
-            note.duration = (1,float(1/currentTimeLeft))
-            currentMeasure.append(note)
+            possibleDurations = [1,.5,.25,0.125,0.0625]
+            for d in possibleDurations:
+                if (currentTimeLeft - duration) >= 0:
+                    note.duration = (1,float(1/currentTimeLeft))
+                    currentMeasure.append(note)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
             currentMeasure = []
@@ -281,7 +281,6 @@ def makeStaffFromTune(tune):
                 savedMeasures.append(m)
         #staff.append(abjad.Measure(abjad.Measure(time_signature,measure)))
     measuresObj = savedMeasures
-    ret = measureIndexToPNGFilepath(5)
 
     #c = abjad.Chord("<c'>8")
     #measure = abjad.Measure(abjad.TimeSignature((1,8)),[c])
