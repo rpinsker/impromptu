@@ -99,6 +99,18 @@ class Event(object):
     def getPitch(self):
         """Method that should be implemented in subclasses."""
 
+    def combineEvent(self, event):
+        if isinstance(event, Rest):
+            return self
+        if isinstance(self, Chord):
+            self.setPitch(self.getPitch() + event.getPitch())
+            return self
+        elif isinstance(self, Note):
+            newChord = Chord(pitches = self.getPitch() + event.getPitch(), duration = self.duration, onset = self.onset)
+            return newChord
+        else: # is rest
+            return event
+
     def eventEqual(self, event):
         if self.duration != event.duration or self.onset != event.onset:
             return False
@@ -160,12 +172,20 @@ class Chord(Event):
         if chord.getPitch != None:
             self.setPitches(chord.getPitch)
 
-    def addPitch(self, event):
-        print self, event
-        if self.getPitch() != None:
-            self.setPitch(self.getPitch().extend(event.getPitch()))
-        else:
-            print '\n\nempty chord\n\n'
+    # def addPitch(self, event):
+    #     if isinstance(self, Chord):
+    #         self.setPitch(self.getPitch().extend(event.getPitch()))
+    #         return self
+    #     elif isinstance(self, Note):
+    #         return Chord(pitches = list(self.getPitch()).extend(event.getPitch), duration = self.duration, onset = self.onset)
+    #     else:
+    #         return event
+        # print self, event
+        # if self.getPitch() != None:
+        #     self.setPitch()
+        # else:
+        #     self.setPitch(event.getPitch())
+        #     print '\n\nempty chord\n\n'
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
