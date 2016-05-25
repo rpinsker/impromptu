@@ -82,7 +82,7 @@ class Pitch(object):
 
     def toString(self):
         acc = {Accidental.NATURAL: '', Accidental.SHARP: '#', Accidental.FLAT: 'Flat'}.get(self.accidental)
-        return "Pitch: " + str(self.letter) + str(self.octave) + acc
+        return "Pitch: " + ("None" if self.letter==None else str(self.letter)) + ("None" if self.octave==None else str(self.octave)) + acc
 
 class Event(object):
     def __init__(self, **kwargs):
