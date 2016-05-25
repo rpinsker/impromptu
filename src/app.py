@@ -214,7 +214,7 @@ def tunetoMeasures(tune):
             possibleDurations = [1,.5,.25,0.125,0.0625]
             for d in possibleDurations:
                 if (currentTimeLeft - d) >= 0:
-                    note.setDuration(1,float(1/currentTimeLeft))
+                    note.setDuration((1,float(1/currentTimeLeft)))
                     currentMeasure.append(note)
             currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
             measures.append(currentMeasure)
