@@ -99,6 +99,18 @@ class Event(object):
     def getPitch(self):
         """Method that should be implemented in subclasses."""
 
+ def combineEvent(self, event):
+        if isinstance(event, Rest):
+            return self
+        if isinstance(self, Chord):
+            self.setPitch(self.getPitch() + event.getPitch())
+            return self
+        elif isinstance(self, Note):
+            newChord = Chord(pitches = self.getPitch() + event.getPitch(), s_duration = self.s_duration, duration = self.duration, onset = self.onset)
+            return newChord
+        else: # is rest
+            return event
+            
     def eventEqual(self, event):
         if self.duration != event.duration or self.onset != event.onset:
             return False
