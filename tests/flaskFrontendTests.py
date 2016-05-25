@@ -101,17 +101,15 @@ class AppTestCase(unittest.TestCase):
             notes.append(rest2)
         # test empty note
         notes.append(Tune.Note())
-        testTune.setEventsList(notes) # changed tuneiter2
+        testTune.setEventsList(notes)
         # test calling tuneToNotes
         notesA = tuneToNotes(testTune)
         staff = abjad.Staff()
         for measure in notesA:
-            # print aEvent.written_duration
             m = abjad.Measure(abjad.TimeSignature(tune.getTimeSignature()), measure)
             d = m._preprolated_duration
             if d == abjad.TimeSignature(tune.getTimeSignature()).duration:
                 staff.append(m)
-        #staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
 
@@ -465,12 +463,10 @@ class AppTestCase(unittest.TestCase):
         notesA = tuneToNotes(testTune)
         staff = abjad.Staff()
         for measure in notesA:
-            # print aEvent.written_duration
             m = abjad.Measure(abjad.TimeSignature(tune.getTimeSignature()), measure)
             d = m._preprolated_duration
             if d == abjad.TimeSignature(tune.getTimeSignature()).duration:
                 staff.append(m)
-        #staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
 ############################ EDITING SHEET MUSIC ###################################################
@@ -567,11 +563,11 @@ class AppTestCase(unittest.TestCase):
 
         # make test tune object with the notes
         testTune = Tune.Tune()
-        testTune.setNotesList(notes)
+        testTune.setEventsList(notes)
         # set the app's tune to be this test tune
         setTune(testTune)
 
-        # for each note, send a request to edit the pitch
+        # send a request to edit the pitch for the note 1 in measure 0
         for i in range(0, len(notes),15):
             newPitch = Tune.Pitch()
             newPitch.letter = letters[i % len(letters)] # just choose some letter in the letters list
@@ -579,8 +575,8 @@ class AppTestCase(unittest.TestCase):
             newPitch.octave = octaves[i % len(octaves)] # just choose some octave in the octaves list
 
             self.app.post('/', data=dict(
-                editDurationInputMeasureIndex=0,
-                editPitchInputIndex=i,
+                editPitchInputMeasureIndex=0,
+                editPitchInputIndex=1,
                 editPitchInputLetter=newPitch.letter,
                 editPitchInputAccidental=newPitch.accidental,
                 editPitchInputOctave=newPitch.octave
@@ -588,7 +584,7 @@ class AppTestCase(unittest.TestCase):
 
             # after making post request to change the duration, make sure new tune object's note list has been updated
             updatedTune = getTune()
-            noteI = updatedTune.notes[i]
+            noteI = updatedTune.events[1]
             pitchI = noteI.pitch
 
             pitchesEqual = pitchI.pitchEqual(newPitch)
