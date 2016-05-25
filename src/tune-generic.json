@@ -6,103 +6,48 @@
 		"contributors":[],
 		"events":[
 			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"0.000000",
-				"pitch":{
-					"letter":"g",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"0.250000",
-				"pitch":{
-					"letter":"a",
-					"octave":"4",
-					"accidental":"0"
-				}
-			},
-			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"0.500000",
-				"pitch":{
-					"letter":"c",
-					"octave":"4",
-					"accidental":"1"
-				}
-			},
-			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"0.750000",
-				"pitch":{
-					"letter":"d",
-					"octave":"4",
-					"accidental":"2"
-				}
-			},
-			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"1.000000",
-				"pitch":{
+				"class":"chord",
+				"duration":"SIXTEENTH",
+				"s_duration":"0.136363",
+				"onset":"0.136363",
+				"pitches":[
+					{
 					"letter":"e",
-					"octave":"4",
+					"octave":"3",
 					"accidental":"0"
-				}
-			},
-			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"1.250000",
-				"pitch":{
-					"letter":"f",
-					"octave":"4",
-					"accidental":"2"
-				}
-			},
-			{
-				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"1.500000",
-				"pitch":{
+					},
+					{
 					"letter":"g",
-					"octave":"4",
-					"accidental":"0"
+					"octave":"3",
+					"accidental":"1"
+					}
+				]
+			},
+			{
+				"class":"rest",
+				"duration":"QUARTER",
+				"s_duration":"0.818181",
+				"onset":"0.272727",
+				"pitch":{
+					"letter":"r",
+					"octave":"",
+					"accidental":""
 				}
 			},
 			{
 				"class":"note",
-				"duration":"QUARTER",
-				"s_duration":"",
+				"duration":"SIXTEENTH",
+				"s_duration":"0.136364",
 				"frequency":"",
-				"onset":"1.750000",
+				"onset":"1.090908",
 				"pitch":{
 					"letter":"a",
-					"octave":"4",
+					"octave":"3",
 					"accidental":"0"
 				}
 			}
 		],
-		"keySignature": {
+		"keySignature":{
 			"isMajor":"True",
 				"pitch":{
 					"letter":"c",

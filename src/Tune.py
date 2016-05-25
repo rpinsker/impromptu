@@ -2,8 +2,11 @@ from TuneSubclasses import *
 
 # refer to vartec's answer at http://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
 class Tune(object):
-
+    
+    
+    
     def __init__(self, **kwargs):
+        self.measures = []
         self.timeSignature = (4,4) # default time Signature
         self.keySignature = kwargs.get('keySignature', Key())
         self.clef = kwargs.get('clef', Clef.TREBLE)
@@ -300,9 +303,9 @@ class Tune(object):
 
         keysig = self.keySignature
         if keysig == None:
-            f.write('\t\t"keySignature": {}\n')
+            f.write('\t\t"keySignature":{}\n')
         else:
-            f.write('\t\t"keySignature": {\n')
+            f.write('\t\t"keySignature":{\n')
             if keysig.isMajor != None:
                 f.write('\t\t\t"isMajor":"%s",\n' %(keysig.isMajor))
             else:
@@ -311,7 +314,7 @@ class Tune(object):
             if keysig.pitch != None:
                 self.writePitchtoFile(keysig.pitch, f)
             else:
-                f.write('\t\t\t"pitch":{}\n')
+                f.write('\t\t\t\t"pitch":{}\n')
             f.write('\t\t}\n')
 
         f.write('\t}\n')
@@ -580,6 +583,14 @@ if __name__ == "__main__":
     for i in xrange(1,len(sys.argv)):
         if (sys.argv[i] == '-f'): # input flag: sets input file name
             INPUT_FILE = sys.argv[i+1]
+    tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00 (4).wav')
+    print tuneWav.toString()
+    tuneWav.TunetoJSON()
+    jsonfile = 'tune-generic.json'
+    tuneprime = Tune()
+    tuneprime.JSONtoTune(jsonfile)
+    print tuneprime.toString()
+
     # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
@@ -594,11 +605,11 @@ if __name__ == "__main__":
 
 
 #    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
-    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
+#    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
 #    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
-    tune = Tune.TuneWrapper(file1)
+
+#    tune = Tune.TuneWrapper(file1)
     # tuneWav = Tune(wav = 'test1.wav')
-    # tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00.wav')
-    # print tuneWav.toString()
-    tune.TunetoJSON()
-    print tune.toString()
+
+#    tune.TunetoJSON()
+#    print tune.toString()
