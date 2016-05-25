@@ -126,7 +126,8 @@ def tuneToNotes(tune):
                 octave = str(pitch.octave)
                 if letter:
                     if not letter == "r":
-                       aChord = abjad.Chord([],abjad.Duration(Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1]))
+                       if not aChord:
+                           aChord = abjad.Chord([],abjad.Duration(Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1]))
                        pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
                        if (event.duration):
                            duration = abjad.Duration(event.duration[0],event.duration[1])
