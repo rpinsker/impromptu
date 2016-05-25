@@ -38,7 +38,7 @@
             <button id="load">LOAD JSON</button>
                 <div class="modal" id="jsonModal">
                     <div class="modal-content">
-                        <span class="closeJSON">x</span>
+                        <span class="close" id="closeJSON">x</span>
                         <form action="/" method="POST" name="load" id="load" enctype=multipart/form-data>
                             <input type="file" name="jsonInput" value="Load JSON" accept=".json"/>
                             <br/>
@@ -88,22 +88,183 @@
                 </select>
                 <button id="edit">Edit</button>
                 <div class="modal" id="editModal">
-                    <div class="modal-content">
-                        <span class="close">x</span>
+                    <div class="modal-content-edit">
+                        <span class="close" id="close-x-n">x</span>
                         <h4 id="edit-title"></h4>
+                        <div class="measureImg" id="measureImg">
+                        </div>
                         {% for m in range(measures|length) %}
-                            <h5>Choose a Note</h5>
-                            <select class="note-select" id={{ "ns-" + m|string }} hidden>
-                            {% for n in range(measures[m]|length) %}
-                                <option value={{ n + 1 }}>{{ n + 1 }}</option>
-                            {% endfor %}
-                            </select>
-                            {% for n in range(measures[m]|length) %}
-                                <div class="note-info" id={{ "ni-" + n|string}} hidden>
-                                    <p>Pitch: {{ measures[m][n] }}</p>
-                                </div>
-                            {% endfor %}
+                            <div class="noteEditor" id={{ "ne-" + (m + 1)|string }} style="display: none">
+                                <h5 style="display: inline">Choose a Note</h5>
+                                &nbsp;
+                                <select class="note-select" style="display: inline" id={{ "ns-" + (m + 1)|string }}>
+                                {% for n in range(measures[m]|length) %}
+                                    <option value={{ n + 1 }}>{{ n + 1 }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
                         {% endfor %}
+                        <button id="note-edit">Edit</button>
+                        <button id="note-add">Add</button>
+                        <button id="note-delete">Delete</button>
+                        <br>
+                        <br>
+                        {% for m in range(measures|length) %}
+                            <div id={{ "note-info-box-" + (m + 1)|string }}>
+                                {% for n in range(measures[m]|length) %}
+                                    <div class="note-info"  style="display: none" id={{ "m-" + (m + 1)|string + "ni-" + (n + 1)|string }}>
+                                        <h5>Editing Note {{ (n + 1) }}</h5>
+
+                                        {% for p in measures[m][n].getPitch() %}
+                                            <!-- PITCH & ACCIDENTAL -->
+                                            <div style="display: block"></div>
+                                            <p style="display: inline">Pitch: </p>
+                                             <select class="edit-select-pitch">
+                                                {% for i in ["Rest","A","B","C","D","E","F","G"] %}
+                                                    {% if i == p.letter|upper %}
+                                                        <option value={{ i }} selected>{{ i }}</option>
+                                                    {% else %}
+                                                        <option value={{ i }}>{{ i }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            <select class="edit-select-acc" style="display: inline">
+                                                {% if 1 == p.accidental %}
+                                                    <option value="sharp" selected>&#9839;</option>
+                                                {% else %}
+                                                    <option value="sharp">&#9839;</option>
+                                                {% endif %}
+                                                {% if 2 == p.accidental %}
+                                                    <option value="flat" selected>&#9837;</option>
+                                                {% else %}
+                                                    <option value="flat">&#9837;</option>
+                                                {% endif %}
+                                                {% if 0 == p.accidental %}
+                                                    <option value="natural" selected>&#9838;</option>
+                                                {% else %}
+                                                    <option value="natural">&#9838;</option>
+                                                {% endif %}
+                                            </select>
+                                            &nbsp;
+                                            <!-- OCTAVE -->
+                                            <p style="display: inline">Octave: </p>
+                                            <select class="edit-select-octave">
+                                                {% for i in range(11) %}
+                                                    {% if i == p.octave %}
+                                                        <option value={{ i }} selected>{{ i }}</option>
+                                                    {% else %}
+                                                        <option value={{ i }}>{{ i }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        {% endfor %}
+                                        &nbsp;
+                                        <!-- DURATION -->
+                                        <p style="display: inline">Duration: </p>
+                                        <select class="edit-select-duration">
+                                            {% for i in [1,2,4,8,16] %}
+                                                {% if i == measures[m][n].duration[1] %}
+                                                    <option value={{ i }} selected>{{ i }}</option>
+                                                {% else %}
+                                                    <option value={{ i }}>{{ i }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <br />
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div id={{ "note-add-box-" + (m + 1)|string }}>
+                                {% for n in range(measures[m]|length) %}
+                                    <div class="note-add" id={{ "m-" + (m + 1)|string + "na-" + (n + 1)|string }} style="display: none">
+                                        <h5>Inserting before Note {{ (n + 1) }}</h5>
+
+                                         <!-- PITCH & ACCIDENTAL -->
+                                        <p style="display: inline-block">Pitch: </p>
+                                         <select class="add-select-pitch">
+                                            {% for i in ["Rest","A","B","C","D","E","F","G"] %}
+                                                {% if i == measures[m][n].getPitch()[0].letter|upper %}
+                                                    <option value={{ i }} selected>{{ i }}</option>
+                                                {% else %}
+                                                    <option value={{ i }}>{{ i }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        <select class="add-select-acc" style="display: inline-block">
+                                            {% if 1 == measures[m][n].getPitch()[0].accidental %}
+                                                <option value="sharp" selected>&#9839;</option>
+                                            {% else %}
+                                                <option value="sharp">&#9839;</option>
+                                            {% endif %}
+                                            {% if 2 == measures[m][n].getPitch()[0].accidental %}
+                                                <option value="flat" selected>&#9837;</option>
+                                            {% else %}
+                                                <option value="flat">&#9837;</option>
+                                            {% endif %}
+                                            {% if 0 == measures[m][n].getPitch()[0].accidental %}
+                                                <option value="natural" selected>&#9838;</option>
+                                            {% else %}
+                                                <option value="natural">&#9838;</option>
+                                            {% endif %}
+                                        </select>
+                                        &nbsp;
+                                        <!-- OCTAVE -->
+                                        <p style="display: inline-block">Octave: </p>
+                                        <select class="add-select-octave">
+                                            {% for i in range(11) %}
+                                                {% if i == measures[m][n].getPitch()[0].octave %}
+                                                    <option value={{ i }} selected>{{ i }}</option>
+                                                {% else %}
+                                                    <option value={{ i }}>{{ i }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        &nbsp;
+                                        <!-- DURATION -->
+                                        <p style="display: inline-block">Duration: </p>
+                                        <select class="add-select-duration">
+                                            {% for i in [1,2,4,8,16] %}
+                                                {% if i == measures[m][n].duration[1] %}
+                                                    <option value={{ i }} selected>{{ i }}</option>
+                                                {% else %}
+                                                    <option value={{ i }}>{{ i }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div id={{ "note-delete-box-" + (m + 1)|string }}>
+                                {% for n in range(measures[m]|length) %}
+                                    <div class="note-delete" id={{ "m-" + (m + 1)|string + "nd-" + (n + 1)|string }} style="display: none">
+                                        <h5>Deleting Note {{ (n + 1) }}</h5>
+
+                                         <!-- PITCH & ACCIDENTAL -->
+                                        <p style="display: inline">Pitch: {{ measures[m][n].getPitch()[0].letter|upper }}</p>
+                                        {% if 1 == measures[m][n].getPitch()[0].accidental %}
+                                            <p style="display: inline">&#9839;</p>
+                                        {% elif 2 == measures[m][n].getPitch()[0].accidental %}
+                                            <p style="display: inline">&#9837;</p>
+                                        {% else %}
+                                            <p style="display: inline">&#9838;</p>
+                                        {% endif %}
+                                        &nbsp;
+                                        <!-- OCTAVE -->
+                                        <p style="display: inline-block">Octave: {{ measures[m][n].getPitch()[0].octave }}</p>
+                                        &nbsp;
+                                        <!-- DURATION -->
+                                        <p style="display: inline-block">Duration: {{ measures[m][n].duration[1] }}</p>
+
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <hr>
+                        <div class="modal-button-box">
+                            <input class="modal-button" id="note-apply" type="button" value="Apply" \>
+                            <input class="modal-button" id="note-cancel" type="submit" value="Cancel" \>
+                        </div>
+                        <div class="clear"></div>
                     </div>
                 </div>
             </div>
@@ -112,7 +273,7 @@
                 <button id="upload">Upload a File &#9834;</button>
                 <div class="modal" id="uploadModal">
                     <div class="modal-content">
-                        <span class="close">x</span>
+                        <span class="close" id="close-x-u">x</span>
                         <form action="/" method="POST" name="upload" id="uploadForm" enctype=multipart/form-data>
                             <input type="file" name="fileInput" value="Upload File" id="chooseFile" accept=".mid,.midi,.mp3,.wav"/>
                             <br/>
@@ -124,7 +285,7 @@
                 <button id="record" onclick="toggleRecording(this);">Record Audio &#9834;</button>
                 <div class="modal" id="recordModal">
                     <div class="modal-content">
-                        <span class="close">x</span>
+                        <span id="close-x-u">x</span>
                     </div>
                 </div>
 

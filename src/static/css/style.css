@@ -25,6 +25,12 @@
     height: 30px;
 }
 
+.measureImg {
+    width: 300px;
+    height: 150px;
+    overflow: hidden;
+}
+
 .buttons {
     padding: 50px;
 }
@@ -33,6 +39,7 @@
     width: 300px;
     margin-left: -50px;
 }
+
 
 .left-panel {
     position: absolute;
@@ -45,6 +52,13 @@
     padding: 10px;
     bottom: 0;
 }
+
+.modal-button-box {
+    margin: 5px;
+    float: right;
+}
+
+.clear { clear:both; }
 
 button {
     background-color: white;
@@ -60,6 +74,10 @@ button:hover {
 .button-small {
     width: 40px;
     padding: 5px;
+}
+
+.modal-button {
+    height: auto;
 }
 
 a.button {
@@ -105,6 +123,21 @@ input[type="button"]:hover {
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
     animation-duration: 0.4s
+}
+
+.modal-content-edit {
+    background-color: #fefefe;
+    margin: 7% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%; /* Could be more or less, depending on screen size */
+    position: relative;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+    height: auto;
 }
 
 @-webkit-keyframes animatetop {

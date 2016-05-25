@@ -17,6 +17,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 tuneObj = None
 measuresObj = None
+notesObj = None
+impromptuMeasuresObj = None
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -33,11 +35,12 @@ def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
     result = abjad.topleveltools.persist(expr).as_pdf(**kwargs)
 
 def save_measure_as_png(expr, i, return_timing=False, **kwargs):
-    if i == 0:
-        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
-        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
+    subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
+    subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
     # SAVE AS A PNG
-    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i) + '.png',**kwargs)
+    name = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
+    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ name + '.png',**kwargs)
+    return 'static/currentTune/'+ name + '.png'
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -83,7 +86,14 @@ def tune():
                 lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
                 lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
-                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
+
+                listOfMeasures = tunetoMeasures(tuneObj)
+                listOfPNGs = []
+                for m in range(len(listOfMeasures)):
+                    name = "static/currentTune/" + str(m+1) + ".png"
+                    listOfPNGs.append(name)
+                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs, getMeasurImge = measureIndexToPNGFilepath)
+
         if request.files.has_key('jsonInput'):
             file = request.files['jsonInput']
             if file and allowed_file(file.filename):
@@ -101,27 +111,80 @@ def tune():
                 lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
                 return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
+
+        if request.form.has_key('editDurationInputMeasureIndex') and request.form.has_key('editDurationInputIndex') and request.form.has_key('editDurationInputDuration0') and request.form.has_key('editDurationInputDuration1'):
+            measureIndex = int(request.form['editDurationInputMeasureIndex'])
+            noteIndex = int(request.form['editDurationInputIndex'])
+            dur0 = int(request.form['editDurationInputDuration0'])
+            dur1 = int(request.form['editDurationInputDuration1'])
+            editDurationUpdateTuneObj(measureIndex,noteIndex,dur0,dur1)
+            tune = tuneObj
+            # convert our tune object to notes for abjad and then to a staff
+            staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
+            # make lilypond file, setting title and contributors, and then make the PDF
+            lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+            lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
+            lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
+            filenamePDF = updatePDFWithNewLY(lilypond_file)
+            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
+
+
     # page was loaded normally (not from a request to update name, contributor, or file upload)
 
     # so display the tune object created at the beginning of the this method
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
-    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf', measures=[[1,1,2],[3,4]])
+    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
 
+@app.route('/measure', methods=["GET","POST"])
+def measure():
+    if request.method == "POST":
+        data = request.form.keys()[0]
+        return measureIndexToPNGFilepath(data)
 
 def measureIndexToPNGFilepath(i):
+    i = int(i) - 1
     if i < len(measuresObj) and i >= 0:
         m = measuresObj[i]
-        return save_measure_as_png(m,i)
+        return save_measure_as_png(m,i+1)
     else:
-        "bad index!"
+        return "bad index!"
+
+
+def editDurationUpdateTuneObj(measureIndex,noteIndex,newDuration0,newDuration1):
+    global tuneObj
+
+    makeStaffFromTune(tuneObj)
+    # update the note in measuresObj
+    m = impromptuMeasuresObj[measureIndex]
+    e = m[noteIndex]
+    e.setDuration((newDuration0,newDuration1))
+    m[noteIndex] = e
+    impromptuMeasuresObj[measureIndex] = m
+
+    # make an array of all notes and recompute everything
+    events = []
+    for measure in impromptuMeasuresObj:
+        for event in measure:
+            events.append(event)
+
+    tuneObj.setEventsList(events)
+
+
+
+
 
 
 # convert a Tune object to an array of notes usable by abjad
 def tuneToNotes(tune):
+
+    global impromptuMeasuresObj
+
     if tune == None:
         return []
 
     listOfMeasures = tunetoMeasures(tune)
+
+    impromptuMeasuresObj = listOfMeasures
 
     aNotes = [] # holds lists of notes corresponding to measures
 
@@ -190,11 +253,16 @@ def tunetoMeasures(tune):
             currentMeasure.append(note)
             currentTimeLeft -= duration
         else:
+            # split the note and add the first one to the current measure
+            splitNote1 = note
+            splitNote1.setDuration((1,float(1/currentTimeLeft)))
+            currentMeasure.append(splitNote1)
+
             # change the note's duration!
             possibleDurations = [1,.5,.25,0.125,0.0625]
             for d in possibleDurations:
                 if (currentTimeLeft - d) >= 0:
-                    note.duration = (1,float(1/currentTimeLeft))
+                    note.setDuration((1,float(1/currentTimeLeft)))
                     currentMeasure.append(note)
             currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
             measures.append(currentMeasure)
@@ -251,10 +319,21 @@ def padMeasureWithRests(currentTimeLeft,currentMeasure):
 # makes a lilypond file either from globally stored tune object or makes a filler
 # staff and pdf to display when page is first loaded
 def makeLilypondFile(tune):
+    global tuneObj
     if tune == None:
-        duration = abjad.Duration(1, 4)
-        notes = [abjad.Note(pitch, duration) for pitch in range(8)]
-        staff = abjad.Staff(notes)
+        eventsList = []
+        for (l,a) in [('g',Tune.Accidental.NATURAL),('a',Tune.Accidental.NATURAL),('c',Tune.Accidental.SHARP),('d',Tune.Accidental.FLAT),('e',Tune.Accidental.NATURAL),('f',Tune.Accidental.FLAT),('g',Tune.Accidental.NATURAL),('a',Tune.Accidental.NATURAL)]:
+            dur = Tune.Duration.QUARTER
+            p = Tune.Pitch()
+            p.letter = l
+            p.octave = 4
+            p.accidental = a
+            note = Tune.Note(duration=dur, pitch=p)
+            eventsList.append(note)
+        newTune = Tune.Tune()
+        newTune.setEventsList(eventsList)
+        tuneObj = newTune
+        staff = makeStaffFromTune(newTune)
         lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
         lilypond_file.header_block.title = abjad.markuptools.Markup("SAMPLE TUNE DISPLAY")
         return lilypond_file
@@ -271,6 +350,8 @@ def makeStaffFromTune(tune):
 
     global measuresObj
 
+    measuresObj = []
+
     time_signature = abjad.TimeSignature(tune.getTimeSignature())
     if time_signature is None:
         time_signature = abjad.TimeSignature(4,4)
@@ -281,13 +362,13 @@ def makeStaffFromTune(tune):
     savedMeasures = []
     staff = abjad.Staff()
     for measure in notes:
-            #print aEvent.written_duration
-            m = abjad.Measure(time_signature, measure)
-            m = abjad.scoretools.append_spacer_skip_to_underfull_measure(m)
-            d = m._preprolated_duration
-            if d == time_signature.duration:
-                staff.append(m)
-                savedMeasures.append(m)
+        #print aEvent.written_duration
+        m = abjad.Measure(time_signature, measure)
+        m = abjad.scoretools.append_spacer_skip_to_underfull_measure(m)
+        d = m._preprolated_duration
+        if d == time_signature.duration:
+            staff.append(m)
+            savedMeasures.append(m)
         #staff.append(abjad.Measure(abjad.Measure(time_signature,measure)))
     measuresObj = savedMeasures
 
