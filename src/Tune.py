@@ -99,45 +99,45 @@ class Tune(object):
         self.events = sorted(self.events, key=lambda event: event.onset)
 
     def eventListToChords(self):
-        newEventList = []
-        prevOnset = -1
-        for item in self.events:
-            if item.onset != prevOnset: 
-                newEventList.append(item)
-                prevOnset = item.onset
-            else:
-                # add pitch to last event and turn to chord
-                newEventList[-1] = newEventList[-1].combineEvent(item)
-        self.events = newEventList
+#        newEventList = []
+#        prevOnset = -1
+#        for item in self.events:
+#            if item.onset != prevOnset: 
+#                newEventList.append(item)
+#                prevOnset = item.onset
+#            else:
+#                # add pitch to last event and turn to chord
+#                newEventList[-1] = newEventList[-1].combineEvent(item)
+#        self.events = newEventList
 
-#         i = 0
-#         while(i<len(self.events)-1):
-#             if Helper.floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
-#                 # Chord, Event
-#                 if isinstance(self.events[i],Chord):
-#                     self.events[i].combineEvent(self.events[i+1]) #checks chords and notes
-#                     self.events.pop(i+1)
-#                 # Event, Chord
-#                 elif isinstance(self.events[i+1],Chord):
-#                     self.events[i+1].combineEvent(self.events[i]) #checks chords and notes
-#                     self.events.pop(i)
-#                 # Note, Note
-#                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
-#                     self.events[i] = Chord(pitches = self.events[i].getPitch() + self.events[i+1].getPitch() ,duration= self.events[i].duration,onset=self.events[i].onset)
-#                     self.events.pop(i+1)
-#                 # Rest, Note
-#                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
-#                     self.events[i] = self.events[i+1]
-#                     self.events.pop(i+1)
-#                 # Note, Rest
-#                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Rest):
-#                     self.events[i+1] = self.events[i]
-#                     self.events.pop(i)
-#                 # Rest, Rest
-#                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Rest):
-#                     self.events.pop(i+1)
-#             else:
-#                 i=i+1
+         i = 0
+         while(i<len(self.events)-1):
+             if Helper.floatComp(self.events[i].onset,self.events[i+1].onset,0.001):
+                 # Chord, Event
+                 if isinstance(self.events[i],Chord):
+                     self.events[i].combineEvent(self.events[i+1]) #checks chords and notes
+                     self.events.pop(i+1)
+                 # Event, Chord
+                 elif isinstance(self.events[i+1],Chord):
+                     self.events[i+1].combineEvent(self.events[i]) #checks chords and notes
+                     self.events.pop(i)
+                 # Note, Note
+                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
+                     self.events[i] = Chord(pitches = self.events[i].getPitch() + self.events[i+1].getPitch() ,duration= self.events[i].duration,onset=self.events[i].onset)
+                     self.events.pop(i+1)
+                 # Rest, Note
+                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
+                     self.events[i] = self.events[i+1]
+                     self.events.pop(i+1)
+                 # Note, Rest
+                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Rest):
+                     self.events[i+1] = self.events[i]
+                     self.events.pop(i)
+                 # Rest, Rest
+                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Rest):
+                     self.events.pop(i+1)
+             else:
+                 i=i+1
 
 
     def addEvent(self, idx, event):
@@ -565,9 +565,9 @@ if __name__ == "__main__":
     # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
-    tune = Tune.TuneWrapper(INPUT_FILE)
-    print tune.toString()
-    tune.TunetoJSON()
+#    tune = Tune.TuneWrapper(INPUT_FILE)
+#    print tune.toString()
+#    tune.TunetoJSON()
 
 #    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
 #    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
