@@ -479,7 +479,6 @@ class TestImpromptuBackend(unittest.TestCase):
 
 	def testJSONtoTune(self):
 		# Test a tune with two notes
-		fp = open("../tests/MIDITestFiles/tune.json")
 		tune = Tune()
 		tune.JSONtoTune("../tests/MIDITestFiles/tune.json")
 		tune_keysig = tune.getKey()

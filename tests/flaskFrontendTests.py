@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, '../src')
 
 from app import app
-from app import getTune, setTune, makeLilypondFile, tuneToNotes, makeStaffFromTune, saveLilypondForDisplay
+from app import getTune, setTune, makeLilypondFile, tuneToNotes, makeStaffFromTune, saveLilypondForDisplay, tunetoMeasures
 import unittest
 import TuneIter2 as Tune
 import subprocess
@@ -504,9 +504,9 @@ class AppTestCase(unittest.TestCase):
 
     # changing duration (will be from a dropdown so can't be invalid) -- rachel
     def test_change_duration(self):
-        # make notes of all different durations and add to the list notes
-        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
-                     Tune.Duration.HALF, Tune.Duration.WHOLE]
+        # make notes and add to the list notes
+        durations = [Tune.Duration.QUARTER, Tune.Duration.QUARTER, Tune.Duration.QUARTER,
+                     Tune.Duration.QUARTER]
         notes = []
 
         for duration in durations:
@@ -520,7 +520,8 @@ class AppTestCase(unittest.TestCase):
 
         # make test tune object with the notes
         testTune = Tune.Tune()
-        testTune.setNotesList(notes)
+        testTune.setTimeSignature((4,4))
+        testTune.setEventsList(notes)
         # set the app's tune to be this test tune
         setTune(testTune)
 
@@ -528,6 +529,7 @@ class AppTestCase(unittest.TestCase):
         for i in range(0,len(durations)):
             newDuration = durations[len(durations)-i-1]
             self.app.post('/', data=dict(
+                editDurationInputMeasureIndex=0,
                 editDurationInputIndex=i,
                 editDurationInputDuration0=newDuration[0],
                 editDurationInputDuration1=newDuration[1]
@@ -535,7 +537,7 @@ class AppTestCase(unittest.TestCase):
 
             # after making post request to change the duration, make sure new tune object's note list has been updated
             updatedTune = getTune()
-            noteI = updatedTune.notes[i]
+            noteI = updatedTune.events[i]
             durationI = noteI.duration
 
             self.assertEqual(durationI,newDuration)

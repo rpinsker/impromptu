@@ -82,7 +82,7 @@ class Pitch(object):
 
     def toString(self):
         acc = {Accidental.NATURAL: '', Accidental.SHARP: '#', Accidental.FLAT: 'Flat'}.get(self.accidental)
-        return "Pitch: " + str(self.letter) + str(self.octave) + acc
+        return "Pitch: " + ("None" if self.letter==None else str(self.letter)) + ("None" if self.octave==None else str(self.octave)) + acc
 
 class Event(object):
     def __init__(self, **kwargs):
@@ -110,7 +110,7 @@ class Event(object):
             return newChord
         else: # is rest
             return event
-
+            
     def eventEqual(self, event):
         if self.duration != event.duration or self.onset != event.onset:
             return False
@@ -154,7 +154,6 @@ class Chord(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
         self.pitches = kwargs.get('pitches', [])
-    
     def getPitch(self):
         return self.pitches
 
@@ -172,20 +171,20 @@ class Chord(Event):
         if chord.getPitch != None:
             self.setPitches(chord.getPitch)
 
-    # def addPitch(self, event):
-    #     if isinstance(self, Chord):
-    #         self.setPitch(self.getPitch().extend(event.getPitch()))
-    #         return self
-    #     elif isinstance(self, Note):
-    #         return Chord(pitches = list(self.getPitch()).extend(event.getPitch), duration = self.duration, onset = self.onset)
-    #     else:
-    #         return event
-        # print self, event
-        # if self.getPitch() != None:
-        #     self.setPitch()
-        # else:
-        #     self.setPitch(event.getPitch())
-        #     print '\n\nempty chord\n\n'
+       # def addPitch(self, event):
+     #     if isinstance(self, Chord):
+     #         self.setPitch(self.getPitch().extend(event.getPitch()))
+     #         return self
+     #     elif isinstance(self, Note):
+     #         return Chord(pitches = list(self.getPitch()).extend(event.getPitch), duration = self.duration, onset = self.onset)
+     #     else:
+     #         return event
+         # print self, event
+         # if self.getPitch() != None:
+         #     self.setPitch()
+         # else:
+         #     self.setPitch(event.getPitch())
+         #     print '\n\nempty chord\n\n'
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
@@ -199,7 +198,6 @@ class Chord(Event):
         else:
             pitchstr += "no pitches \n"
         return pitchstr
-
 
 class Rest(Event):
     def __init__(self, **kwargs):
@@ -241,10 +239,9 @@ class Note(Event):
         return "Note: Freq - %s, Duration (seconds) - %s, Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), durationstring, str(self.onset), self.pitch.toString())
 
     def isRest(self):
-        if self.pitch.letter == 'r':
+        if self.getPitch()[0].letter == 'r':
             return True
-        else:
-            return False
+        return False
 
     @staticmethod
     def convertFreqToPitch(freq):
@@ -267,7 +264,7 @@ class Note(Event):
         return False
 
     def isRest(self):
-        if self.getPitch()[0].letter == 'r':
+        if self.pitch.letter == 'r':
             return True
         return False
 
