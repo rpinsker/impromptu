@@ -558,10 +558,10 @@ class Tune(object):
                 if len(tuple) ==1:
                     if len(oldtuple) ==1:
                         sdur = float(tuple[0]) - float(oldtuple[0])
-                        events = events + [Rest(onset=oldtuple[0], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                        events = events + [Rest(onset=float(oldtuple[0]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
                     else:
                         sdur = float(tuple[0]) - float(oldtuple[2])
-                        events = events + [Rest(onset=oldtuple[2], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                        events = events + [Rest(onset=float(oldtuple[2]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
                 else:
                     sdur = float(tuple[2]) - float(tuple[1])
                     p = Pitch()
