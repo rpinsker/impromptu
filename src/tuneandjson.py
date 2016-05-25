@@ -22,10 +22,10 @@ from Tune import *
 #tune3.TunetoJSON()
 #pprint.pprint(tune3.events)
 
-#tune4 = Tune()
-#tune4.JSONtoTune("../tests/MIDITestFiles/tune2.json")
+tune4 = Tune()
+tune4.JSONtoTune("../tests/MIDITestFiles/tune2.json")
 #print tune4.toString()
-#tune4.TunetoJSON()
+tune4.TunetoJSON()
 
 
 
