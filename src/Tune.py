@@ -384,7 +384,7 @@ class Tune(object):
             pitches = []
             for p in event['pitches']:
                 pch = self.pitchJSONtoTune(p)
-                pitches.append(p)
+                pitches.append(pch)
             new_event.setPitch(pitches)
         return new_event
             
