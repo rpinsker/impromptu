@@ -35,12 +35,12 @@ def saveLilypondForDisplay(expr, return_timing=False, **kwargs):
     result = abjad.topleveltools.persist(expr).as_pdf(**kwargs)
 
 def save_measure_as_png(expr, i, return_timing=False, **kwargs):
-    if i == 0:
-        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
-        subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
+    subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
+    subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
     # SAVE AS A PNG
-    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i) + '.png',**kwargs)
-    return 'static/currentTune/'+ str(i) + '.png'
+    name = time.strftime("%d%m%Y") + time.strftime("%H%M%S")
+    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ name + '.png',**kwargs)
+    return 'static/currentTune/'+ name + '.png'
 
 
 @app.route('/', methods=['GET', 'POST'])
