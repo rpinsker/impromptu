@@ -17,10 +17,16 @@ from Tune import *
 #tune2.TunetoJSON()
 #pprint.pprint(tune2.events)
 
-tune3 = Tune.TuneWrapper('../tests/MIDITestFiles/tune-with-chord-rest-note.mid')
-print tune3.toString()
-tune3.TunetoJSON()
-pprint.pprint(tune3.events)
+#tune3 = Tune.TuneWrapper('../tests/MIDITestFiles/tune-with-chord-rest-note.mid')
+#print tune3.toString()
+#tune3.TunetoJSON()
+#pprint.pprint(tune3.events)
+
+#tune4 = Tune()
+#tune4.JSONtoTune("../tests/MIDITestFiles/tune2.json")
+#print tune4.toString()
+#tune4.TunetoJSON()
+
 
 
 #fp = open("../tests/MIDITestFiles/tune.json")

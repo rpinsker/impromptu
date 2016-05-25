@@ -99,18 +99,6 @@ class Event(object):
     def getPitch(self):
         """Method that should be implemented in subclasses."""
 
-    def combineEvent(self, event):
-        if isinstance(event, Rest):
-            return self
-        if isinstance(self, Chord):
-            self.setPitch(self.getPitch() + event.getPitch())
-            return self
-        elif isinstance(self, Note):
-            newChord = Chord(pitches = self.getPitch() + event.getPitch(), s_duration = self.s_duration, duration = self.duration, onset = self.onset)
-            return newChord
-        else: # is rest
-            return event
-
     def eventEqual(self, event):
         if self.duration != event.duration or self.onset != event.onset:
             return False
@@ -154,7 +142,6 @@ class Chord(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
         self.pitches = kwargs.get('pitches', [])
-    
     def getPitch(self):
         return self.pitches
 
@@ -172,34 +159,21 @@ class Chord(Event):
         if chord.getPitch != None:
             self.setPitches(chord.getPitch)
 
-    # def addPitch(self, event):
-    #     if isinstance(self, Chord):
-    #         self.setPitch(self.getPitch().extend(event.getPitch()))
-    #         return self
-    #     elif isinstance(self, Note):
-    #         return Chord(pitches = list(self.getPitch()).extend(event.getPitch), duration = self.duration, onset = self.onset)
-    #     else:
-    #         return event
-        # print self, event
-        # if self.getPitch() != None:
-        #     self.setPitch()
-        # else:
-        #     self.setPitch(event.getPitch())
-        #     print '\n\nempty chord\n\n'
+    def addPitch(self, event):
+        if self.getPitch() != None:
+            self.setPitch(self.getPitch().extend(event))
+        else:
+            self.setPitch(event.getPitch())
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
 
-    def toString(self):
+    def NotetoString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
         pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
-        if self.pitches != None:
-            for pitch in self.pitches:
-                pitchstr += '>>>>>>>' + pitch.toString() + "\n"
-        else:
-            pitchstr += "no pitches \n"
+        for pitch in self.pitches:
+            pitchstr += '>>>>>>>' + pitch.NotetoString() + "\n"
         return pitchstr
-
 
 class Rest(Event):
     def __init__(self, **kwargs):
@@ -267,7 +241,7 @@ class Note(Event):
         return False
 
     def isRest(self):
-        if self.getPitch()[0].letter == 'r':
+        if self.pitch.letter == 'r':
             return True
         return False
 

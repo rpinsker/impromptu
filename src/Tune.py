@@ -181,7 +181,7 @@ class Tune(object):
             octave = str(pitch.octave)
         if pitch.accidental != None:
             accidental = str(pitch.accidental)
-        myfile.write('\t\t\t\t"pitch":{\n\t\t\t\t\t"letter":"%c",\n\t\t\t\t\t"octave":"%s",\n\t\t\t\t\t"accidental":"%s"\n\t\t\t\t}\n' %(letter, octave, accidental))
+        myfile.write('\t\t\t\t"pitch":{\n\t\t\t\t\t"letter":"%s",\n\t\t\t\t\t"octave":"%s",\n\t\t\t\t\t"accidental":"%s"\n\t\t\t\t}\n' %(str(letter), octave, accidental))
 
     def TunetoJSON(self):
         if self.title != None:
@@ -205,10 +205,12 @@ class Tune(object):
         f.write('\t\t"contributors":[')
         if self.contributors != None:
             n_contributors = len(self.contributors)
-            for num in (0, n_contributors - 1):
-                f.write('"%s"' %(self.contributors[num]))
-                if num != n_contributors - 1:
-                    f.write(',')
+            if n_contributors > 0:
+                for num in (0, n_contributors - 1):
+                    f.write('"%s"' %(self.contributors[num]))
+                    if num != n_contributors - 1:
+                        f.write(',')
+
         f.write('],\n')
 
         f.write('\t\t"events":[\n')
@@ -222,7 +224,14 @@ class Tune(object):
                 if event.duration != None:
                     dur_str = self.durationTunetoJSON(event.duration)
                     f.write('\t\t\t\t"duration":"%s",\n' %(dur_str))
-                f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
+                else:
+                    f.write('\t\t\t\t"duration":"",\n')
+
+                if event.s_duration != None:
+                    f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
+                else:
+                    f.write('\t\t\t\t"s_duration":"",\n')
+
                 f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
                 
                 f.write('\t\t\t\t"pitches":[\n')
@@ -230,16 +239,16 @@ class Tune(object):
                 n_pitches = len(pitches)
                 for n in range(0, n_pitches):
                     f.write('\t\t\t\t\t{\n')
-                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n].letter))
-                    f.write('\t\t\t\t\t"octave":"%d",\n' %(pitches[n].octave))
-                    f.write('\t\t\t\t\t"accidental":"%d",\n' %(pitches[n].accidental))
+                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n]['letter']))
+                    f.write('\t\t\t\t\t"octave":"%d",\n' %(int(pitches[n]['octave'])))
+                    f.write('\t\t\t\t\t"accidental":"%d"\n' %(int(pitches[n]['accidental'])))
                     f.write('\t\t\t\t\t}')
                     if n != n_pitches-1:
                         f.write(',\n')
                     else:
                         f.write('\n')
-                f.write('\t\t\t\t],\n')
-                f.write('\t\t\t}')
+                f.write('\t\t\t\t]\n')
+                #f.write('\t\t\t}')
             elif isinstance(event, Note):
                 f.write('\t\t\t\t"class":"note",\n')
 
@@ -249,7 +258,7 @@ class Tune(object):
                 else:
                     f.write('\t\t\t\t"duration":"",\n')
 
-                if event.duration != None:
+                if event.s_duration != None:
                     f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
                 else:
                     f.write('\t\t\t\t"s_duration":"",\n')
@@ -271,7 +280,7 @@ class Tune(object):
                 else:
                     f.write('\t\t\t\t"duration":"",\n')
 
-                if event.duration != None:
+                if event.s_duration != None:
                     f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
                 else:
                     f.write('\t\t\t\t"s_duration":"",\n')
@@ -301,8 +310,8 @@ class Tune(object):
                 f.write('\t\t\t"isMajor":"%s",\n' %(keysig.isMajor))
             else:
                 f.write('\t\t\t"isMajor":"",\n')
-            f.write('\t\t\t')
-            writePitchtoFile(keysig.pitch, f)
+            #f.write('\t\t\t')
+            self.writePitchtoFile(keysig.pitch, f)
             f.write('\t\t}\n')
 
         f.write('\t}\n')
@@ -345,7 +354,10 @@ class Tune(object):
 
         if event['class'] == 'note':
             new_event = Note(duration=duration, onset=onset)
-            n_frequency = float(event['frequency'])
+            if event['frequency'] != "":
+                n_frequency = float(event['frequency'])
+            else:
+                n_frequency = None
             n_pitch = self.pitchJSONtoTune(event['pitch'])
             new_event.frequency = n_frequency
             new_event.setPitch(n_pitch)

@@ -1,32 +1,32 @@
 {
 	"tune":{
-		"timeSignature":["4","4"],
+		"timeSignature":["4","8"],
 		"clef":"0",
 		"title":"",
 		"contributors":[],
 		"events":[
 			{
 				"class":"chord",
-				"duration":"SIXTEENTH",
-				"s_duration":"0.136363",
-				"onset":"0.136363",
+				"duration":"",
+				"s_duration":"",
+				"onset":"0.000000",
 				"pitches":[
 					{
 					"letter":"e",
 					"octave":"3",
-					"accidental":"0",
+					"accidental":"0"
 					},
 					{
 					"letter":"g",
 					"octave":"3",
-					"accidental":"1",
+					"accidental":"1"
 					}
-				],
-			}			},
+				]
+			},
 			{
 				"class":"rest",
 				"duration":"QUARTER",
-				"s_duration":"0.818181",
+				"s_duration":"",
 				"onset":"0.272727",
 				"pitch":{
 					"letter":"r",
@@ -37,7 +37,7 @@
 			{
 				"class":"note",
 				"duration":"SIXTEENTH",
-				"s_duration":"0.136364",
+				"s_duration":"",
 				"frequency":"",
 				"onset":"1.090908",
 				"pitch":{
@@ -47,6 +47,13 @@
 				}
 			}
 		],
-		"keySignature": {}
+		"keySignature": {
+			"isMajor":"True",
+				"pitch":{
+					"letter":"",
+					"octave":"",
+					"accidental":""
+				}
+		}
 	}
 }
