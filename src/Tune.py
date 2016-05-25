@@ -106,7 +106,7 @@ class Tune(object):
                     self.events[i+1].addPitch(self.events[i]) #checks chords and notes
                     self.events.pop(i)
                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
-                    self.events[i] = Chord(pitches = [self.events[i],self.events[i+1]] ,duration= self.events[i].duration,onset=self.events[i].onset)
+                    self.events[i] = Chord(pitches = [self.events[i].getPitch(),self.events[i+1]].getPitch() ,duration= self.events[i].duration,onset=self.events[i].onset)
                     self.events.pop(i+1)
                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
                     self.events[i] = self.events[i+1]
