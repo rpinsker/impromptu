@@ -267,7 +267,7 @@ class Tune(object):
                     f.write('\t\t\t\t"frequency":"%lf",\n' %(event.frequency))
                 else:
                     f.write('\t\t\t\t"frequency":"",\n')
-
+                print "here: ", event.onset
                 f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
 
                 self.writePitchtoFile(event.pitch, f)

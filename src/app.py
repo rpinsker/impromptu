@@ -135,6 +135,17 @@ def tune():
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
     return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
 
+
+
+@app.route('/savejson', methods=["GET"])
+def savejson():
+    global tuneObj
+    filename = tuneObj.TunetoJSON()
+    print filename
+    return send_from_directory(directory="", filename=filename)
+
+
+
 @app.route('/measure', methods=["GET","POST"])
 def measure():
     if request.method == "POST":
@@ -322,16 +333,19 @@ def makeLilypondFile(tune):
     global tuneObj
     if tune == None:
         eventsList = []
+        curr_onset = 0.0
         for (l,a) in [('g',Tune.Accidental.NATURAL),('a',Tune.Accidental.NATURAL),('c',Tune.Accidental.SHARP),('d',Tune.Accidental.FLAT),('e',Tune.Accidental.NATURAL),('f',Tune.Accidental.FLAT),('g',Tune.Accidental.NATURAL),('a',Tune.Accidental.NATURAL)]:
             dur = Tune.Duration.QUARTER
             p = Tune.Pitch()
             p.letter = l
             p.octave = 4
             p.accidental = a
-            note = Tune.Note(duration=dur, pitch=p)
+            note = Tune.Note(duration=dur, pitch=p, onset=curr_onset)
+            curr_onset += 0.25
             eventsList.append(note)
         newTune = Tune.Tune()
         newTune.setEventsList(eventsList)
+        newTune.setTitle("default")
         tuneObj = newTune
         staff = makeStaffFromTune(newTune)
         lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
