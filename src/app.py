@@ -12,7 +12,7 @@ import time
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = set(['mid', 'midi', 'mp3', 'wav'])
+ALLOWED_EXTENSIONS = set(['mid', 'midi', 'mp3', 'wav','json'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 tuneObj = None
@@ -84,6 +84,23 @@ def tune():
                 lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
                 return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf')
+        if request.files.has_key('jsonInput'):
+            file = request.files['jsonInput']
+            if file and allowed_file(file.filename):
+                filename = os.path.basename(file.filename)  # secure_filename(file.filename)
+                file.save(UPLOAD_FOLDER + "/" + filename)
+                # call backend to get Tune object
+                tune = Tune.Tune.TuneWrapper(UPLOAD_FOLDER + "/" + filename)
+                # save it globally to persist when page is reloaded
+                tuneObj = tune
+                # convert our tune object to notes for abjad and then to a staff
+                staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
+                # make lilypond file, setting title and contributors, and then make the PDF
+                lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+                lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
+                lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
+                filenamePDF = updatePDFWithNewLY(lilypond_file)
+                return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
     # page was loaded normally (not from a request to update name, contributor, or file upload)
 
     # so display the tune object created at the beginning of the this method

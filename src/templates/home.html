@@ -31,15 +31,24 @@
 </div>
 <br>
 <div class="left-panel">
-    <form action="/" method="POST">
         <div class="row">
             <input class="button" type="submit" value="Save JSON">
         </div>
         <div class="row">
-            <input class="button" type="submit" value="Load JSON">
+            <button id="load">LOAD JSON</button>
+                <div class="modal" id="jsonModal">
+                    <div class="modal-content">
+                        <span class="closeJSON">x</span>
+                        <form action="/" method="POST" name="load" id="load" enctype=multipart/form-data>
+                            <input type="file" name="jsonInput" value="Load JSON" accept=".json"/>
+                            <br/>
+                            <input type="submit" value="LOAD">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <input type="file" accept="audio/*" capture="microphone">
-    </form>
+
 </div>
 <div class="container">
     <div class="row">

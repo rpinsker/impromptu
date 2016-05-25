@@ -16,6 +16,9 @@ class Tune(object):
             self.readWav(kwargs.get('wav'))
         elif kwargs.get('mp3') != None and kwargs.get('mp3').endswith('mp3'):
             raise NotImplementedError
+        elif kwargs.get('json') != None and kwargs.get('json').endswith('json'):
+            #print kwargs.get('json')
+            self.JSONtoTune(kwargs.get('json'))
         elif kwargs.get('midi') != None and kwargs.get('midi').endswith('.mid'):
             self.midifile = kwargs.get('midi')
             pattern = self.MIDItoPattern(self.midifile)
@@ -52,6 +55,8 @@ class Tune(object):
             return cls(mp3=file)
         elif file.endswith('.wav'):
             return cls(wav=file)
+        elif file.endswith('.json'):
+            return cls(json=file)
 
     def getKey(self):
         return self.keySignature
