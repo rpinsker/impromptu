@@ -319,10 +319,21 @@ def padMeasureWithRests(currentTimeLeft,currentMeasure):
 # makes a lilypond file either from globally stored tune object or makes a filler
 # staff and pdf to display when page is first loaded
 def makeLilypondFile(tune):
+    global tuneObj
     if tune == None:
-        duration = abjad.Duration(1, 4)
-        notes = [abjad.Note(pitch, duration) for pitch in range(8)]
-        staff = abjad.Staff(notes)
+        eventsList = []
+        for (l,a) in [('g',Tune.Accidental.NATURAL),('a',Tune.Accidental.NATURAL),('c',Tune.Accidental.SHARP),('d',Tune.Accidental.FLAT),('e',Tune.Accidental.NATURAL),('f',Tune.Accidental.FLAT),('g',Tune.Accidental.NATURAL),('a',Tune.Accidental.NATURAL)]:
+            dur = Tune.Duration.QUARTER
+            p = Tune.Pitch()
+            p.letter = l
+            p.octave = 4
+            p.accidental = a
+            note = Tune.Note(duration=dur, pitch=p)
+            eventsList.append(note)
+        newTune = Tune.Tune()
+        newTune.setEventsList(eventsList)
+        tuneObj = newTune
+        staff = makeStaffFromTune(newTune)
         lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
         lilypond_file.header_block.title = abjad.markuptools.Markup("SAMPLE TUNE DISPLAY")
         return lilypond_file
