@@ -142,6 +142,7 @@ class Chord(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
         self.pitches = kwargs.get('pitches', [])
+    
     def getPitch(self):
         return self.pitches
 
@@ -163,6 +164,8 @@ class Chord(Event):
         print self, event
         if self.getPitch() != None:
             self.setPitch(self.getPitch().extend(event.getPitch()))
+        else:
+            print '\n\nempty chord\n\n'
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
@@ -173,7 +176,10 @@ class Chord(Event):
         if self.pitches != None:
             for pitch in self.pitches:
                 pitchstr += '>>>>>>>' + pitch.toString() + "\n"
-            return pitchstr
+        else:
+            pitchstr += "no pitches \n"
+        return pitchstr
+
 
 class Rest(Event):
     def __init__(self, **kwargs):
