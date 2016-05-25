@@ -580,6 +580,14 @@ if __name__ == "__main__":
     for i in xrange(1,len(sys.argv)):
         if (sys.argv[i] == '-f'): # input flag: sets input file name
             INPUT_FILE = sys.argv[i+1]
+    tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00 (4).wav')
+    print tuneWav.toString()
+    tuneWav.TunetoJSON()
+    jsonfile = 'tune-generic.json'
+    tuneprime = Tune()
+    tuneprime.JSONtoTune(jsonfile)
+    print tuneprime.toString()
+
     # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
@@ -594,11 +602,11 @@ if __name__ == "__main__":
 
 
 #    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
-    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
+#    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
 #    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
-    tune = Tune.TuneWrapper(file1)
+
+#    tune = Tune.TuneWrapper(file1)
     # tuneWav = Tune(wav = 'test1.wav')
-    # tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00.wav')
-    # print tuneWav.toString()
-    tune.TunetoJSON()
-    print tune.toString()
+
+#    tune.TunetoJSON()
+#    print tune.toString()
