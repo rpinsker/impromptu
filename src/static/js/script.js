@@ -17,6 +17,16 @@ $( document ).ready(function() {
 
     btn2.onclick = function () {
         var m = document.getElementById('measure-select').value;
+        $.ajax({
+            type: "POST",
+            url: "/measure",
+            data : m,
+            success: function (result) {
+                $('#measureImg').html("<img src="+result+"\>");
+                console.log(m);
+            }
+        });
+
         var measureID = "ne-" + m;
         document.getElementById(measureID).style.display = "block";
         document.getElementById('edit-title').innerHTML = "Editing Measure " + m;

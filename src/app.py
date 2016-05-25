@@ -38,6 +38,7 @@ def save_measure_as_png(expr, i, return_timing=False, **kwargs):
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
     # SAVE AS A PNG
     result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i) + '.png',**kwargs)
+    return 'static/currentTune/'+ str(i) + '.png'
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -89,7 +90,7 @@ def tune():
                 for m in range(len(listOfMeasures)):
                     name = "static/currentTune/" + str(m+1) + ".png"
                     listOfPNGs.append(name)
-                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs)
+                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs, getMeasurImge = measureIndexToPNGFilepath)
 
         if request.files.has_key('jsonInput'):
             file = request.files['jsonInput']
@@ -115,13 +116,19 @@ def tune():
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
     return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
 
+@app.route('/measure', methods=["GET","POST"])
+def measure():
+    if request.method == "POST":
+        data = request.form.keys()[0]
+        return measureIndexToPNGFilepath(data)
 
 def measureIndexToPNGFilepath(i):
+    i = int(i) - 1
     if i < len(measuresObj) and i >= 0:
         m = measuresObj[i]
-        return save_measure_as_png(m,i)
+        return save_measure_as_png(m,i+1)
     else:
-        "bad index!"
+        return "bad index!"
 
 
 # convert a Tune object to an array of notes usable by abjad
