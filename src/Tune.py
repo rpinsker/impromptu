@@ -583,22 +583,22 @@ if __name__ == "__main__":
     # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
-    tune = Tune.TuneWrapper(INPUT_FILE)
-    print tune.toString()
-    tune.TunetoJSON()
-    jsonfile = 'tune-generic.json'
-    tuneprime = Tune()
-    tuneprime.JSONtoTune(jsonfile)
-    print tuneprime.toString()
+#    tune = Tune.TuneWrapper(INPUT_FILE)
+#    print tune.toString()
+#    tune.TunetoJSON()
+#    jsonfile = 'tune-generic.json'
+#    tuneprime = Tune()
+#    tuneprime.JSONtoTune(jsonfile)
+#    print tuneprime.toString()
 
 
 
 #    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
-#    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
-    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
+    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
+#    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
     tune = Tune.TuneWrapper(file1)
-#    runConvert('../tests/WAVTestFiles/Test1/')
     # tuneWav = Tune(wav = 'test1.wav')
     # tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00.wav')
     # print tuneWav.toString()
-#    print tune.toString()
+    tune.TunetoJSON()
+    print tune.toString()
