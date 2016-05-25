@@ -104,7 +104,14 @@ class AppTestCase(unittest.TestCase):
         testTune.setEventsList(notes) # changed tuneiter2
         # test calling tuneToNotes
         notesA = tuneToNotes(testTune)
-        staff = abjad.Staff(notesA)
+        staff = abjad.Staff()
+        for measure in notesA:
+            # print aEvent.written_duration
+            m = abjad.Measure(abjad.TimeSignature(tune.getTimeSignature()), measure)
+            d = m._preprolated_duration
+            if d == abjad.TimeSignature(tune.getTimeSignature()).duration:
+                staff.append(m)
+        #staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
 
@@ -304,7 +311,7 @@ class AppTestCase(unittest.TestCase):
             abjad.systemtools.IOManager.save_last_ly_as("test.ly")
             file = open("test.ly")
             # check if time signature t is in lilypond file
-            isPresent = ('        \\time ' + str(t[0]) + '/' + str(t[1]) + '\n' in file.readlines())
+            isPresent = ('            \\time ' + str(t[0]) + '/' + str(t[1]) + '\n' in file.readlines())
             # make sure invalid key not present
             if t == (-1, -1):
                 self.assertEqual(isPresent, False)
@@ -456,7 +463,14 @@ class AppTestCase(unittest.TestCase):
 
         # test calling tuneToNotes and make sure a lilypond file can be created with no error
         notesA = tuneToNotes(testTune)
-        staff = abjad.Staff(notesA)
+        staff = abjad.Staff()
+        for measure in notesA:
+            # print aEvent.written_duration
+            m = abjad.Measure(abjad.TimeSignature(tune.getTimeSignature()), measure)
+            d = m._preprolated_duration
+            if d == abjad.TimeSignature(tune.getTimeSignature()).duration:
+                staff.append(m)
+        #staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
 ############################ EDITING SHEET MUSIC ###################################################

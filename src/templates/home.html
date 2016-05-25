@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="/static/js/recorder.js"></script>
+	<script src="/static/js/main.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/css/skeleton.css">
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
     <meta charset="UTF-8">
@@ -29,15 +31,24 @@
 </div>
 <br>
 <div class="left-panel">
-    <form action="/" method="POST">
         <div class="row">
             <input class="button" type="submit" value="Save JSON">
         </div>
         <div class="row">
-            <input class="button" type="submit" value="Load JSON">
+            <button id="load">LOAD JSON</button>
+                <div class="modal" id="jsonModal">
+                    <div class="modal-content">
+                        <span class="close" id="closeJSON">x</span>
+                        <form action="/" method="POST" name="load" id="load" enctype=multipart/form-data>
+                            <input type="file" name="jsonInput" value="Load JSON" accept=".json"/>
+                            <br/>
+                            <input type="submit" value="LOAD">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
-        <input type="file" accept="audio/*" capture="microphone">
-    </form>
+
 </div>
 <div class="container">
     <div class="row">
@@ -78,7 +89,7 @@
                 <button id="edit">Edit</button>
                 <div class="modal" id="editModal">
                     <div class="modal-content">
-                        <span class="close">x</span>
+                        <span class="close" id="close-x-n">x</span>
                         <h4 id="edit-title"></h4>
                         {% for m in range(measures|length) %}
                             <div class="noteEditor" id={{ "ne-" + (m + 1)|string }} style="display: none">
@@ -245,18 +256,29 @@
                     </div>
                 </div>
             </div>
-            <div class="button-box">
-                <button id="upload">Upload a MIDI File &#9834;</button>
+
+             <div class="button-box">
+                <button id="upload">Upload a File &#9834;</button>
                 <div class="modal" id="uploadModal">
                     <div class="modal-content">
                         <span class="close" id="close-x-u">x</span>
-                        <form action="/" method="POST" name="upload" enctype=multipart/form-data>
-                            <input type="file" name="fileInput" value="Upload Midi" accept=".mid,.midi"/>
+                        <form action="/" method="POST" name="upload" id="uploadForm" enctype=multipart/form-data>
+                            <input type="file" name="fileInput" value="Upload File" id="chooseFile" accept=".mid,.midi,.mp3,.wav"/>
                             <br/>
                             <input type="submit" value="CONVERT">
                         </form>
                     </div>
                 </div>
+
+                <button id="record" onclick="toggleRecording(this);">Record Audio &#9834;</button>
+                <div class="modal" id="recordModal">
+                    <div class="modal-content">
+                        <span id="close-x-u">x</span>
+                    </div>
+                </div>
+
+                <a id="save" href="#" class="button">Save Recording &#9834;</a> -->
+
             </div>
             <script>
                function chooseFile() {

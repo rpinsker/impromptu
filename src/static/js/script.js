@@ -13,7 +13,7 @@ $( document ).ready(function() {
 
     var modal2 = document.getElementById('editModal');
     var btn2 = document.getElementById('edit');
-    var span2 = document.getElementsByClassName("close")[0];
+    var span2 = document.getElementById("close-x-n");
 
     btn2.onclick = function () {
         var m = document.getElementById('measure-select').value;
@@ -24,16 +24,19 @@ $( document ).ready(function() {
     }
     span2.onclick = function () {
         modal2.style.display = "none";
-        var m = document.getElementById('measure-select').value;
-        var measureID = "ne-" + m;
-        document.getElementById(measureID).style.display = "none";
-        var infoboxID = "note-info-box-" + m;
-        var addboxID = "note-add-box-" + m;
-        var deleteboxID = "note-delete-box-" + m;
-        document.getElementById(infoboxID).style.display = "none";
-        document.getElementById(addboxID).style.display = "none";
-        document.getElementById(deleteboxID).style.display = "none";
     }
+
+    var modal3 = document.getElementById('jsonModal');
+    var btn3 = document.getElementById('load');
+    var span3 = document.getElementById("closeJSON");
+
+    btn3.onclick = function () {
+        modal3.style.display = "block";
+    }
+    span3.onclick = function () {
+        modal3.style.display = "none";
+    }
+
     window.onclick = function (event) {
         if (event.target == modal) {
             modal.style.display = "none";
@@ -50,6 +53,10 @@ $( document ).ready(function() {
             document.getElementById(infoboxID).style.display = "none";
             document.getElementById(addboxID).style.display = "none";
             document.getElementById(deleteboxID).style.display = "none";
+        }
+
+        if (event.target == modal3) {
+            modal3.style.display = "none";
         }
     }
 

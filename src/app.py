@@ -4,7 +4,7 @@ from flask import render_template, Flask, request, redirect, url_for
 from flask import send_from_directory
 from flask import Flask
 from flask import render_template
-import TuneIter2 as Tune
+import Tune #TuneIter2 as Tune
 import glob
 
 import os, subprocess
@@ -12,10 +12,11 @@ import time
 app = Flask(__name__)
 
 UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = set(['mid', 'midi'])
+ALLOWED_EXTENSIONS = set(['mid', 'midi', 'mp3', 'wav','json'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 tuneObj = None
+measuresObj = None
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -36,7 +37,7 @@ def save_measure_as_png(expr, i, return_timing=False, **kwargs):
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.png"))
         subprocess.Popen(["rm"] + glob.glob("static/currentTune/*.ly"))
     # SAVE AS A PNG
-    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i+1) + '.png',**kwargs)
+    result = abjad.topleveltools.persist(expr).as_png('static/currentTune/'+ str(i) + '.png',**kwargs)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -90,10 +91,37 @@ def tune():
                     listOfPNGs.append(name)
                 return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs)
 
+        if request.files.has_key('jsonInput'):
+            file = request.files['jsonInput']
+            if file and allowed_file(file.filename):
+                filename = os.path.basename(file.filename)  # secure_filename(file.filename)
+                file.save(UPLOAD_FOLDER + "/" + filename)
+                # call backend to get Tune object
+                tune = Tune.Tune.TuneWrapper(UPLOAD_FOLDER + "/" + filename)
+                # save it globally to persist when page is reloaded
+                tuneObj = tune
+                # convert our tune object to notes for abjad and then to a staff
+                staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
+                # make lilypond file, setting title and contributors, and then make the PDF
+                lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
+                lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
+                lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
+                filenamePDF = updatePDFWithNewLY(lilypond_file)
+                return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
+
     # page was loaded normally (not from a request to update name, contributor, or file upload)
+
     # so display the tune object created at the beginning of the this method
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
     return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
+
+
+def measureIndexToPNGFilepath(i):
+    if i < len(measuresObj) and i >= 0:
+        m = measuresObj[i]
+        return save_measure_as_png(m,i)
+    else:
+        "bad index!"
 
 
 # convert a Tune object to an array of notes usable by abjad
@@ -110,6 +138,9 @@ def tuneToNotes(tune):
         for event in measure:# changed tuneiter2
             aChord = None
             pitches = event.getPitch()
+            if pitches == None:
+                pitches = []
+            pitches = [p for p in pitches if p is not None]
             for pitch in pitches:
                 letter = pitch.letter
                 accidental = ""
@@ -120,7 +151,8 @@ def tuneToNotes(tune):
                 octave = str(pitch.octave)
                 if letter:
                     if not letter == "r":
-                       aChord = abjad.Chord([],abjad.Duration(Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1]))
+                       if not aChord:
+                           aChord = abjad.Chord([],abjad.Duration(Tune.Duration.QUARTER[0],Tune.Duration.QUARTER[1]))
                        pitch = abjad.pitchtools.NamedPitch(letter.upper()+accidental+octave)
                        if (event.duration):
                            duration = abjad.Duration(event.duration[0],event.duration[1])
@@ -153,7 +185,6 @@ def tunetoMeasures(tune):
     currentTimeLeft = measureTime
     currentMeasure = []
     for note in tune.events:
-        #print note.duration
         if currentTimeLeft == 0:
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
@@ -163,8 +194,6 @@ def tunetoMeasures(tune):
         else:
             duration = 0.25
             note.duration = Tune.Duration.QUARTER
-        #print (currentTimeLeft - duration)
-        #print (currentTimeLeft - duration >= 0)
         if (currentTimeLeft - duration >= 0):
             currentMeasure.append(note)
             currentTimeLeft -= duration
@@ -173,6 +202,14 @@ def tunetoMeasures(tune):
             splitNote1 = note
             splitNote1.setDuration((1,float(1/currentTimeLeft)))
             currentMeasure.append(splitNote1)
+
+            # change the note's duration!
+            possibleDurations = [1,.5,.25,0.125,0.0625]
+            for d in possibleDurations:
+                if (currentTimeLeft - d) >= 0:
+                    note.setDuration(1,float(1/currentTimeLeft))
+                    currentMeasure.append(note)
+            currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
             currentMeasure = []
@@ -188,15 +225,23 @@ def tunetoMeasures(tune):
 
 
     if len(currentMeasure) > 0:
-        if currentTimeLeft != 0: # insert a rest to fill the measure otherwise abjad throws an exception
-            restOfMeasure = measureTime - currentTimeLeft
-            rest = Tune.Rest()
-            rest.setDuration((1,int(1/restOfMeasure)))
-            currentMeasure.append(rest)
-            measures.append(currentMeasure)
+        if currentTimeLeft > 0: # insert a rest to fill the measure otherwise abjad throws an exception
+            currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
+            #restOfMeasure = measureTime - currentTimeLeft
+            #rest = Tune.Rest()
+            #rest.setDuration((1,int(1/restOfMeasure)))
+            #currentMeasure.append(rest)
+        measures.append(currentMeasure)
     return measures
 
 
+def padMeasureWithRests(currentTimeLeft,currentMeasure):
+    while currentTimeLeft > 0:
+        rest = Tune.Rest()
+        rest.setDuration(Tune.Duration.SIXTEENTH)
+        currentMeasure.append(rest)
+        currentTimeLeft -= 0.0625
+    return currentMeasure
 
 # FOR PARSING CHORDS
 # ps = []
@@ -237,24 +282,27 @@ def makeLilypondFile(tune):
 def makeStaffFromTune(tune):
     # TODO milestone 4b Rachel
 
+    global measuresObj
+
     time_signature = abjad.TimeSignature(tune.getTimeSignature())
     if time_signature is None:
         time_signature = abjad.TimeSignature(4,4)
 
     # now coming as a list of lists so notes separated by measure
     notes = tuneToNotes(tune)
+
+    savedMeasures = []
     staff = abjad.Staff()
-    counter = 0
     for measure in notes:
         #print aEvent.written_duration
         m = abjad.Measure(time_signature, measure)
+        m = abjad.scoretools.append_spacer_skip_to_underfull_measure(m)
         d = m._preprolated_duration
         if d == time_signature.duration:
             staff.append(m)
-            save_measure_as_png(m,counter)
-            counter += 1
+            savedMeasures.append(m)
         #staff.append(abjad.Measure(abjad.Measure(time_signature,measure)))
-
+    measuresObj = savedMeasures
 
     #c = abjad.Chord("<c'>8")
     #measure = abjad.Measure(abjad.TimeSignature((1,8)),[c])
