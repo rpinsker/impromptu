@@ -88,15 +88,16 @@
                 </select>
                 <button id="edit">Edit</button>
                 <div class="modal" id="editModal">
-                    <div class="modal-content">
+                    <div class="modal-content-edit">
                         <span class="close" id="close-x-n">x</span>
                         <h4 id="edit-title"></h4>
                         <div class="measureImg" id="measureImg">
                         </div>
                         {% for m in range(measures|length) %}
                             <div class="noteEditor" id={{ "ne-" + (m + 1)|string }} style="display: none">
-                                <h5>Choose a Note</h5>
-                                <select class="note-select" id={{ "ns-" + (m + 1)|string }}>
+                                <h5 style="display: inline">Choose a Note</h5>
+                                &nbsp;
+                                <select class="note-select" style="display: inline" id={{ "ns-" + (m + 1)|string }}>
                                 {% for n in range(measures[m]|length) %}
                                     <option value={{ n + 1 }}>{{ n + 1 }}</option>
                                 {% endfor %}
@@ -106,15 +107,18 @@
                         <button id="note-edit">Edit</button>
                         <button id="note-add">Add</button>
                         <button id="note-delete">Delete</button>
+                        <br>
+                        <br>
                         {% for m in range(measures|length) %}
                             <div id={{ "note-info-box-" + (m + 1)|string }}>
                                 {% for n in range(measures[m]|length) %}
                                     <div class="note-info"  style="display: none" id={{ "m-" + (m + 1)|string + "ni-" + (n + 1)|string }}>
-                                        <h5>Note {{ (n + 1) }}</h5>
+                                        <h5>Editing Note {{ (n + 1) }}</h5>
 
                                         {% for p in measures[m][n].getPitch() %}
                                             <!-- PITCH & ACCIDENTAL -->
-                                            <p style="display: inline-block">Pitch: </p>
+                                            <div style="display: block"></div>
+                                            <p style="display: inline">Pitch: </p>
                                              <select class="edit-select-pitch">
                                                 {% for i in ["Rest","A","B","C","D","E","F","G"] %}
                                                     {% if i == p.letter|upper %}
@@ -124,7 +128,7 @@
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>
-                                            <select class="edit-select-acc" style="display: inline-block">
+                                            <select class="edit-select-acc" style="display: inline">
                                                 {% if 1 == p.accidental %}
                                                     <option value="sharp" selected>&#9839;</option>
                                                 {% else %}
@@ -143,7 +147,7 @@
                                             </select>
                                             &nbsp;
                                             <!-- OCTAVE -->
-                                            <p style="display: inline-block">Octave: </p>
+                                            <p style="display: inline">Octave: </p>
                                             <select class="edit-select-octave">
                                                 {% for i in range(11) %}
                                                     {% if i == p.octave %}
@@ -156,7 +160,7 @@
                                         {% endfor %}
                                         &nbsp;
                                         <!-- DURATION -->
-                                        <p style="display: inline-block">Duration: </p>
+                                        <p style="display: inline">Duration: </p>
                                         <select class="edit-select-duration">
                                             {% for i in [1,2,4,8,16] %}
                                                 {% if i == measures[m][n].duration[1] %}
@@ -166,13 +170,14 @@
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
+                                        <br />
                                     </div>
                                 {% endfor %}
                             </div>
                             <div id={{ "note-add-box-" + (m + 1)|string }}>
                                 {% for n in range(measures[m]|length) %}
                                     <div class="note-add" id={{ "m-" + (m + 1)|string + "na-" + (n + 1)|string }} style="display: none">
-                                        <h6>Inserting after Note {{ (n + 1) }}:</h6>
+                                        <h5>Inserting before Note {{ (n + 1) }}</h5>
 
                                          <!-- PITCH & ACCIDENTAL -->
                                         <p style="display: inline-block">Pitch: </p>
@@ -232,7 +237,7 @@
                             <div id={{ "note-delete-box-" + (m + 1)|string }}>
                                 {% for n in range(measures[m]|length) %}
                                     <div class="note-delete" id={{ "m-" + (m + 1)|string + "nd-" + (n + 1)|string }} style="display: none">
-                                        <h6>Note {{ (n + 1) }}:</h6>
+                                        <h5>Deleting Note {{ (n + 1) }}</h5>
 
                                          <!-- PITCH & ACCIDENTAL -->
                                         <p style="display: inline">Pitch: {{ measures[m][n].getPitch()[0].letter|upper }}</p>
@@ -254,6 +259,12 @@
                                 {% endfor %}
                             </div>
                         {% endfor %}
+                        <hr>
+                        <div class="modal-button-box">
+                            <input class="modal-button" id="note-apply" type="button" value="Apply" \>
+                            <input class="modal-button" id="note-cancel" type="submit" value="Cancel" \>
+                        </div>
+                        <div class="clear"></div>
                     </div>
                 </div>
             </div>
