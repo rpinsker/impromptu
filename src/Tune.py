@@ -509,8 +509,12 @@ class Tune(object):
             oldtuple = raw.pop(0)
             for tuple in ofArray:
                 if len(tuple) ==1:
-                    sdur = float(tuple[0]) - float(oldtuple[2])
-                    events = events + [Rest(onset=oldtuple[2], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                    if len(oldtuple) ==1:
+                        sdur = float(tuple[0]) - float(oldtuple[0])
+                        events = events + [Rest(onset=oldtuple[0], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                    else:
+                        sdur = float(tuple[0]) - float(oldtuple[2])
+                        events = events + [Rest(onset=oldtuple[2], s_duration=sdur, duration = self.secondsToDuration(sdur))]
                 else:
                     sdur = float(tuple[2]) - float(tuple[1])
                     p = Pitch()
