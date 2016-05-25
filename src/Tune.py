@@ -309,6 +309,7 @@ class Tune(object):
         return pitch
 
     def durationJSONtoTune(self, dur_str):
+        dur = None
         if dur_str == 'SIXTEENTH':
             dur = Duration.SIXTEENTH
         elif dur_str == 'EIGHTH':
@@ -338,14 +339,15 @@ class Tune(object):
             new_event = Chord(duration=duration, onset=onset)
             pitches = []
             for p in event['pitches']:
-                pch = pitchJSONtoTune(p)
+                pch = self.pitchJSONtoTune(p)
                 pitches.append(p)
             new_event.setPitch(pitches)
         return new_event
             
 
     def JSONtoTune(self, json_file):
-        json_data = json.load(json_file)
+        f = open(json_file)
+        json_data = json.load(f)
         json_tune = json_data['tune']
 
         tune_title = json_tune['title']
