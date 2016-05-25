@@ -32,10 +32,10 @@
 <br>
 <div class="left-panel">
          <div class="row">
-            <form action="/savejson" target="blank" method="GET" name="saveJSON" id="saveJSON">
-                <input class="button" type="submit" value="Save JSON">
-            </form>
+                <a id="saveJSON" class="button" href="static/uploads/currentTune.json" download>Save JSON</a>
         </div>
+
+
         <div class="row">
             <button id="load">LOAD JSON</button>
                 <div class="modal" id="jsonModal">
@@ -291,7 +291,7 @@
                     </div>
                 </div>
 
-                <a id="save" href="#" class="button">Save Recording &#9834;</a> -->
+                <a id="save" href="#" class="button">Save Recording &#9834;</a>
 
             </div>
             <script>

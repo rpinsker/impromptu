@@ -49,6 +49,7 @@ def tune():
     # make a lilypond file, either from tune object previously created or
     # a filler one when page is first loaded
     lilypond_file = makeLilypondFile(tuneObj)
+    tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
     if request.method == 'POST':
         # change the title. update lilypond file and backend storage of tune object accordingly
         if request.form.has_key('titleInput'):
@@ -59,6 +60,7 @@ def tune():
                 if tuneObj:
                     tuneObj.title = title
             filenamePDF = updatePDFWithNewLY(lilypond_file)
+            tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
             return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         # change the contributors. update lilypond file and backend storage of tune object accordingly
         if request.form.has_key('contributorsInput'):
@@ -68,6 +70,7 @@ def tune():
                 if tuneObj:
                     tuneObj.contributors = composer
             filenamePDF = updatePDFWithNewLY(lilypond_file)
+            tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
             return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
         # use uploaded file to render a tune object and then render a PDF
         if request.files.has_key('fileInput'):
@@ -92,6 +95,7 @@ def tune():
                 for m in range(len(listOfMeasures)):
                     name = "static/currentTune/" + str(m+1) + ".png"
                     listOfPNGs.append(name)
+                tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
                 return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs, getMeasurImge = measureIndexToPNGFilepath)
 
         if request.files.has_key('jsonInput'):
@@ -110,6 +114,7 @@ def tune():
                 lilypond_file.header_block.title = abjad.markuptools.Markup(tune.title)
                 lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
+                tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
                 return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
 
         if request.form.has_key('editDurationInputMeasureIndex') and request.form.has_key('editDurationInputIndex') and request.form.has_key('editDurationInputDuration0') and request.form.has_key('editDurationInputDuration1'):
@@ -126,6 +131,7 @@ def tune():
             lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
             lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
             filenamePDF = updatePDFWithNewLY(lilypond_file)
+            tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
             return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
 
 
@@ -135,15 +141,15 @@ def tune():
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
     return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
 
-
-
-@app.route('/savejson', methods=["GET"])
-def savejson():
-    global tuneObj
-    filename = tuneObj.TunetoJSON()
-    print filename
-    return send_from_directory(directory="", filename=filename)
-
+#
+#
+# @app.route('/savejson', methods=["GET"])
+# def savejson():
+#     global tuneObj
+#     jsonFilename = tuneObj.TunetoJSON()
+#     print "here:", filename
+#     return send_from_directory(directory="", filename=filename)
+#
 
 
 @app.route('/measure', methods=["GET","POST"])

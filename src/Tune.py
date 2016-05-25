@@ -183,11 +183,8 @@ class Tune(object):
             accidental = str(pitch.accidental)
         myfile.write('\t\t\t\t"pitch":{\n\t\t\t\t\t"letter":"%s",\n\t\t\t\t\t"octave":"%s",\n\t\t\t\t\t"accidental":"%s"\n\t\t\t\t}\n' %(str(letter), octave, accidental))
 
-    def TunetoJSON(self):
-        if self.title != None:
-            filename = 'tune-' + self.title + '.json'
-        else:
-            filename = 'tune-generic.json'
+    def TunetoJSON(self, filename='tune-generic.json'):
+
         f = open(filename, 'w')
         
         f.write('{\n')
@@ -267,7 +264,7 @@ class Tune(object):
                     f.write('\t\t\t\t"frequency":"%lf",\n' %(event.frequency))
                 else:
                     f.write('\t\t\t\t"frequency":"",\n')
-                print "here: ", event.onset
+
                 f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
 
                 self.writePitchtoFile(event.pitch, f)
