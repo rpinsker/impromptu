@@ -39,6 +39,8 @@ $( document ).ready(function() {
         document.getElementById(deleteboxID).style.display = "none";
     }
     span2.onclick = function () {
+        var measureID = "ne-" + m;
+        document.getElementById(measureID).style.display = "none";
         modal2.style.display = "none";
     }
 
@@ -138,6 +140,25 @@ $( document ).ready(function() {
     }
 
     var cancel = document.getElementById('note-cancel');
+    var apply = document.getElementById('note-apply');
+
+    apply.onclick = function() {
+        var m = document.getElementById('measure-select').value;
+        measureID = "ns-" + m;
+        var n = document.getElementById(measureID).value;
+        infoID = "#m-" + m + "ni-" + n;
+        var d = $(infoID).find(".edit-select-duration").val();
+        var l = $(infoID).find(".edit-select-pitch").val();
+        var a = $(infoID).find(".edit-select-acc").val();
+        var o = $(infoID).find(".edit-select-octave").val();
+        $('input[name=measure_number]').val(m);
+        $('input[name=note_number]').val(n);
+        $('input[name=duration0]').val('1');
+        $('input[name=duration1]').val(d);
+        $('input[name=pitch]').val(l);
+        $('input[name=acc]').val(a);
+        $('input[name=octave]').val(o);
+    }
 
     cancel.onclick = function () {
         modal2.style.display = "none";

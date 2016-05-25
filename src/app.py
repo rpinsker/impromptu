@@ -96,7 +96,8 @@ def tune():
                     name = "static/currentTune/" + str(m+1) + ".png"
                     listOfPNGs.append(name)
                 tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
-                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs, getMeasurImge = measureIndexToPNGFilepath)
+                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf',measures=listOfMeasures)
+
 
         if request.files.has_key('jsonInput'):
             file = request.files['jsonInput']
@@ -117,12 +118,26 @@ def tune():
                 tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
                 return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
 
-        if request.form.has_key('editDurationInputMeasureIndex') and request.form.has_key('editDurationInputIndex') and request.form.has_key('editDurationInputDuration0') and request.form.has_key('editDurationInputDuration1'):
-            measureIndex = int(request.form['editDurationInputMeasureIndex'])
-            noteIndex = int(request.form['editDurationInputIndex'])
-            dur0 = int(request.form['editDurationInputDuration0'])
-            dur1 = int(request.form['editDurationInputDuration1'])
-            editDurationUpdateTuneObj(measureIndex,noteIndex,dur0,dur1)
+        if request.form.has_key('note-submit') and request.form.has_key('measure_number') and request.form.has_key('note_number'):
+            measureIndex = request.form['measure_number']
+            noteIndex = request.form['note_number']
+            dur0 = request.form['duration0']
+            dur1 = request.form['duration1']
+            letter = request.form['pitch']
+            letter = str(letter)
+            if letter == "Rest":
+                letter = "r"
+            accidental = request.form['acc']
+            accidental = str(accidental)
+            if accidental == "&#9839;":
+                accidental = 1
+            elif accidental == "&#9837;":
+                accidental = 2
+            else:
+                accidental = 0
+            octave = int(request.form['octave'])
+            editDurationUpdateTuneObj(int(measureIndex) - 1,int(noteIndex) - 1,int(dur0),int(dur1))
+            editPitchUpdateTuneObj(int(measureIndex) - 1, int(noteIndex) - 1, letter.lower(), accidental, int(octave))
             tune = tuneObj
             # convert our tune object to notes for abjad and then to a staff
             staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
@@ -131,34 +146,15 @@ def tune():
             lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
             lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
             filenamePDF = updatePDFWithNewLY(lilypond_file)
-            tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
-            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
-
-        if request.form.has_key('editPitchInputMeasureIndex') and request.form.has_key(
-                'editPitchInputIndex') and request.form.has_key(
-                'editPitchInputLetter') and request.form.has_key('editPitchInputAccidental') and request.form.has_key('editPitchInputOctave'):
-            measureIndex = int(request.form['editPitchInputMeasureIndex'])
-            noteIndex = int(request.form['editPitchInputIndex'])
-            letter = str(request.form['editPitchInputLetter'])
-            accidental = int(request.form['editPitchInputAccidental'])
-            octave = int(request.form['editPitchInputOctave'])
-            editPitchUpdateTuneObj(measureIndex, noteIndex, letter, accidental, octave)
-            tune = tuneObj
-            # convert our tune object to notes for abjad and then to a staff
-            staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
-            # make lilypond file, setting title and contributors, and then make the PDF
-            lilypond_file = abjad.lilypondfiletools.make_basic_lilypond_file(staff)
-            lilypond_file.header_block.title = abjad.markuptools.Markup(tuneObj.title)
-            lilypond_file.header_block.composer = abjad.markuptools.Markup(tune.contributors)
-            filenamePDF = updatePDFWithNewLY(lilypond_file)
-            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
+            listOfMeasures = tunetoMeasures(tuneObj)
+            return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures)
 
 
     # page was loaded normally (not from a request to update name, contributor, or file upload)
-
+    listOfMeasures = tunetoMeasures(tuneObj)
     # so display the tune object created at the beginning of the this method
     filenamePDFTemp = updatePDFWithNewLY(lilypond_file)
-    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf')
+    return render_template('home.html',filename='static/currentTune/' + filenamePDFTemp + '.pdf', measures=listOfMeasures)
 
 #
 #
@@ -221,7 +217,6 @@ def editPitchUpdateTuneObj(measureIndex, noteIndex, letter, accidental, octave):
     newPitch.accidental = accidental
     newPitch.octave = octave
     e.setPitch(newPitch)
-    print e.pitch.letter
     m[noteIndex] = e
     impromptuMeasuresObj[measureIndex] = m
 
