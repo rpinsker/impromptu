@@ -481,6 +481,8 @@ class Tune(object):
         if self.getEventsList() != None:
             for event in self.getEventsList():
                 buf = buf + "%s\n" %(event.toString())
+        else:
+                buf = buf + "No events list\n"
         return buf
 
     def notesListEquals(self, Notelist1, Notelist2):
