@@ -300,9 +300,9 @@ class Tune(object):
 
         keysig = self.keySignature
         if keysig == None:
-            f.write('\t\t"keySignature": {}\n')
+            f.write('\t\t"keySignature":{}\n')
         else:
-            f.write('\t\t"keySignature": {\n')
+            f.write('\t\t"keySignature":{\n')
             if keysig.isMajor != None:
                 f.write('\t\t\t"isMajor":"%s",\n' %(keysig.isMajor))
             else:
@@ -311,7 +311,7 @@ class Tune(object):
             if keysig.pitch != None:
                 self.writePitchtoFile(keysig.pitch, f)
             else:
-                f.write('\t\t\t"pitch":{}\n')
+                f.write('\t\t\t\t"pitch":{}\n')
             f.write('\t\t}\n')
 
         f.write('\t}\n')
