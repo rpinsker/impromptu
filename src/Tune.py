@@ -239,9 +239,9 @@ class Tune(object):
                 n_pitches = len(pitches)
                 for n in range(0, n_pitches):
                     f.write('\t\t\t\t\t{\n')
-                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n]['letter']))
-                    f.write('\t\t\t\t\t"octave":"%d",\n' %(int(pitches[n]['octave'])))
-                    f.write('\t\t\t\t\t"accidental":"%d"\n' %(int(pitches[n]['accidental'])))
+                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n].letter))
+                    f.write('\t\t\t\t\t"octave":"%d",\n' %(int(pitches[n].octave)))
+                    f.write('\t\t\t\t\t"accidental":"%d"\n' %(int(pitches[n].accidental)))
                     f.write('\t\t\t\t\t}')
                     if n != n_pitches-1:
                         f.write(',\n')
@@ -324,6 +324,18 @@ class Tune(object):
         return filename
 
     def pitchJSONtoTune(self, pitch):
+#        if pitch['accidental'] != '':
+#            ksig_pitch_accidental = int(pitch['accidental'])
+#        else:
+#            ksig_pitch_accidental = ''
+#        ksig_pitch_letter = str(pitch['letter'])
+#        if pitch['octave'] != '':
+#            ksig_pitch_octave = int(pitch['octave'])
+#        else:
+#            ksig_pitch_octave = ''
+#        pitch = Pitch(accidental=ksig_pitch_accidental, letter=ksig_pitch_letter, octave=ksig_pitch_octave)
+#        return pitch
+
         if pitch['accidental'] != '':
             ksig_pitch_accidental = int(pitch['accidental'])
         else:
@@ -335,6 +347,7 @@ class Tune(object):
             ksig_pitch_octave = ''
         pitch = Pitch(accidental=ksig_pitch_accidental, letter=ksig_pitch_letter, octave=ksig_pitch_octave)
         return pitch
+
 
     def durationJSONtoTune(self, dur_str):
         dur = None
@@ -575,11 +588,11 @@ if __name__ == "__main__":
 #    print INPUT_FILE
     tune = Tune.TuneWrapper(INPUT_FILE)
     print tune.toString()
-    # tune.TunetoJSON()
-    # jsonfile = 'tune-generic.json'
-    # tuneprime = Tune()
-    # tuneprime.JSONtoTune(jsonfile)
-    # print tuneprime.toString()
+    tune.TunetoJSON()
+    jsonfile = 'tune-generic.json'
+    tuneprime = Tune()
+    tuneprime.JSONtoTune(jsonfile)
+    print tuneprime.toString()
 
 
 
