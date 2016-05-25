@@ -23,22 +23,18 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertFalse(pitch.pitchEqual(differentOctave))
 		self.assertFalse(pitch.pitchEqual(differentAccidental))
 
-		# print "PASSED"
 	
 	def testPitchGetterSetter(self):
 		# print "RUNNING: testPitchGetterSetter ..."
 		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
 		note = Note(frequency=493.88, onset=0.0)
 		note.setPitch(pitch)
-		self.assertTrue(pitch.pitchEqual(note.getPitch()))
-		# print "PASSED"
+		self.assertTrue(pitch.pitchEqual(note.getPitch()[0]))
 
 	def testIsRest(self):
 		# print "RUNNING: testIsRest ..."
 		#Testing rest
-		restPitch = Pitch(letter='r')
-		rest = Note()
-		rest.setPitch(restPitch)
+		rest = Rest()
 		self.assertTrue(rest.isRest())
 		
 		#testing note
@@ -47,7 +43,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		note.setPitch(notePitch)
 		self.assertFalse(note.isRest())
 
-		# print "PASSED"
 	
 	def testNoteEqual(self):
 		# print "RUNNING: testNoteEqual ..."
@@ -65,7 +60,8 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertFalse(note.noteEqual(diffPitchNote))
 
 		diffFreqNote = Note(frequency=350.0, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
-		self.assertFalse(note.noteEqual(diffFreqNote))
+		# noteEqual does not compare against different frequencies
+		self.assertTrue(note.noteEqual(diffFreqNote))
 
 		diffOnsetNote = Note(frequency=493.88, onset=40.0, duration=Duration.QUARTER, pitch=samePitch)
 		sameNote.setPitch(samePitch)
@@ -75,16 +71,10 @@ class TestImpromptuBackend(unittest.TestCase):
 		sameNote.setPitch(samePitch)
 		self.assertFalse(note.noteEqual(diffDurationNote))
 
-		rest = Pitch (letter='r')
-		restNote = Note(frequency=0, onset=0.0)
-		note.setPitch(rest)
+		restNote = Rest(onset=0, pitch = 'r')
+		samerestNote = Rest(onset=0.0)
+		self.assertTrue(restNote.eventEqual(samerestNote))
 
-		samerest = Pitch (letter='r')
-		samerestNote = Note(frequency=0, onset=0.0)
-		note.setPitch(samerest)
-		self.assertTrue(samerestNote.noteEqual(samerestNote))
-
-		# print "PASSED"
 
 	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
 	# This instead will be needed for iteration 2 with audio files.
@@ -106,7 +96,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		for i in xrange(0, 3):
 			self.assertEqual(computeOnset(TuneMIDI[i]), i)
 
-		# print "PASSED"
 
 	def testcreateTune(self):
 		# print "RUNNING: testcreateTune ..."
@@ -143,7 +132,6 @@ class TestImpromptuBackend(unittest.TestCase):
 			self.assertEqual(tune[i].getOnset(), i)
 			self.assertTrue(samerest.noteEqual(samerestNote))
 
-		# print "PASSED"
 		
 	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
 	# This instead will be needed for iteration 2 with audio files.
@@ -165,9 +153,8 @@ class TestImpromptuBackend(unittest.TestCase):
 		# check onsets are calculated correctly from computeOnset
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
 		for i in xrange(0, 15):
-			self.assertEqual(round(TuneMIDI.getNotesList()[i].onset, 5), round(i*0.50505, 5))
+			self.assertEqual(round(TuneMIDI.getEventsList()[i].onset, 5), round(i*0.50505, 5))
 
-		# print "PASSED"
 		
 	def testcreateTune(self):
 		# print "RUNNING: testcreateTune ..."
@@ -199,7 +186,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		TuneMIDI.setContributors(["this is toooooooooooooooooooooooooooooooooooooooooooooooooo long contributor name"])
 		self.assertEqual(TuneMIDI.getContributors(), [])
 
-		# print "PASSED"
 		
 		# frequencies = [261.63, 293.66, 329.63]
 		# # check frequencies and onsets calculated correctly from generateTune
@@ -209,7 +195,7 @@ class TestImpromptuBackend(unittest.TestCase):
 
     #These functions weren't written and are not necessary for execution 
     # because we didn't need the frequency attribute
-#	def testnotesListEquals(self):
+#	def testeventsListEquals(self):
 # 		note1 = Note(frequency = 261.63, onset = 0.0)
 # 		note2 = Note( frequency = 293.66, onset = 1.0)
 # 		note3 = Note(frequency = 329.63, onset = 2.0)
@@ -227,14 +213,14 @@ class TestImpromptuBackend(unittest.TestCase):
 # 		midifile = "../tests/MIDITestFiles/c-major-scale-treble.mid"
 # 		tune = Tune(midi = midifile, timeSignature = (4, 4), clef = Clef.TREBLE, titel = "firstTune", contributor = ["me", "you"])
 		
-# 		self.assertTrue(tune.notesListEquals(notes,sameNotes))
+# 		self.assertTrue(tune.eventsListEquals(notes,sameNotes))
 		
 # 		diffNote3 = Note( frequency = 300.0, onset =  2.0)
 # 		diff3rdNote = [samenote1, samenote2, diffNote3, samenote4]
-# 		self.assertFalse(tune.notesListEquals(notes,diff3rdNote))
+# 		self.assertFalse(tune.eventsListEquals(notes,diff3rdNote))
 		
 # 		diffNoteOrder = [samenote1, samenote3, samenote2, samenote4]
-# 		self.assertFalse(tune.notesListEquals(notes,diffNoteOrder))
+# 		self.assertFalse(tune.eventsListEquals(notes,diffNoteOrder))
 #		note1 = Note( 261.63, 0.0)
 #		note2 = Note( 293.66, 1.0)
 #		note3 = Note(329.63, 2.0)
@@ -252,14 +238,14 @@ class TestImpromptuBackend(unittest.TestCase):
 #		midifile = midi.read_midifile("miditest.midi")
 #		tune = Tune(midifile, (4, 4), treble, "firstTune", ["me", "you"])
 #		
-#		self.assertTrue(tune.notesListEquals(notes,sameNotes))
+#		self.assertTrue(tune.eventsListEquals(notes,sameNotes))
 #		
 #		diffNote3 = Note( 300.0, 2.0)
 #		diff3rdNote = [samenote1, samenote2, diffNote3, samenote4]
-#		self.assertFalse(tune.notesListEquals(notes,diff3rdNote))
+#		self.assertFalse(tune.eventsListEquals(notes,diff3rdNote))
 #		
 #		diffNoteOrder = [samenote1, samenote3, samenote2, samenote4]
-#		self.assertFalse(tune.notesListEquals(notes,diffNoteOrder))
+#		self.assertFalse(tune.eventsListEquals(notes,diffNoteOrder))
 #
 #
 #	def testNotesListGetterSetter(self):
@@ -280,7 +266,7 @@ class TestImpromptuBackend(unittest.TestCase):
 #		tune = Tune()
 #		
 #		tune.setNotesList(notes)
-#		self.assertTrue(tune.notesListEquals(tune.getNotesList(), sameNotes))
+#		self.assertTrue(tune.eventsListEquals(tune.getNotesList(), sameNotes))
 
 	# This test is unnecessary because we do not need to covert frequencies from MIDI files to compute note pitches.
 	# This instead will be needed for iteration 2 with audio files.
@@ -298,7 +284,7 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	q_C5 = Note(523.25, 7)
 	# 	CMajor1 = [q_C4, q_D4, q_E4, q_F4, q_G4, q_A4, q_B4, q_C5]
 	# 	CMajor1_notes = tune.computeNotes(CMajor1)
-	# 	self.assertTrue(tune.notesListEquals(CMajor1, CMajor1_notes))
+	# 	self.assertTrue(tune.eventsListEquals(CMajor1, CMajor1_notes))
 		
 	# 	#testing for C major scale of different note lengths
 	# 	w_C4 = Note(261.63, 0)
@@ -311,8 +297,8 @@ class TestImpromptuBackend(unittest.TestCase):
 	# 	h_C5 = Note(523.25, 9.25)
 	# 	CMajor2 = [w_C4, h_D4, q_E4, e_F4, s_G4, e_A4, q_B4, h_C5]
 	# 	CMajor2_notes = tune.computeNotes(CMajor2)
-	# 	self.assertTrue(tune.notesListEquals(CMajor2, CMajor2_notes))
-	# 	self.assertFalse(tune.notesListEquals(CMajor2, CMajor1))
+	# 	self.assertTrue(tune.eventsListEquals(CMajor2, CMajor2_notes))
+	# 	self.assertFalse(tune.eventsListEquals(CMajor2, CMajor1))
 		
 	def testcalculateRests(self):
 		# print "RUNNING: testcalculateRests ..."
@@ -320,16 +306,16 @@ class TestImpromptuBackend(unittest.TestCase):
 		PitchC = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
 					
 		q1_C4 = Note(frequency=261.63, onset=0, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
-		q_restNote = Note.Rest(frequency=0, onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
+		q_restNote = Rest(frequency=0, onset=1.0, s_duration=1.0, duration=Duration.QUARTER)
 		q2_C4 = Note(frequency=261.63, onset=2, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
 		
 		CRestC = [q1_C4, q_restNote, q2_C4]
 		rest = tune.calculateRests([q1_C4, q2_C4])
-		self.assertTrue(tune.notesListEquals(rest, CRestC))
-		self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
 
-		# print "PASSED"
-    #self.assertFalse(tune.notesListEquals(rest, [q1_C4, q2_C4]))
+		self.assertTrue(tune.eventsListEquals(rest, CRestC))
+		self.assertFalse(tune.eventsListEquals(rest, [q1_C4, q2_C4]))
+
+    #self.assertFalse(tune.eventsListEquals(rest, [q1_C4, q2_C4]))
 
 	# We put computeNoteOrder functionality into the calculateRests method so this 
 	# test is not relevant 		
@@ -346,7 +332,7 @@ class TestImpromptuBackend(unittest.TestCase):
 #		midifile = midi.read_midifile("miditest.midi")
 #		tune = Tune(midi = midifile, timeSignature = (4,4), clef = Clef.TREBLE, title = "firstTune", contributor = ["me", "you"])
 #		
-#		self.assertTrue(tune.notesListEquals(t1notesOrdered, t1expectedNotesOrdered))
+#		self.assertTrue(tune.eventsListEquals(t1notesOrdered, t1expectedNotesOrdered))
 #		
 #		#testing notes with equal length rests
 #		t21note1 = Note(frequency = 261.63,onset =  0.0)
@@ -362,7 +348,7 @@ class TestImpromptuBackend(unittest.TestCase):
 #		t2notesOrdered = computeNoteOrder(t2notes, t2rests)
 #		t2expectedNotesOrdered = [t2note1,t2note2,t2rest1, t2note3,t2note4, t2rest2, t2note5]
 #		
-#		self.assertTrue(tune.notesListEquals(t2notesOrdered, t2expectedNotesOrdered))
+#		self.assertTrue(tune.eventsListEquals(t2notesOrdered, t2expectedNotesOrdered))
 #		
 #		#testing notes with different length rests and notes
 #		t3note1 = Note(261.63, 0.0)
@@ -380,7 +366,7 @@ class TestImpromptuBackend(unittest.TestCase):
 #		t3notesOrdered = computeNoteOrder(t3notes, t3rests)
 #		t3expectedNotesOrdered = [t3note1,t3rest1, t3note2, t3rest2, t3note3, t3note4, t3rest3, t3note5]
 #		
-#		self.assertTrue(tune.notesListEquals(t3notesOrdered, t3expectedNotesOrdered))
+#		self.assertTrue(tune.eventsListEquals(t3notesOrdered, t3expectedNotesOrdered))
 
 	def testKeyEqual(self):
 		# print "RUNNING: testKeyEqual ..."
@@ -399,7 +385,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertFalse(key.keyEqual(diffAccidental))
 		self.assertFalse(key.keyEqual(diffIsMajor))
 
-		# print "PASSED"
 	
 	# we did not implement a tuneEquals method in the Tune class	
 	# def testtuneEquals(self):
@@ -472,10 +457,9 @@ class TestImpromptuBackend(unittest.TestCase):
 		
 		tune = Tune()
 		
-		tune.setNotesList(notes)
-		self.assertTrue(tune.notesListEquals(tune.getNotesList(), sameNotes))
+		tune.setEventsList(notes)
+		self.assertTrue(tune.eventsListEquals(tune.getEventsList(), sameNotes))
 
-		# print "PASSED"
 
 	def testTuneGetterSetter(self):
 		# print "RUNNING: testTuneGetterSetter ..."
@@ -488,7 +472,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		
 		self.assertTrue(tune.getKey().keyEqual(expectedKey))
 
-		# print "PASSED"
 
 
 if __name__ == '__main__':
