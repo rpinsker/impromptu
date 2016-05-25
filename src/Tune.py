@@ -106,7 +106,7 @@ class Tune(object):
                     self.events[i+1].addPitch(self.events[i]) #checks chords and notes
                     self.events.pop(i)
                 elif isinstance(self.events[i],Note) and isinstance(self.events[i+1],Note):
-                    self.events[i] = Chord(pitches = [self.events[i].getPitch(),self.events[i+1]].getPitch() ,duration= self.events[i].duration,onset=self.events[i].onset)
+                    self.events[i] = Chord(pitches = self.events[i].getPitch().extend(self.events[i+1].getPitch()) ,duration= self.events[i].duration,onset=self.events[i].onset)
                     self.events.pop(i+1)
                 elif isinstance(self.events[i],Rest) and isinstance(self.events[i+1],Note):
                     self.events[i] = self.events[i+1]
@@ -498,15 +498,20 @@ class Tune(object):
             ofArray=[]
             f= subprocess.check_output(["aubionotes", "-i", filename])
             raw = f.splitlines()
-            raw.pop(0)
             for line in raw:
                 ofArray = ofArray+[line.split()]
             events = []
+            oldtuple = raw.pop(0)
             for tuple in ofArray:
-                sdur = float(tuple[2]) - float(tuple[1])
-                p = Pitch()
-                p = p.MIDInotetoPitch(math.floor(float(tuple[0])))
-                events = events+[Note(pitch=p, onset=float(tuple[1]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                if len(tuple) ==1:
+                    sdur = float(tuple[0]) - float(oldtuple[2])
+                    events = events + [Rest(onset=oldtuple[2], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                else:
+                    sdur = float(tuple[2]) - float(tuple[1])
+                    p = Pitch()
+                    p = p.MIDInotetoPitch(math.floor(float(tuple[0])))
+                    events = events+[Note(pitch=p, onset=float(tuple[1]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                oldtuple=tuple
             self.setEventsList(events)
 
                                    
@@ -524,11 +529,11 @@ if __name__ == "__main__":
 #    tune = Tune.TuneWrapper(INPUT_FILE)
 #    print tune.toString()
 
-    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
+#    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
 #    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
-    tune = Tune.TuneWrapper(file1)
+#    tune = Tune.TuneWrapper(file1)
 #    runConvert('../tests/WAVTestFiles/Test1/')
     # tuneWav = Tune(wav = 'test1.wav')
-#    tuneWav = Tune(wav = '../tests/WAVTestFiles/eqt-chromo-sc.wav')
-#    print tuneWav.TunetoString()
-    print tune.toString()
+    tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00.wav')
+    print tuneWav.toString()
+#    print tune.toString()
