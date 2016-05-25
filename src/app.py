@@ -135,9 +135,15 @@ def tune():
                 accidental = 2
             else:
                 accidental = 0
-            octave = int(request.form['octave'])
-            editDurationUpdateTuneObj(int(measureIndex) - 1,int(noteIndex) - 1,int(dur0),int(dur1))
-            editPitchUpdateTuneObj(int(measureIndex) - 1, int(noteIndex) - 1, letter.lower(), accidental, int(octave))
+            octave = str(request.form['octave'])
+            type = str(request.form['submit-type'])
+            if type == "edit":
+                editDurationUpdateTuneObj(int(measureIndex) - 1,int(noteIndex) - 1,int(dur0),int(dur1))
+                editPitchUpdateTuneObj(int(measureIndex) - 1, int(noteIndex) - 1, letter.lower(), accidental, int(octave))
+            elif type == "add":
+                addNoteUpdateTuneObj(int(measureIndex) - 1, int(noteIndex) - 1, int(dur0), int(dur1), letter.lower(), accidental, int(octave))
+            else:
+                deleteNoteUpdateTuneObj(int(measureIndex) - 1,int(noteIndex) - 1)
             tune = tuneObj
             # convert our tune object to notes for abjad and then to a staff
             staff = makeStaffFromTune(tune)  # abjad.Staff(notes)
@@ -186,6 +192,7 @@ def measureIndexToPNGFilepath(i):
 # editing duration of a note
 def editDurationUpdateTuneObj(measureIndex,noteIndex,newDuration0,newDuration1):
     global tuneObj
+    global impromptuMeasuresObj
 
     makeStaffFromTune(tuneObj)
     # update the note in our measures
@@ -207,6 +214,7 @@ def editDurationUpdateTuneObj(measureIndex,noteIndex,newDuration0,newDuration1):
 
 def editPitchUpdateTuneObj(measureIndex, noteIndex, letter, accidental, octave):
     global tuneObj
+    global impromptuMeasuresObj
 
     makeStaffFromTune(tuneObj)
     # update the note in our measures
@@ -229,6 +237,69 @@ def editPitchUpdateTuneObj(measureIndex, noteIndex, letter, accidental, octave):
     # update the global tune object for display
     tuneObj.setEventsList(events)
 
+def addNoteUpdateTuneObj(measureIndex, noteIndex, newDuration0, newDuration1, letter, accidental, octave):
+    global tuneObj
+    global impromptuMeasuresObj
+
+    makeStaffFromTune(tuneObj)
+
+
+    newEvent = Tune.Note()
+
+    newEvent.duration = (int(newDuration0), int(newDuration1))
+    newPitch = Tune.Pitch()
+    newPitch.letter = letter
+    newPitch.accidental = accidental
+    newPitch.octave = octave
+    newEvent.setPitch(newPitch)
+    print newPitch.toString()
+    print newEvent.getPitch()[0].toString()
+    events = []
+    newIndex = 0
+    counter = 0
+    for measure in range(len(impromptuMeasuresObj)):
+        for event in range(len(impromptuMeasuresObj[measure])):
+            if measure == measureIndex and event == noteIndex:
+                newIndex = counter
+            events.append(impromptuMeasuresObj[measure][event])
+            counter += 1
+    updated_events = events[:newIndex] + [newEvent] + events[newIndex:]
+    if updated_events[newIndex + 1]:
+        print updated_events[newIndex + 1].onset
+        updated_events[newIndex].onset = updated_events[newIndex + 1].onset
+    for n in updated_events[newIndex+1:]:
+        if n.onset:
+            n.onset += (newEvent.duration[0] / newEvent.duration[1])
+        else:
+            n.onset = 0.0
+    # update the global tune object for display
+    tuneObj.setEventsList(updated_events)
+    # update the note in our measures
+    impromptuMeasuresObj = tunetoMeasures(tuneObj)
+
+def deleteNoteUpdateTuneObj(measureIndex, noteIndex):
+    global tuneObj
+    global impromptuMeasuresObj
+
+    counter = 0
+    newIndex = 0
+    events = []
+    for measure in range(len(impromptuMeasuresObj)):
+        for event in range(len(impromptuMeasuresObj[measure])):
+            if measure == measureIndex and event == noteIndex:
+                newIndex = counter
+            events.append(impromptuMeasuresObj[measure][event])
+            counter += 1
+
+    for n in events[newIndex + 1:]:
+        if n.onset:
+            n.onset -= (events[newIndex].duration[0] / events[newIndex].duration[1])
+        else:
+            n.onset = 0.0
+    events.remove(events[newIndex])
+    tuneObj.setEventsList(events)
+    # update the note in our measures
+    impromptuMeasuresObj = tunetoMeasures(tuneObj)
 
 # convert a Tune object to an array of notes usable by abjad
 def tuneToNotes(tune):
