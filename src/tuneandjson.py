@@ -7,9 +7,13 @@ import pprint
 from TuneSubclasses import *
 from Tune import *
 
-#tune = Tune.TuneWrapper('../tests/MIDITestFiles/c-major-scale-treble.mid')
-#print tune.toString()
-#tune.TunetoJSON()
+tune = Tune.TuneWrapper('../tests/MIDITestFiles/c-major-scale-treble.mid')
+print tune.toString()
+tune.TunetoJSON()
+tune_json = Tune()
+tune_json.JSONtoTune('../src/tune-generic.json')
+#tune_json.toString()
+tune_json.TunetoJSON()
 #pprint.pprint(tune.events)
 
 #tune2 = Tune.TuneWrapper('../tests/MIDITestFiles/d-flat-major-scale-on-treble-clef.mid')

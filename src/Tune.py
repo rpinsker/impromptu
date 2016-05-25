@@ -311,7 +311,10 @@ class Tune(object):
             else:
                 f.write('\t\t\t"isMajor":"",\n')
             #f.write('\t\t\t')
-            self.writePitchtoFile(keysig.pitch, f)
+            if keysig.pitch != None:
+                self.writePitchtoFile(keysig.pitch, f)
+            else:
+                f.write('\t\t\t"pitch":{}\n')
             f.write('\t\t}\n')
 
         f.write('\t}\n')
@@ -390,15 +393,18 @@ class Tune(object):
         tune_tsig2 = int(json_tune['timeSignature'][1])
         tune_tsig = (tune_tsig1, tune_tsig2)
 
-        tune_ksig_pitch = self.pitchJSONtoTune(json_tune['keySignature']['pitch'])
-        iMflag = str(json_tune['keySignature']['isMajor'])
-        iMflag.lower()
-        ksigisMajor = True
-        if iMflag == 'true':
-            ksig_isMajor = True
-        if iMflag == 'false':
-            ksigisMajor = False
-        tune_ksig = Key(pitch=tune_ksig_pitch, isMajor=ksigisMajor)
+        if len(json_tune['keySignature']) != 0:
+            tune_ksig_pitch = self.pitchJSONtoTune(json_tune['keySignature']['pitch'])
+            iMflag = str(json_tune['keySignature']['isMajor'])
+            iMflag.lower()
+            ksigisMajor = True
+            if iMflag == 'true':
+                ksig_isMajor = True
+            if iMflag == 'false':
+                ksigisMajor = False
+            tune_ksig = Key(pitch=tune_ksig_pitch, isMajor=ksigisMajor)
+        else:
+            tune_ksig = Key(pitch=None, isMajor=None)
 
         tune_events = []
         for event in json_tune['events']:
