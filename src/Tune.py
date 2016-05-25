@@ -574,12 +574,12 @@ if __name__ == "__main__":
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
     tune = Tune.TuneWrapper(INPUT_FILE)
-#    print tune.toString()
-    tune.TunetoJSON()
-    jsonfile = 'tune-generic.json'
-    tuneprime = Tune()
-    tuneprime.JSONtoTune(jsonfile)
-    print tuneprime.toString()
+    print tune.toString()
+    # tune.TunetoJSON()
+    # jsonfile = 'tune-generic.json'
+    # tuneprime = Tune()
+    # tuneprime.JSONtoTune(jsonfile)
+    # print tuneprime.toString()
 
 
 

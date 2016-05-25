@@ -154,23 +154,23 @@ class Chord(Event):
     def __init__(self, **kwargs):
         super(self.__class__, self).__init__(**kwargs)
         self.pitches = kwargs.get('pitches', [])
-        
+
     def getPitch(self):
         return self.pitches
 
     def chordEqual(self, chord):
         if self.duration != chord.duration or self.onset != chord.onset:
             return False
-        if len(chord.pitches) != len(self.pitches):
+        if len(chord.getPitch()) != len(self.getPitch()):
             return False
-        for i in range(0, len(chord.pitches)):
-            if self.pitches[i].pitchEqual(chord.pitches[i]) == False:
+        for i in range(0, len(chord.getPitch())):
+            if self.getPitch()[i].pitchEqual(chord.getPitch()[i]) == False:
                 return False
         return True
 
     def editChord(self, chord):
-        if chord.getPitch != None:
-            self.setPitches(chord.getPitch)
+        if chord.getPitch() != None:
+            self.setPitches(chord.getPitch())
 
        # def addPitch(self, event):
      #     if isinstance(self, Chord):
@@ -193,8 +193,8 @@ class Chord(Event):
     def toString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
         pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
-        if self.pitches != None:
-            for pitch in self.pitches:
+        if self.getPitch() != None:
+            for pitch in self.getPitch():
                 pitchstr += '>>>>>>>' + pitch.toString() + "\n"
         else:
             pitchstr += "no pitches \n"
