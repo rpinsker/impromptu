@@ -4,7 +4,7 @@ from flask import render_template, Flask, request, redirect, url_for
 from flask import send_from_directory
 from flask import Flask
 from flask import render_template
-import TuneIter2 as Tune
+import Tune #TuneIter2 as Tune
 import glob
 
 import os, subprocess
@@ -113,6 +113,8 @@ def tuneToNotes(tune):
         for event in measure:# changed tuneiter2
             aChord = None
             pitches = event.getPitch()
+            if pitches == None:
+                pitches = []
             pitches = [p for p in pitches if p is not None]
             for pitch in pitches:
                 letter = pitch.letter
@@ -192,10 +194,10 @@ def tunetoMeasures(tune):
 
     if len(currentMeasure) > 0:
         if currentTimeLeft != 0: # insert a rest to fill the measure otherwise abjad throws an exception
-            restOfMeasure = measureTime - currentTimeLeft
-            rest = Tune.Rest()
-            rest.setDuration((1,int(1/restOfMeasure)))
-            currentMeasure.append(rest)
+            #restOfMeasure = measureTime - currentTimeLeft
+            #rest = Tune.Rest()
+            #rest.setDuration((1,int(1/restOfMeasure)))
+            #currentMeasure.append(rest)
             measures.append(currentMeasure)
     return measures
 
@@ -248,11 +250,13 @@ def makeStaffFromTune(tune):
 
     # now coming as a list of lists so notes separated by measure
     notes = tuneToNotes(tune)
+
     savedMeasures = []
     staff = abjad.Staff()
     for measure in notes:
             #print aEvent.written_duration
             m = abjad.Measure(time_signature, measure)
+            m = abjad.scoretools.append_spacer_skip_to_underfull_measure(m)
             d = m._preprolated_duration
             if d == time_signature.duration:
                 staff.append(m)
