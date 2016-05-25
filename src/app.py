@@ -193,9 +193,10 @@ def tunetoMeasures(tune):
             # change the note's duration!
             possibleDurations = [1,.5,.25,0.125,0.0625]
             for d in possibleDurations:
-                if (currentTimeLeft - duration) >= 0:
+                if (currentTimeLeft - d) >= 0:
                     note.duration = (1,float(1/currentTimeLeft))
                     currentMeasure.append(note)
+            currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
             currentMeasure = []
@@ -211,15 +212,23 @@ def tunetoMeasures(tune):
 
 
     if len(currentMeasure) > 0:
-        if currentTimeLeft != 0: # insert a rest to fill the measure otherwise abjad throws an exception
+        if currentTimeLeft > 0: # insert a rest to fill the measure otherwise abjad throws an exception
+            currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
             #restOfMeasure = measureTime - currentTimeLeft
             #rest = Tune.Rest()
             #rest.setDuration((1,int(1/restOfMeasure)))
             #currentMeasure.append(rest)
-            measures.append(currentMeasure)
+        measures.append(currentMeasure)
     return measures
 
 
+def padMeasureWithRests(currentTimeLeft,currentMeasure):
+    while currentTimeLeft > 0:
+        rest = Tune.Rest()
+        rest.setDuration(Tune.Duration.SIXTEENTH)
+        currentMeasure.append(rest)
+        currentTimeLeft -= 0.0625
+    return currentMeasure
 
 # FOR PARSING CHORDS
 # ps = []
