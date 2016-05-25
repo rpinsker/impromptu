@@ -1,5 +1,6 @@
 
 import abjad
+from abjad import *
 from flask import render_template, Flask, request, redirect, url_for
 from flask import send_from_directory
 from flask import Flask
@@ -365,34 +366,46 @@ def tunetoMeasures(tune):
     measureTime = float(tune.getTimeSignature()[0]) / float(tune.getTimeSignature()[1])
     currentTimeLeft = measureTime
     currentMeasure = []
+
     for note in tune.events:
-        # measure is full so add it to the list
-        if currentTimeLeft == 0:
-            measures.append(currentMeasure)
-            currentTimeLeft = measureTime
-            currentMeasure = []
+        
         # give a duration if it is empty or use the note's actual duration
+        duration=100
         if note.duration:
             duration = float(note.duration[0]) / float(note.duration[1])
         else:
             duration = 0.25
             note.duration = Tune.Duration.QUARTER
-        # add the note to the measure
+
+        # measure is full so add it to the list
+        if currentTimeLeft == 0:
+            measures.append(currentMeasure)
+            currentTimeLeft = measureTime
+            currentMeasure = []
+        elif currentTimeLeft <0:
+            print 'shouldnt reach this - current time should never be neg'
+
+       # add the note to the measure
         if (currentTimeLeft - duration >= 0):
             currentMeasure.append(note)
             currentTimeLeft -= duration
         else:
             # split the note and add the first one to the current measure
-            splitNote1 = note
-            splitNote1.setDuration((1,float(1/currentTimeLeft)))
-            currentMeasure.append(splitNote1)
+            
+            #Not sure if this is garbage or what
+#            splitNote1 = note
+#            splitNote1.setDuration((1,float(1/currentTimeLeft)))
+#            currentMeasure.append(splitNote1)
 
             # change the note's duration so it fits in the measure
-            possibleDurations = [1,.5,.25,0.125,0.0625]
+            possibleDurations = [1.0,.5,.25,0.125,0.0625]
             for d in possibleDurations:
                 if (currentTimeLeft - d) >= 0:
-                    note.setDuration((1,float(1/currentTimeLeft)))
+                    note.setDuration((1,int(float(1.0/d))))
                     currentMeasure.append(note)
+                    currentTimeLeft -= d
+                    break
+
             currentMeasure = padMeasureWithRests(currentTimeLeft,currentMeasure)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
@@ -467,13 +480,21 @@ def makeStaffFromTune(tune):
     staff = abjad.Staff()
     for measure in notes:
         m = abjad.Measure(time_signature, measure)
+#        m.implicit_scaling = True
+#        m.automatically_adjust_time_signature = True
+
+        
         m = abjad.scoretools.append_spacer_skip_to_underfull_measure(m)
         d = m._preprolated_duration
         if d == time_signature.duration:
             staff.append(m)
             savedMeasures.append(m)
+        elif d < time_signature.duration:
+            print 'measures dropped less than time sig ' + str(d) + 'should be ' + str(time_signature.duration)
+        elif d > time_signature.duration:
+            print 'measures dropped greater than time sig ' + str(d) + 'should be ' + str(time_signature.duration)
     measuresObj = savedMeasures
-    print staff.format
+
 
     # set key and clef
     key = tune.getKey()
@@ -529,6 +550,7 @@ if __name__ == "__main__":
     tuneObj = None
     app.debug = True
     app.run(port=1995)
+
 
 
 def setTune(tune):
