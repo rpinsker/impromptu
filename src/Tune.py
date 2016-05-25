@@ -378,6 +378,7 @@ class Tune(object):
 
     def JSONtoTune(self, json_file):
         f = open(json_file)
+        print f
         json_data = json.load(f)
         json_tune = json_data['tune']
 
@@ -563,7 +564,8 @@ class Tune(object):
 # main function used for testing of Tune.py separate from web integration
 if __name__ == "__main__":
     # default parameters
-    INPUT_FILE = '../tests/MIDITestFiles/c-major-scale-treble.mid'
+#    INPUT_FILE = '../tests/MIDITestFiles/c-major-scale-treble.mid'
+    INPUT_FILE = '../tests/MIDITestFiles/tune-with-chords-rest-chords.mid'
     # Sets parameters and files
     for i in xrange(1,len(sys.argv)):
         if (sys.argv[i] == '-f'): # input flag: sets input file name
@@ -572,8 +574,13 @@ if __name__ == "__main__":
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
     tune = Tune.TuneWrapper(INPUT_FILE)
-    print tune.toString()
+#    print tune.toString()
     tune.TunetoJSON()
+    jsonfile = 'tune-generic.json'
+    tuneprime = Tune()
+    tuneprime.JSONtoTune(jsonfile)
+    print tuneprime.toString()
+
 
 
 #    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
