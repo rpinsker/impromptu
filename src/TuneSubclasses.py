@@ -197,6 +197,7 @@ class Chord(Event):
                 pitchstr += '>>>>>>>' + pitch.toString() + "\n"
         else:
             pitchstr += "no pitches \n"
+        return pitchstr
 
 class Rest(Event):
     def __init__(self, **kwargs):
