@@ -31,6 +31,12 @@ $( document ).ready(function() {
         document.getElementById(measureID).style.display = "block";
         document.getElementById('edit-title').innerHTML = "Editing Measure " + m;
         modal2.style.display = "block";
+        var infoboxID = "note-info-box-" + m;
+        var addboxID = "note-add-box-" + m;
+        var deleteboxID = "note-delete-box-" + m;
+        document.getElementById(infoboxID).style.display = "none";
+        document.getElementById(addboxID).style.display = "none";
+        document.getElementById(deleteboxID).style.display = "none";
     }
     span2.onclick = function () {
         modal2.style.display = "none";
