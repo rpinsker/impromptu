@@ -5,6 +5,7 @@ sys.path.insert(0, '../src')
 import os 
 from Tune import *
 
+
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
 
@@ -342,6 +343,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		for i in xrange(0, 8):
 			self.assertTrue(pitchList[i].pitchEqual(mp3Pitch[i]))
 
+#Support one-track/single-instrument mp3 audio file by generating Tune object directly from audio file
 	def testcreateTunefromWav(self):
 		# --- tests if MP3 files are successfully converted to a Tune object ---
 		
