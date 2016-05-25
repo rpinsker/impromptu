@@ -171,21 +171,32 @@ class Chord(Event):
         if chord.getPitch != None:
             self.setPitches(chord.getPitch)
 
-    def addPitch(self, event):
-        if self.getPitch() != None:
-            self.setPitch(self.getPitch().extend(event))
-        else:
-            self.setPitch(event.getPitch())
+       # def addPitch(self, event):
+     #     if isinstance(self, Chord):
+     #         self.setPitch(self.getPitch().extend(event.getPitch()))
+     #         return self
+     #     elif isinstance(self, Note):
+     #         return Chord(pitches = list(self.getPitch()).extend(event.getPitch), duration = self.duration, onset = self.onset)
+     #     else:
+     #         return event
+         # print self, event
+         # if self.getPitch() != None:
+         #     self.setPitch()
+         # else:
+         #     self.setPitch(event.getPitch())
+         #     print '\n\nempty chord\n\n'
 
     def setPitch(self, listofPitches):
         self.pitches = listofPitches
 
-    def NotetoString(self):
+    def toString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)
         pitchstr = "Chord: Duration (seconds) - %s, Duration - %s, Onset - %s, \n" %(str(self.s_duration), durationstring, str(self.onset))
-        for pitch in self.pitches:
-            pitchstr += '>>>>>>>' + pitch.NotetoString() + "\n"
-        return pitchstr
+        if self.pitches != None:
+            for pitch in self.pitches:
+                pitchstr += '>>>>>>>' + pitch.toString() + "\n"
+        else:
+            pitchstr += "no pitches \n"
 
 class Rest(Event):
     def __init__(self, **kwargs):
@@ -227,10 +238,9 @@ class Note(Event):
         return "Note: Freq - %s, Duration (seconds) - %s, Duration - %s, Onset - %s \n \t %s" %(str(self.frequency), str(self.s_duration), durationstring, str(self.onset), self.pitch.toString())
 
     def isRest(self):
-        if self.pitch.letter == 'r':
+        if self.getPitch()[0].letter == 'r':
             return True
-        else:
-            return False
+        return False
 
     @staticmethod
     def convertFreqToPitch(freq):
