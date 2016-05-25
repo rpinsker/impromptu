@@ -348,7 +348,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		# import wav file: C major scale with all quarter notes (refer to TestComputePitches)
 
 
-		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.wav")
+		TuneWAV = Tune.TuneWrapper("../tests/WAVTestFiles/eqt-chromo-sc.wav")
 		
 	def testcomputeOnset(self):
 		# check onsets are calculated correctly from computeOnset
