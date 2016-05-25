@@ -106,7 +106,7 @@ class Event(object):
             self.setPitch(self.getPitch() + event.getPitch())
             return self
         elif isinstance(self, Note):
-            newChord = Chord(pitches = self.getPitch() + event.getPitch(), duration = self.duration, onset = self.onset)
+            newChord = Chord(pitches = self.getPitch() + event.getPitch(), s_duration = self.s_duration, duration = self.duration, onset = self.onset)
             return newChord
         else: # is rest
             return event
@@ -267,7 +267,7 @@ class Note(Event):
         return False
 
     def isRest(self):
-        if self.pitch.letter == 'r':
+        if self.getPitch()[0].letter == 'r':
             return True
         return False
 

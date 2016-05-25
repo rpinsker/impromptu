@@ -3,7 +3,7 @@ import midi
 import sys
 sys.path.insert(0, '../src')
 import os 
-from TuneIter2 import *
+from Tune import *
 
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
@@ -196,22 +196,22 @@ class TestImpromptuBackend(unittest.TestCase):
 	def testcomputeOnset(self):
 		# check onsets are calculated correctly from computeOnset
 		TuneMIDI = Tune.TuneWrapper("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		for i in xrange(0, 3):
-			self.assertEqual(round(TuneMIDI.getEventsList()[i].onset), i)
+		for i in xrange(0, 15):
+			self.assertEqual(round(TuneMIDI.getEventsList()[i].onset, 5), round(i*0.50505, 5))
 				
 	def testcalculateRests(self):
 		tune = Tune()
 		PitchC = Pitch (letter='b', octave=4, accidental=Accidental.NATURAL)
 					
 		q1_C4 = Note(frequency=261.63, onset=0, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
-		q_rest = Pitch (letter='r')
-		q_restNote = Rest(onset=0.0, s_duration=1.0, duration=Duration.QUARTER)
-		q_restNote.setPitch(q_rest)
+		q_restNote = Rest(frequency=0, onset=1.0, s_duration=1.0, duration=Duration.QUARTER)
 		q2_C4 = Note(frequency=261.63, onset=2, s_duration=1.0, duration=Duration.QUARTER, pitch=PitchC)
 		
-		CRestC = [q1_C4, q2_C4]
-		rest = tune.calculateRests([q1_C4, q2_C4])
-		self.assertTrue(tune.notesListEquals(rest, CRestC))
+		CRestC = [q1_C4, q_restNote, q2_C4]
+		tune.setEventsList(tune.calculateRests([q1_C4, q2_C4]))
+
+		self.assertTrue(tune.eventsListEquals(CRestC))
+		self.assertFalse(tune.eventsListEquals([q1_C4, q2_C4]))
 
 
 	def testKeyEqual(self):
@@ -313,10 +313,31 @@ class TestImpromptuBackend(unittest.TestCase):
 		sameevent6 = Chord(pitches=[spitch1,spitch2,spitch3],duration=Duration.QUARTER, onset=5.0)
 		sameEvents = [sameevent1, sameevent2, sameevent3, sameevent4, sameevent5, sameevent6]
 		tune=Tune(events = events)
+		tune.eventListToChords()
 
-		self.assertTrue(tune.eventsListEquals(tune.eventListToChords().getEventsList(), sameEvents))
-		self.assertFalse(tune.eventsListEquals(tune.eventListToChords().getEventsList(), events))
+		self.assertTrue(tune.eventsListEquals(sameEvents))
+		self.assertFalse(tune.eventsListEquals(events))
 
+	def testNotesListGetterSetter(self):
+		# print "RUNNING: testNotesListGetterSetter ..."
+		note1 = Note(frequency=261.63,onset= 0.0)
+		note2 = Note(frequency=293.66,onset= 1.0)
+		note3 = Note(frequency=329.63,onset= 2.0)
+		note4 = Note(frequency=349.23,onset= 3.0)
+		
+		notes = [note1, note2, note3, note4]
+		
+		samenote1 = Note(frequency= 261.63,onset= 0.0)
+		samenote2 = Note(frequency= 293.66,onset= 1.0)
+		samenote3 = Note(frequency= 329.63,onset= 2.0)
+		samenote4 = Note(frequency= 349.23,onset= 3.0)
+		
+		sameNotes = [samenote1, samenote2, samenote3, samenote4]
+		
+		tune = Tune()
+		
+		tune.setEventsList(notes)
+		self.assertTrue(tune.eventsListEquals(sameNotes))
 
 	def testTuneGetterSetter(self):
 		pitch = Pitch(letter='b', accidental=Accidental.FLAT)
@@ -337,7 +358,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		l2 = f.readline()
 		self.assertEqual(l2, '\t"tune":{\n')
 		l3 = f.readline()
-		self.assertEqual(l3, '\t\t"timeSignature":["4","8"],\n')
+		self.assertEqual(l3, '\t\t"timeSignature":["4","4"],\n')
 		l4 = f.readline()
 		self.assertEqual(l4, '\t\t"clef":"0",\n')
 		l5 = f.readline()
@@ -460,7 +481,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		# Test a tune with two notes
 		fp = open("../tests/MIDITestFiles/tune.json")
 		tune = Tune()
-		tune.JSONtoTune(fp)
+		tune.JSONtoTune("../tests/MIDITestFiles/tune.json")
 		tune_keysig = tune.getKey()
 		tune_keysig_pitch = Pitch(letter="b", octave='', accidental=Accidental.FLAT)
 		tune_keysig_key = Key(isMajor=True, pitch=tune_keysig_pitch)

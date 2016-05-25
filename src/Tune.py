@@ -11,7 +11,7 @@ class Tune(object):
         self.title = self.setTitle(kwargs.get('title', kwargs.get('midi')))
         self.contributors = self.setContributors(kwargs.get('contributors', ['Add Contributors']))
         self.midifile = None
-        self.events = None
+        self.events = kwargs.get('events')
         if kwargs.get('wav') != None and kwargs.get('wav').endswith('wav'):
             self.readWav(kwargs.get('wav'))
         elif kwargs.get('mp3') != None and kwargs.get('mp3').endswith('mp3'):
@@ -95,14 +95,12 @@ class Tune(object):
     def getEventsList(self):
         return self.events
 
-
     def sortEventListByOnset(self):
         self.events = sorted(self.events, key=lambda event: event.onset)
 
     def eventListToChords(self):
         newEventList = []
         prevOnset = -1
-        currChord = []
         for item in self.events:
             if item.onset != prevOnset: 
                 newEventList.append(item)
@@ -221,9 +219,10 @@ class Tune(object):
             f.write('\t\t\t{\n')
             if isinstance(event, Chord):
                 f.write('\t\t\t\t"class":"chord",\n')
-                f.write('\t\t\t\t"duration":"%lf",\n' %(event.duration))
+                if event.duration != None:
+                    dur_str = self.durationTunetoJSON(event.duration)
+                    f.write('\t\t\t\t"duration":"%s",\n' %(dur_str))
                 f.write('\t\t\t\t"s_duration":"%lf",\n' %(event.s_duration))
-                f.write('\t\t\t\t"frequency":"%lf",\n' %(event.frequency))
                 f.write('\t\t\t\t"onset":"%lf",\n' %(event.onset))
                 
                 f.write('\t\t\t\t"pitches":[\n')
@@ -501,7 +500,7 @@ class Tune(object):
             keystring = 'None'
         else:
             keystring = self.getKey().toString()
-        buf = "Tune: \nTitle - %s, Contributors - %s \n\tTime Sig - %s, %s, Clef - %s\nList of Notes:\n" %(self.title, str(self.contributors), str(self.timeSignature), keystring, clefstring)
+        buf = "Tune: \nTitle - %s, Contributors - %s \n\tTime Sig - %s, KeySig - %s, Clef - %s\nList of Notes:\n" %(self.title, str(self.contributors), str(self.timeSignature), keystring, clefstring)
         if self.getEventsList() != None:
             for event in self.getEventsList():
                 buf = buf + "%s\n" %(event.toString())
@@ -509,13 +508,13 @@ class Tune(object):
                 buf = buf + "No events list\n"
         return buf
 
-    def notesListEquals(self, Notelist1, Notelist2):
-        if len(Notelist1) != len(Notelist2):
-            return False
-        for i in range(len(Notelist1)):
-            if Notelist1[i].noteEqual(Notelist2[i]) == False:
-                return False
-        return True
+    # def eventsListEquals(self, list1, list2):
+    #     if len(list1) != len(list2):
+    #         return False
+    #     for i in range(len(list1)):
+    #         if list1[i].eventEqual(list2[i]) == False:
+    #             return False
+    #     return True
     
     #aubio output array to event list using aubionotes
     def readWav(self, filename):
