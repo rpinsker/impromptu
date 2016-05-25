@@ -603,4 +603,5 @@ if __name__ == "__main__":
     # tuneWav = Tune(wav = 'test1.wav')
     # tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00.wav')
     # print tuneWav.toString()
+    tune.TunetoJSON()
     print tune.toString()
