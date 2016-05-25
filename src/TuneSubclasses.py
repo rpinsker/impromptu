@@ -99,7 +99,7 @@ class Event(object):
     def getPitch(self):
         """Method that should be implemented in subclasses."""
 
- def combineEvent(self, event):
+    def combineEvent(self, event):
         if isinstance(event, Rest):
             return self
         if isinstance(self, Chord):
