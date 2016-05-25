@@ -5,7 +5,7 @@ class Tune(object):
 
     def __init__(self, **kwargs):
         self.timeSignature = (4,4) # default time Signature
-        self.keySignature = kwargs.get('keySignature')
+        self.keySignature = kwargs.get('keySignature', Key())
         self.clef = kwargs.get('clef', Clef.TREBLE)
         # default title is midi file name
         self.title = self.setTitle(kwargs.get('title', kwargs.get('midi')))
