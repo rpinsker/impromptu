@@ -579,6 +579,7 @@ class AppTestCase(unittest.TestCase):
             newPitch.octave = octaves[i % len(octaves)] # just choose some octave in the octaves list
 
             self.app.post('/', data=dict(
+                editDurationInputMeasureIndex=0,
                 editPitchInputIndex=i,
                 editPitchInputLetter=newPitch.letter,
                 editPitchInputAccidental=newPitch.accidental,
