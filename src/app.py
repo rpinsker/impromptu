@@ -84,7 +84,11 @@ def tune():
                 filenamePDF = updatePDFWithNewLY(lilypond_file)
 
                 listOfMeasures = tunetoMeasures(tuneObj)
-                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures)
+                listOfPNGs = []
+                for m in range(len(listOfMeasures)):
+                    name = "static/currentTune/" + str(m+1) + ".png"
+                    listOfPNGs.append(name)
+                return render_template('home.html',filename='static/currentTune/' + filenamePDF + '.pdf', measures=listOfMeasures, measureImgs=listOfPNGs)
 
     # page was loaded normally (not from a request to update name, contributor, or file upload)
     # so display the tune object created at the beginning of the this method
@@ -146,7 +150,6 @@ def tunetoMeasures(tune):
         return []
     measures = []
     measureTime = float(tune.getTimeSignature()[0]) / float(tune.getTimeSignature()[1])
-    print "measure time: " + str(measureTime)
     currentTimeLeft = measureTime
     currentMeasure = []
     for note in tune.events:
@@ -167,9 +170,8 @@ def tunetoMeasures(tune):
             currentTimeLeft -= duration
         else:
             # split the note and add the first one to the current measure
-            splitNote1 = Tune.Note()
-            splitNote1.pitch = note.pitch
-            splitNote1.duration = (1,float(1/currentTimeLeft))
+            splitNote1 = note
+            splitNote1.setDuration((1,float(1/currentTimeLeft)))
             currentMeasure.append(splitNote1)
             measures.append(currentMeasure)
             currentTimeLeft = measureTime
@@ -244,13 +246,13 @@ def makeStaffFromTune(tune):
     staff = abjad.Staff()
     counter = 0
     for measure in notes:
-            #print aEvent.written_duration
-            m = abjad.Measure(time_signature, measure)
-            d = m._preprolated_duration
-            if d == time_signature.duration:
-                staff.append(m)
-                save_measure_as_png(m,counter)
-                counter += 1
+        #print aEvent.written_duration
+        m = abjad.Measure(time_signature, measure)
+        d = m._preprolated_duration
+        if d == time_signature.duration:
+            staff.append(m)
+            save_measure_as_png(m,counter)
+            counter += 1
         #staff.append(abjad.Measure(abjad.Measure(time_signature,measure)))
 
 
