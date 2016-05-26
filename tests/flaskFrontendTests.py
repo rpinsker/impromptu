@@ -597,7 +597,7 @@ class AppTestCase(unittest.TestCase):
 
 
         # Testing a valid .json file
-        f = open("../tests/JSONTestFiles/tune-generic.json", 'rb')
+        f = open("../tests/JSONTestFiles/tune.json", 'rb')
 
 
         self.app.post(
@@ -608,7 +608,7 @@ class AppTestCase(unittest.TestCase):
             content_type='multipart/form-data',
         )
         f.close()
-        f = open("../tests/JSONTestFiles/tune-generic.json", 'r')
+        f = open("../tests/JSONTestFiles/tune.json", 'r')
         r = f.read()
         f.close()
         lines_input = r.splitlines()
