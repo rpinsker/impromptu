@@ -100,6 +100,8 @@ class Event(object):
         """Method that should be implemented in subclasses."""
 
     def combineEvent(self, event):
+        if self.onset != event.onset:
+            return False
         if isinstance(event, Rest):
             return self
         if isinstance(self, Chord):
@@ -127,9 +129,12 @@ class Event(object):
             self.duration = event.duration
         if type(self) == type(event):
             if isinstance(self, Chord) and isinstance(event, Chord):
-                return self.editChord(event)
+                self.editChord(event)
             if isinstance(self, Note) and isinstance(event, Note):
-                return self.editNote(event)
+                self.editNote(event)
+            return self
+        else:
+            return False
 
     def isRest(self):
         if isinstance(self, Rest):
@@ -170,7 +175,8 @@ class Chord(Event):
 
     def editChord(self, chord):
         if chord.getPitch() != None:
-            self.setPitches(chord.getPitch())
+            self.setPitch(chord.getPitch())
+        return self
 
        # def addPitch(self, event):
      #     if isinstance(self, Chord):
@@ -234,6 +240,7 @@ class Note(Event):
     def editNote(self, note):
         if note.pitch != None:
             self.setPitch(note.pitch)
+        return self
 
     def toString(self):
         durationstring = {Duration.SIXTEENTH: 'Sixteenth', Duration.EIGHTH: 'Eighth', Duration.QUARTER: 'Quarter', Duration.HALF: 'Half', Duration.WHOLE: 'Whole' }.get(self.duration)

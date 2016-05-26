@@ -1,9 +1,7 @@
 from TuneSubclasses import *
 
 # refer to vartec's answer at http://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
-class Tune(object):
-    
-    
+class Tune(object):  
     
     def __init__(self, **kwargs):
         self.measures = []
