@@ -511,9 +511,9 @@ class TestImpromptuBackend(unittest.TestCase):
 
 		tune_events = tune.getEventsList()
 		pitch1 = Pitch(letter='b', octave=2, accidental=2)
-		note1 = Note(duration=Duration.QUARTER, frequency=25.0, onset=5.67, pitch=pitch1)
+		note1 = Note(duration=Duration.QUARTER, s_duration=1.0, frequency=25.0, onset=5.67, pitch=pitch1)
 		pitch2 = Pitch(letter='r')
-		rest1 = Rest(duration=Duration.WHOLE, onset=6.67, pitch=pitch2)
+		rest1 = Rest(duration=Duration.WHOLE, s_duration=4.0, onset=6.67, pitch=pitch2)
 		self.assertTrue(note1.eventEqual(tune_events[0]))
 		self.assertTrue(rest1.eventEqual(tune_events[1]))
 
