@@ -51,6 +51,7 @@
     background-color: black;
     padding: 10px;
     bottom: 0;
+    width: 200px;
 }
 
 .modal-button-box {
@@ -78,6 +79,15 @@ button:hover {
 
 .modal-button {
     height: auto;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: black;
 }
 
 a.button {
@@ -167,8 +177,7 @@ input[type="button"]:hover {
 
 .modal-body {padding: 2px 16px;}
 
-
-#record { height: 6vh; width: 250px}
+#record { height: 6vh; width: 200px}
 	#record.recording {
 		background: red;
 		background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%);
@@ -176,7 +185,7 @@ input[type="button"]:hover {
 		background: radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%);
 	}
 
-#save { height: 6vh; width: 250px}
+#save { height: 6vh; width: 200px}
 	#save.button { opacity: 0.25;}
 	#save[download] { opacity: 1;  }
 

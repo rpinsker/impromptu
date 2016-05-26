@@ -31,26 +31,34 @@
 </div>
 <br>
 <div class="left-panel">
-         <div class="row">
-                <a id="saveJSON" class="button" href="static/uploads/currentTune.json" download>Save JSON</a>
-        </div>
-
-
-        <div class="row">
-            <button id="load">LOAD JSON</button>
-                <div class="modal" id="jsonModal">
+    <br>
+        <button id="record" onclick="toggleRecording(this);">Record Audio &#9834;</button>
+                <div class="modal" id="recordModal">
                     <div class="modal-content">
-                        <span class="close" id="closeJSON">x</span>
-                        <form action="/" method="POST" name="load" id="load" enctype=multipart/form-data>
-                            <input type="file" name="jsonInput" value="Load JSON" accept=".json"/>
-                            <br/>
-                            <input type="submit" value="LOAD">
-                        </form>
+                        <span id="close-x-u">x</span>
                     </div>
                 </div>
-            </div>
-        </div>
+        <br>
+         <a id="save" href="#" class="button">Save Recording &#9834;</a>
 
+    <hr>
+    <div class="row">
+        <button><a id="saveJSON" href="static/uploads/currentTune.json" download>Save JSON</a></button>
+    </div>
+
+    <div class="row">
+    <button id="load">LOAD JSON</button>
+    <div class="modal" id="jsonModal">
+        <div class="modal-content">
+            <span class="close" id="closeJSON">x</span>
+            <form action="/" method="POST" name="load" id="load" enctype=multipart/form-data>
+                <input type="file" name="jsonInput" value="Load JSON" accept=".json"/>
+                <br/>
+                <input type="submit" value="LOAD">
+            </form>
+        </div>
+    </div>
+    </div>
 </div>
 <div class="container">
     <div class="row">
@@ -283,8 +291,8 @@
             </div>
 
              <div class="button-box">
-                <button id="upload">Upload a File &#9834;</button>
-                <div class="modal" id="uploadModal">
+                 <button id="upload">Upload a File &#9834;</button>
+                 <div class="modal" id="uploadModal">
                     <div class="modal-content">
                         <span class="close" id="close-x-u">x</span>
                         <form action="/" method="POST" name="upload" id="uploadForm" enctype=multipart/form-data>
@@ -294,15 +302,6 @@
                         </form>
                     </div>
                 </div>
-
-                <button id="record" onclick="toggleRecording(this);">Record Audio &#9834;</button>
-                <div class="modal" id="recordModal">
-                    <div class="modal-content">
-                        <span id="close-x-u">x</span>
-                    </div>
-                </div>
-
-                <a id="save" href="#" class="button">Save Recording &#9834;</a>
 
             </div>
             <script>
