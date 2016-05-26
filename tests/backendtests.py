@@ -8,6 +8,22 @@ from Tune import *
 #Please refer to class diagram for reference on parameter values for constructors and methods
 class TestImpromptuBackend(unittest.TestCase):
 
+	# EQUALITY TESTS ####################################################
+
+	def testPitchEqual(self):
+		#Testing equality of the same note
+		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+		samePitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+		self.assertTrue(pitch.pitchEqual(samePitch))
+		
+		#Testing equality of different notes
+		differentLetter = Pitch(letter='c', octave=4, accidental=Accidental.FLAT)
+		differentOctave = Pitch(letter='b', octave=5, accidental=Accidental.FLAT)
+		differentAccidental = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
+		self.assertFalse(pitch.pitchEqual(differentLetter))
+		self.assertFalse(pitch.pitchEqual(differentOctave))
+		self.assertFalse(pitch.pitchEqual(differentAccidental))
+
 	def testChordEqual(self):
 	    pitch1 = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
 	    pitch2 = Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
@@ -33,29 +49,6 @@ class TestImpromptuBackend(unittest.TestCase):
 	    self.assertFalse(chord.chordEqual(chordExtraNote))
 	    self.assertFalse(chord.chordEqual(chordDiffDuration))
 	    self.assertFalse(chord.chordEqual(chordDiffOnset))
-
-
-	def testPitchEqual(self):
-		#Testing equality of the same note
-		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
-		samePitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
-		self.assertTrue(pitch.pitchEqual(samePitch))
-		
-		#Testing equality of different notes
-		differentLetter = Pitch(letter='c', octave=4, accidental=Accidental.FLAT)
-		differentOctave = Pitch(letter='b', octave=5, accidental=Accidental.FLAT)
-		differentAccidental = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
-		self.assertFalse(pitch.pitchEqual(differentLetter))
-		self.assertFalse(pitch.pitchEqual(differentOctave))
-		self.assertFalse(pitch.pitchEqual(differentAccidental))
-
-	
-	def testPitchGetterSetter(self):
-		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
-		note = Note(frequency=493.88, onset=0.0)
-		note.setPitch(pitch)
-		print pitch, note.getPitch()[0]
-		self.assertTrue(pitch.pitchEqual(note.getPitch()[0]))
 
 	def testIsRest(self):
 		#Testing rest
@@ -96,7 +89,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		restNote = Rest(onset=0, pitch = 'r')
 		samerestNote = Rest(onset=0.0)
 		self.assertTrue(restNote.eventEqual(samerestNote))
-		
+
 		notePitch = Pitch(letter='b', octave=4, accidental=Accidental.NATURAL)
 		note = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=notePitch)
 
@@ -104,38 +97,31 @@ class TestImpromptuBackend(unittest.TestCase):
 		sameNote = Note(frequency=493.88, onset=0.0, duration=Duration.QUARTER, pitch=samePitch)
 		self.assertTrue(note.noteEqual(sameNote))
 
+	def testFrequencyEqual(self):
+		# equal
+		self.assertTrue(Note.frequencyEqual(360, 360))
+		# in range
+		self.assertTrue(Note.frequencyEqual(363, 360))
+		# out of range
+		self.assertFalse(Note.frequencyEqual(365, 360))
+		# frequency out of lower bound 20
+		self.assertFalse(Note.frequencyEqual(19, 18))
+		# frequency out of upper bound 4200
+		self.assertFalse(Note.frequencyEqual(4201, 4201))
 
-	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
-	# This instead will be needed for iteration 2 with audio files.
-	# def testComputeFrequency(self):
-	# 	# check frequencies are calculated correctly from computeFrequency
-	# 	# import midi file: first 3 notes of C major scale as all quarter notes (refer to TestComputePitches)
-	# 	# Use Python MIDI library https://github.com/vishnubob/python-midi
-	# 	# MIDI files are an array of integers with a header
-	# 	TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
-	# 	frequencies = [261.63, 293.66, 329.63]
-	# 	# check frequencies and onsets calculated correctly from generateTune
-	# 	for i in xrange(0, 3):
-	# 		self.assertEqual(readFrequency(), frequencies[i])
 
-	    
+	# GETTER SETTER TESTS ####################################################
 
-		
-	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
-	# This instead will be needed for iteration 2 with audio files.
-	# def testcomputeFrequency(self):
-	# 	# check frequencies are calculated correctly from computeFrequency
-		
-	# 	# import midi file: first 3 notes of C major scale as all quarter notes (refer to TestComputePitches)
-	# 	# Use Python MIDI library https://github.com/vishnubob/python-midi
-	# 	# MIDI files are an array of integers with a header
-	# 	TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
-		
-	# 	frequencies = [261.63, 293.66, 329.63]
-	# 	# check frequencies and onsets calculated correctly from generateTune
-	# 	for i in xrange(0, 3):
-	# 		self.assertEqual(readFrequency(TuneMIDI[i]), frequencies[i])
-		
+	def testPitchGetterSetter(self):
+		pitch = Pitch(letter='b', octave=4, accidental=Accidental.FLAT)
+		note = Note(frequency=493.88, onset=0.0)
+		note.setPitch(pitch)
+		print pitch, note.getPitch()[0]
+		self.assertTrue(pitch.pitchEqual(note.getPitch()[0]))
+
+
+	# CONSTRUCTOR TESTS ####################################################
+			
 	def testcomputeOnset(self):
 		# print "RUNNING: testcomputeOnset ..."
 		# check onsets are calculated correctly from computeOnset
@@ -180,151 +166,15 @@ class TestImpromptuBackend(unittest.TestCase):
 		# 	self.assertEqual(TuneMIDI.get[i].getFrequency(), frequencies[i])
 		# 	self.assertEqual(tune[i].getOnset(), i)
 
-    #These functions weren't written and are not necessary for execution 
-    # because we didn't need the frequency attribute
-#	def testeventsListEquals(self):
-# 		note1 = Note(frequency = 261.63, onset = 0.0)
-# 		note2 = Note( frequency = 293.66, onset = 1.0)
-# 		note3 = Note(frequency = 329.63, onset = 2.0)
-# 		note4 = Note(frequency = 349.23, onset = 3.0)
-		
-# 		notes = [note1, note2, note3, note4]
-		
-# 		samenote1 = Note( frequency = 261.63, onset =  0.0)
-# 		samenote2 = Note( frequency = 293.66, onset = 1.0)
-# 		samenote3 = Note( frequency = 329.63, onset = 2.0)
-# 		samenote4 = Note( frequency = 349.23, onset = 3.0)
-		
-# 		sameNotes = [samenote1, samenote2, samenote3, samenote4]
-		
-# 		midifile = "../tests/MIDITestFiles/c-major-scale-treble.mid"
-# 		tune = Tune(midi = midifile, timeSignature = (4, 4), clef = Clef.TREBLE, titel = "firstTune", contributor = ["me", "you"])
-		
-# 		self.assertTrue(tune.eventsListEquals(notes,sameNotes))
-		
-# 		diffNote3 = Note( frequency = 300.0, onset =  2.0)
-# 		diff3rdNote = [samenote1, samenote2, diffNote3, samenote4]
-# 		self.assertFalse(tune.eventsListEquals(notes,diff3rdNote))
-		
-# 		diffNoteOrder = [samenote1, samenote3, samenote2, samenote4]
-# 		self.assertFalse(tune.eventsListEquals(notes,diffNoteOrder))
-#		note1 = Note( 261.63, 0.0)
-#		note2 = Note( 293.66, 1.0)
-#		note3 = Note(329.63, 2.0)
-#		note4 = Note(349.23, 3.0)
-#		
-#		notes = [note1, note2, note3, note4]
-#		
-#		samenote1 = Note( 261.63, 0.0)
-#		samenote2 = Note( 293.66, 1.0)
-#		samenote3 = Note( 329.63, 2.0)
-#		samenote4 = Note( 349.23, 3.0)
-#		
-#		sameNotes = [samenote1, samenote2, samenote3, samenote4]
-#		
-#		midifile = midi.read_midifile("miditest.midi")
-#		tune = Tune(midifile, (4, 4), treble, "firstTune", ["me", "you"])
-#		
-#		self.assertTrue(tune.eventsListEquals(notes,sameNotes))
-#		
-#		diffNote3 = Note( 300.0, 2.0)
-#		diff3rdNote = [samenote1, samenote2, diffNote3, samenote4]
-#		self.assertFalse(tune.eventsListEquals(notes,diff3rdNote))
-#		
-#		diffNoteOrder = [samenote1, samenote3, samenote2, samenote4]
-#		self.assertFalse(tune.eventsListEquals(notes,diffNoteOrder))
-#
-#
-#	def testNotesListGetterSetter(self):
-#		note1 = Note(frequency=261.63,onset= 0.0)
-#		note2 = Note(frequency=293.66,onset= 1.0)
-#		note3 = Note(frequency=329.63,onset= 2.0)
-#		note4 = Note(frequency=349.23,onset= 3.0)
-#		
-#		notes = [note1, note2, note3, note4]
-#		
-#		samenote1 = Note(frequency= 261.63,onset= 0.0)
-#		samenote2 = Note(frequency= 293.66,onset= 1.0)
-#		samenote3 = Note(frequency= 329.63,onset= 2.0)
-#		samenote4 = Note(frequency= 349.23,onset= 3.0)
-#		
-#		sameNotes = [samenote1, samenote2, samenote3, samenote4]
-#		
-#		tune = Tune()
-#		
-#		tune.setNotesList(notes)
-#		self.assertTrue(tune.eventsListEquals(tune.getNotesList(), sameNotes))
+	def testComputePitchfromMIDI(self):
+		pitchC =  Pitch(letter='c', octave=4, accidental=Accidental.NATURAL)
+		pitchCsharp = Pitch(letter='c', octave=4, accidental=Accidental.SHARP)
+		pitchD = Pitch(letter='D', octave=4, accidental=Accidental.NATURAL)
 
-	# This test is unnecessary because we do not need to covert frequencies from MIDI files to compute note pitches.
-	# This instead will be needed for iteration 2 with audio files.
-	# def testComputeNotes(self):
-	# 	tune = Tune((4, 4), Clef.TREBLE, "title1", ["a", "b"])
-		
-	# 	#testing C major scale with all quarter notes
-	# 	q_C4 = Note(261.63, 0)
-	# 	q_D4 = Note(293.66, 1)
-	# 	q_E4 = Note(329.63, 2)
-	# 	q_F4 = Note(349.23, 3)
-	# 	q_G4 = Note(392.00, 4)
-	# 	q_A4 = Note(440.00, 5)
-	# 	q_B4 = Note(493.88, 6)
-	# 	q_C5 = Note(523.25, 7)
-	# 	CMajor1 = [q_C4, q_D4, q_E4, q_F4, q_G4, q_A4, q_B4, q_C5]
-	# 	CMajor1_notes = tune.computeNotes(CMajor1)
-	# 	self.assertTrue(tune.eventsListEquals(CMajor1, CMajor1_notes))
-		
-	# 	#testing for C major scale of different note lengths
-	# 	w_C4 = Note(261.63, 0)
-	# 	h_D4 = Note(293.66, 4)
-	# 	q_E4 = Note(329.63, 6)
-	# 	e_F4 = Note(349.23, 7)
-	# 	s_G4 = Note(392.00, 7.5)
-	# 	e_A4 = Note(440.00, 7.75)
-	# 	q_B4 = Note(493.88, 8.25)
-	# 	h_C5 = Note(523.25, 9.25)
-	# 	CMajor2 = [w_C4, h_D4, q_E4, e_F4, s_G4, e_A4, q_B4, h_C5]
-	# 	CMajor2_notes = tune.computeNotes(CMajor2)
-	# 	self.assertTrue(tune.eventsListEquals(CMajor2, CMajor2_notes))
-	# 	self.assertFalse(tune.eventsListEquals(CMajor2, CMajor1))
+		pitchList = [pitchC, pitchCsharp, pitchD]
 
-	# aubio does this functionality for us
-	# def testExtractOnset(self):
-	# 	# mp3 file with 8 note onsets at 0, 2, 3, ..., 7
-	# 	mp3Onset = Tune.extractOnset("../tests/MP3TestFiles/c-major-scale-treble.mp3")
-	# 	for i in range(0, 8):
-	# 		self.assertEqual(mp3Onset[i], i)
-
-	# aubio does this functionality for us
-	# def testExtractDuration(self):
-	# 	# mp3 file with 8 note durations, each a quarter note long
-
-	# 	# first get duration in seconds
-	# 	mp3Duration = Tune.extract_s_Duration("../tests/MP3TestFiles/c-major-scale-treble.mp3")
-	# 	# convert to duration enum
-	# 	for i in xrange(0, 8):
-	# 		mp3Duration[i] = Tune.secondsToDuration(mp3Duration[i])
-	# 		self.assertEqual(mp3Duration[i], Duration.QUARTER)
-
-	def testFrequencyEqual(self):
-		# equal
-		self.assertTrue(Note.frequencyEqual(360, 360))
-		# in range
-		self.assertTrue(Note.frequencyEqual(363, 360))
-		# out of range
-		self.assertFalse(Note.frequencyEqual(365, 360))
-		# frequency out of lower bound 20
-		self.assertFalse(Note.frequencyEqual(19, 18))
-		# frequency out of upper bound 4200
-		self.assertFalse(Note.frequencyEqual(4201, 4201))
-
-	# aubio does this functionality for us
-	# def testExtractFrequency(self):
-	# 	# mp3 file of c major chord on treble clef
-	# 	mp3Frequency = Tune.extractFrequency("../tests/MP3TestFiles/c-major-scale-treble.mp3")
-	# 	# refer to http://www.phy.mtu.edu/~suits/notefreqs.html
-	# 	frequency = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
-	# 	for i in xrange(0, 8):
-	# 		self.assertTrue(Note.frequencyEqual(mp3Frequency[i], frequency[i]))
+		for i in xrange(0, 3):
+			self.assertTrue(pitchList[i].pitchEqual(Pitch.MIDInotetoPitch(i+60)))
 
 	def testComputePitchFromFrequency(self):
 		# mp3 file of c major chord on treble clef
@@ -375,60 +225,7 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertTrue(tune.eventsListEquals(CRestC))
 		self.assertFalse(tune.eventsListEquals([q1_C4, q2_C4]))
 
-    #self.assertFalse(tune.eventsListEquals(rest, [q1_C4, q2_C4]))
-
-	# We put computeNoteOrder functionality into the calculateRests method so this 
-	# test is not relevant 		
-#	def testcomputeNoteOrderTest(self):
-#		#testing notes with no rests
-#		t1note1 = Note(frequency = 261.63, onset = 0.0)
-#		t1note2 = Note( frequency = 293.66,onset =  1.0)
-#		t1note3 = Note( frequency = 329.63, onset = 2.0)
-#		t1note4 = Note( frequency = 349.23,onset =  3.0)
-#		t1notes = [t1note2,t1note3,t1note1,t1note4]
-#		t1notesOrdered = computeNoteOrder(t1notes, [])
-#		t1expectedNotesOrdered = [t1note1,t1note2,t1note3,t1note4]
-#		
-#		midifile = midi.read_midifile("miditest.midi")
-#		tune = Tune(midi = midifile, timeSignature = (4,4), clef = Clef.TREBLE, title = "firstTune", contributor = ["me", "you"])
-#		
-#		self.assertTrue(tune.eventsListEquals(t1notesOrdered, t1expectedNotesOrdered))
-#		
-#		#testing notes with equal length rests
-#		t21note1 = Note(frequency = 261.63,onset =  0.0)
-#		t2note2 = Note(frequency = 293.66, onset = 1.0)
-#		t2rest1 = Note(frequency = 0,onset =  2.0)
-#		t2note3 = Note(frequency = 329.63,onset =  3.0)
-#		t2note4 = Note(frequency = 349.23, onset = 4.0)
-#		t2rest2 = Note(frequency = 0, onset = 5.0)
-#		t2note5 = Note(frequency = 392.00,onset =  6.0)
-#		t2notes = [t2note5, t2note2,t2note3,t2note1,t2note4]
-#		t2rests = [t2rest2, t2rest1]
-#		
-#		t2notesOrdered = computeNoteOrder(t2notes, t2rests)
-#		t2expectedNotesOrdered = [t2note1,t2note2,t2rest1, t2note3,t2note4, t2rest2, t2note5]
-#		
-#		self.assertTrue(tune.eventsListEquals(t2notesOrdered, t2expectedNotesOrdered))
-#		
-#		#testing notes with different length rests and notes
-#		t3note1 = Note(261.63, 0.0)
-#		t3rest1 = Note(0, 1.0)
-#		t3note2 = Note(293.66, 3.0)
-#		t3rest2 = Note(0, 3.5)
-#		t3note3 = Note(329.63, 4.0)
-#		t3note4 = Note(349.23, 8.0)
-#		t3rest3 = Note(0, 10.0)
-#		t3note5 = Note(392.00, 14.0)
-#		
-#		t3notes = [t3note5, t3note3, t3note2,t3note1,t3note4]
-#		t3rests = [t3rest2, t3rest3m, t3rest1]
-#		
-#		t3notesOrdered = computeNoteOrder(t3notes, t3rests)
-#		t3expectedNotesOrdered = [t3note1,t3rest1, t3note2, t3rest2, t3note3, t3note4, t3rest3, t3note5]
-#		
-#		self.assertTrue(tune.eventsListEquals(t3notesOrdered, t3expectedNotesOrdered))
-
-		
+   		
 
 
 	def testKeyEqual(self):
@@ -446,58 +243,6 @@ class TestImpromptuBackend(unittest.TestCase):
 		self.assertFalse(key.keyEqual(diffAccidental))
 		self.assertFalse(key.keyEqual(diffIsMajor))
 	
-	# we did not implement a tuneEquals method in the Tune class	
-	# def testtuneEquals(self):
-	# 	midifile = midi.read_midifile("miditest.midi")
-	# 	tune = Tune(midifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
-	# 	note1 = Note( 261.63, 0.0)
-	# 	note2 = Note( 293.66, 1.0)
-	# 	note3 = Note( 329.63, 2.0)
-	# 	note4 = Note( 349.23, 3.0)
-	# 	notes = [t1note2,t1note3,t1note1,t1note4]
-	# 	tune.setNotesList(notes)
-		
-	# 	sameMidifile = midi.read_midifile("miditest.midi")
-	# 	sametune = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
-	# 	sametune.setNotesList(notes)
-	# 	self.assertTrue(tune.tuneEquals(sametune))
-		
-	# 	diffTimeSig = Tune(sameMidifile, (3,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
-	# 	diffTimeSig.setNotesList(notes)
-	# 	self.assertFalse(tune.tuneEquals(diffTimeSig))
-		
-	# 	diffClef = Tune(sameMidifile, (4,4), bass, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
-	# 	diffClef.setNotesList(notes)
-	# 	self.assertFalse(tune.tuneEquals(diffClef))
-		
-	# 	diffName = Tune(sameMidifile, (4,4), treble, "name", ["me", "you"], Key (true, Pitch('e', None, flat)))
-	# 	diffName.setNotesList(notes)
-	# 	self.assertFalse(tune.tuneEquals(diffName))
-		
-	# 	diffCollab = Tune(sameMidifile, (4,4), treble, "firstTune", ["us", "you"], Key (true, Pitch('e', None, flat)))
-	# 	diffCollab.setNotesList(notes)
-	# 	self.assertFalse(tune.tuneEquals(diffCollab))
-		
-	# 	diffMidiFile = midi.read_midifile("diffmiditest.test")
-	# 	tune = Tune(diffMidiFile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
-	# 	diffMidiFile.setNotesList(notes)
-	# 	self.assertFalse(tune.tuneEquals(diffMidiFile))
-		
-	# 	diffKey = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('b', None, flat)))
-	# 	diffKey.setNotesList(notes)
-	# 	self.assertFalse(tune.tuneEquals(diffKey))
-		
-	# 	t2note1 = Note( 261.63, 0.0)
-	# 	t2note2 = Note( 293.66, 1.0)
-	# 	t2rest1 = Note( 0, 2.0)
-	# 	t2note3 = Note( 329.63, 3.0)
-	# 	t2note4 = Note( 349.23, 4.0)
-	# 	t2rest2 = Note( 0, 5.0)
-	# 	t2note5 = Note( 392.00, 6.0)
-	# 	t2notes = [t2note5, t2note2,t2note3,t2note1,t2note4]
-	# 	diffNotesList = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"])
-	# 	diffNotesList.setNotes(t2note1)
-	# 	self.assertFalse(tune.tuneEquals(diffNotesList))
 
 	def testEventequal(self):
 		note = Note(frequency=261.63,onset= 0.0)
@@ -586,6 +331,7 @@ class TestImpromptuBackend(unittest.TestCase):
 
 		self.assertTrue(tune.eventsListEquals(sameEvents))
 		self.assertFalse(tune.eventsListEquals(events))
+
 
 	def testNotesListGetterSetter(self):
 		# print "RUNNING: testNotesListGetterSetter ..."
@@ -777,6 +523,259 @@ class TestImpromptuBackend(unittest.TestCase):
 		rest1 = Rest(duration=Duration.WHOLE, onset=6.67, pitch=pitch2)
 		self.assertTrue(note1.eventEqual(tune_events[0]))
 		self.assertTrue(rest1.eventEqual(tune_events[1]))
+
+
+		# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
+	# This instead will be needed for iteration 2 with audio files.
+	# def testComputeFrequency(self):
+	# 	# check frequencies are calculated correctly from computeFrequency
+	# 	# import midi file: first 3 notes of C major scale as all quarter notes (refer to TestComputePitches)
+	# 	# Use Python MIDI library https://github.com/vishnubob/python-midi
+	# 	# MIDI files are an array of integers with a header
+	# 	TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
+	# 	frequencies = [261.63, 293.66, 329.63]
+	# 	# check frequencies and onsets calculated correctly from generateTune
+	# 	for i in xrange(0, 3):
+	# 		self.assertEqual(readFrequency(), frequencies[i])
+		
+	# This test is unnecessary because we do not need to read Frequencies from MIDI files to compute note pitches.
+	# This instead will be needed for iteration 2 with audio files.
+	# def testcomputeFrequency(self):
+	# 	# check frequencies are calculated correctly from computeFrequency
+		
+	# 	# import midi file: first 3 notes of C major scale as all quarter notes (refer to TestComputePitches)
+	# 	# Use Python MIDI library https://github.com/vishnubob/python-midi
+	# 	# MIDI files are an array of integers with a header
+	# 	TuneMIDI = midi.read_midifile("../tests/MIDITestFiles/c-major-scale-treble.mid")
+		
+	# 	frequencies = [261.63, 293.66, 329.63]
+	# 	# check frequencies and onsets calculated correctly from generateTune
+	# 	for i in xrange(0, 3):
+	# 		self.assertEqual(readFrequency(TuneMIDI[i]), frequencies[i])
+
+
+	# we did not implement a tuneEquals method in the Tune class	
+	# def testtuneEquals(self):
+	# 	midifile = midi.read_midifile("miditest.midi")
+	# 	tune = Tune(midifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
+	# 	note1 = Note( 261.63, 0.0)
+	# 	note2 = Note( 293.66, 1.0)
+	# 	note3 = Note( 329.63, 2.0)
+	# 	note4 = Note( 349.23, 3.0)
+	# 	notes = [t1note2,t1note3,t1note1,t1note4]
+	# 	tune.setNotesList(notes)
+		
+	# 	sameMidifile = midi.read_midifile("miditest.midi")
+	# 	sametune = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
+	# 	sametune.setNotesList(notes)
+	# 	self.assertTrue(tune.tuneEquals(sametune))
+		
+	# 	diffTimeSig = Tune(sameMidifile, (3,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
+	# 	diffTimeSig.setNotesList(notes)
+	# 	self.assertFalse(tune.tuneEquals(diffTimeSig))
+		
+	# 	diffClef = Tune(sameMidifile, (4,4), bass, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
+	# 	diffClef.setNotesList(notes)
+	# 	self.assertFalse(tune.tuneEquals(diffClef))
+		
+	# 	diffName = Tune(sameMidifile, (4,4), treble, "name", ["me", "you"], Key (true, Pitch('e', None, flat)))
+	# 	diffName.setNotesList(notes)
+	# 	self.assertFalse(tune.tuneEquals(diffName))
+		
+	# 	diffCollab = Tune(sameMidifile, (4,4), treble, "firstTune", ["us", "you"], Key (true, Pitch('e', None, flat)))
+	# 	diffCollab.setNotesList(notes)
+	# 	self.assertFalse(tune.tuneEquals(diffCollab))
+		
+	# 	diffMidiFile = midi.read_midifile("diffmiditest.test")
+	# 	tune = Tune(diffMidiFile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('e', None, flat)))
+	# 	diffMidiFile.setNotesList(notes)
+	# 	self.assertFalse(tune.tuneEquals(diffMidiFile))
+		
+	# 	diffKey = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"], Key (true, Pitch('b', None, flat)))
+	# 	diffKey.setNotesList(notes)
+	# 	self.assertFalse(tune.tuneEquals(diffKey))
+		
+	# 	t2note1 = Note( 261.63, 0.0)
+	# 	t2note2 = Note( 293.66, 1.0)
+	# 	t2rest1 = Note( 0, 2.0)
+	# 	t2note3 = Note( 329.63, 3.0)
+	# 	t2note4 = Note( 349.23, 4.0)
+	# 	t2rest2 = Note( 0, 5.0)
+	# 	t2note5 = Note( 392.00, 6.0)
+	# 	t2notes = [t2note5, t2note2,t2note3,t2note1,t2note4]
+	# 	diffNotesList = Tune(sameMidifile, (4,4), treble, "firstTune", ["me", "you"])
+	# 	diffNotesList.setNotes(t2note1)
+	# 	self.assertFalse(tune.tuneEquals(diffNotesList))
+
+	 #These functions weren't written and are not necessary for execution 
+    # because we didn't need the frequency attribute
+#	def testeventsListEquals(self):
+# 		note1 = Note(frequency = 261.63, onset = 0.0)
+# 		note2 = Note( frequency = 293.66, onset = 1.0)
+# 		note3 = Note(frequency = 329.63, onset = 2.0)
+# 		note4 = Note(frequency = 349.23, onset = 3.0)
+		
+# 		notes = [note1, note2, note3, note4]
+		
+# 		samenote1 = Note( frequency = 261.63, onset =  0.0)
+# 		samenote2 = Note( frequency = 293.66, onset = 1.0)
+# 		samenote3 = Note( frequency = 329.63, onset = 2.0)
+# 		samenote4 = Note( frequency = 349.23, onset = 3.0)
+		
+# 		sameNotes = [samenote1, samenote2, samenote3, samenote4]
+		
+# 		midifile = "../tests/MIDITestFiles/c-major-scale-treble.mid"
+# 		tune = Tune(midi = midifile, timeSignature = (4, 4), clef = Clef.TREBLE, titel = "firstTune", contributor = ["me", "you"])
+		
+# 		self.assertTrue(tune.eventsListEquals(notes,sameNotes))
+		
+# 		diffNote3 = Note( frequency = 300.0, onset =  2.0)
+# 		diff3rdNote = [samenote1, samenote2, diffNote3, samenote4]
+# 		self.assertFalse(tune.eventsListEquals(notes,diff3rdNote))
+		
+# 		diffNoteOrder = [samenote1, samenote3, samenote2, samenote4]
+# 		self.assertFalse(tune.eventsListEquals(notes,diffNoteOrder))
+#		note1 = Note( 261.63, 0.0)
+#		note2 = Note( 293.66, 1.0)
+#		note3 = Note(329.63, 2.0)
+#		note4 = Note(349.23, 3.0)
+#		
+#		notes = [note1, note2, note3, note4]
+#		
+#		samenote1 = Note( 261.63, 0.0)
+#		samenote2 = Note( 293.66, 1.0)
+#		samenote3 = Note( 329.63, 2.0)
+#		samenote4 = Note( 349.23, 3.0)
+#		
+#		sameNotes = [samenote1, samenote2, samenote3, samenote4]
+#		
+#		midifile = midi.read_midifile("miditest.midi")
+#		tune = Tune(midifile, (4, 4), treble, "firstTune", ["me", "you"])
+#		
+#		self.assertTrue(tune.eventsListEquals(notes,sameNotes))
+#		
+#		diffNote3 = Note( 300.0, 2.0)
+#		diff3rdNote = [samenote1, samenote2, diffNote3, samenote4]
+#		self.assertFalse(tune.eventsListEquals(notes,diff3rdNote))
+#		
+#		diffNoteOrder = [samenote1, samenote3, samenote2, samenote4]
+#		self.assertFalse(tune.eventsListEquals(notes,diffNoteOrder))
+
+
+	# This test is unnecessary because we do not need to covert frequencies from MIDI files to compute note pitches.
+	# While Aubio provides extracted frequencies, it also can directly computes MIDI notes
+	# def testComputeNotes(self):
+	# 	tune = Tune((4, 4), Clef.TREBLE, "title1", ["a", "b"])
+		
+	# 	#testing C major scale with all quarter notes
+	# 	q_C4 = Note(261.63, 0)
+	# 	q_D4 = Note(293.66, 1)
+	# 	q_E4 = Note(329.63, 2)
+	# 	q_F4 = Note(349.23, 3)
+	# 	q_G4 = Note(392.00, 4)
+	# 	q_A4 = Note(440.00, 5)
+	# 	q_B4 = Note(493.88, 6)
+	# 	q_C5 = Note(523.25, 7)
+	# 	CMajor1 = [q_C4, q_D4, q_E4, q_F4, q_G4, q_A4, q_B4, q_C5]
+	# 	CMajor1_notes = tune.computeNotes(CMajor1)
+	# 	self.assertTrue(tune.eventsListEquals(CMajor1, CMajor1_notes))
+		
+	# 	#testing for C major scale of different note lengths
+	# 	w_C4 = Note(261.63, 0)
+	# 	h_D4 = Note(293.66, 4)
+	# 	q_E4 = Note(329.63, 6)
+	# 	e_F4 = Note(349.23, 7)
+	# 	s_G4 = Note(392.00, 7.5)
+	# 	e_A4 = Note(440.00, 7.75)
+	# 	q_B4 = Note(493.88, 8.25)
+	# 	h_C5 = Note(523.25, 9.25)
+	# 	CMajor2 = [w_C4, h_D4, q_E4, e_F4, s_G4, e_A4, q_B4, h_C5]
+	# 	CMajor2_notes = tune.computeNotes(CMajor2)
+	# 	self.assertTrue(tune.eventsListEquals(CMajor2, CMajor2_notes))
+	# 	self.assertFalse(tune.eventsListEquals(CMajor2, CMajor1))
+
+	# aubio does this functionality for us
+	# def testExtractOnset(self):
+	# 	# mp3 file with 8 note onsets at 0, 2, 3, ..., 7
+	# 	mp3Onset = Tune.extractOnset("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+	# 	for i in xrange(0, 8):
+	# 		self.assertEqual(mp3Onset[i], i)
+
+	# aubio does this functionality for us
+	# def testExtractDuration(self):
+	# 	# mp3 file with 8 note durations, each a quarter note long
+
+	# 	# first get duration in seconds
+	# 	mp3Duration = Tune.extract_s_Duration("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+	# 	# convert to duration enum
+	# 	for i in xrange(0, 8):
+	# 		mp3Duration[i] = Tune.secondsToDuration(mp3Duration[i])
+	# 		self.assertEqual(mp3Duration[i], Duration.QUARTER)
+
+
+
+	# We put computeNoteOrder functionality into the calculateRests method so this 
+	# test is not relevant 		
+#	def testcomputeNoteOrderTest(self):
+#		#testing notes with no rests
+#		t1note1 = Note(frequency = 261.63, onset = 0.0)
+#		t1note2 = Note( frequency = 293.66,onset =  1.0)
+#		t1note3 = Note( frequency = 329.63, onset = 2.0)
+#		t1note4 = Note( frequency = 349.23,onset =  3.0)
+#		t1notes = [t1note2,t1note3,t1note1,t1note4]
+#		t1notesOrdered = computeNoteOrder(t1notes, [])
+#		t1expectedNotesOrdered = [t1note1,t1note2,t1note3,t1note4]
+#		
+#		midifile = midi.read_midifile("miditest.midi")
+#		tune = Tune(midi = midifile, timeSignature = (4,4), clef = Clef.TREBLE, title = "firstTune", contributor = ["me", "you"])
+#		
+#		self.assertTrue(tune.eventsListEquals(t1notesOrdered, t1expectedNotesOrdered))
+#		
+#		#testing notes with equal length rests
+#		t21note1 = Note(frequency = 261.63,onset =  0.0)
+#		t2note2 = Note(frequency = 293.66, onset = 1.0)
+#		t2rest1 = Note(frequency = 0,onset =  2.0)
+#		t2note3 = Note(frequency = 329.63,onset =  3.0)
+#		t2note4 = Note(frequency = 349.23, onset = 4.0)
+#		t2rest2 = Note(frequency = 0, onset = 5.0)
+#		t2note5 = Note(frequency = 392.00,onset =  6.0)
+#		t2notes = [t2note5, t2note2,t2note3,t2note1,t2note4]
+#		t2rests = [t2rest2, t2rest1]
+#		
+#		t2notesOrdered = computeNoteOrder(t2notes, t2rests)
+#		t2expectedNotesOrdered = [t2note1,t2note2,t2rest1, t2note3,t2note4, t2rest2, t2note5]
+#		
+#		self.assertTrue(tune.eventsListEquals(t2notesOrdered, t2expectedNotesOrdered))
+#		
+#		#testing notes with different length rests and notes
+#		t3note1 = Note(261.63, 0.0)
+#		t3rest1 = Note(0, 1.0)
+#		t3note2 = Note(293.66, 3.0)
+#		t3rest2 = Note(0, 3.5)
+#		t3note3 = Note(329.63, 4.0)
+#		t3note4 = Note(349.23, 8.0)
+#		t3rest3 = Note(0, 10.0)
+#		t3note5 = Note(392.00, 14.0)
+#		
+#		t3notes = [t3note5, t3note3, t3note2,t3note1,t3note4]
+#		t3rests = [t3rest2, t3rest3m, t3rest1]
+#		
+#		t3notesOrdered = computeNoteOrder(t3notes, t3rests)
+#		t3expectedNotesOrdered = [t3note1,t3rest1, t3note2, t3rest2, t3note3, t3note4, t3rest3, t3note5]
+#		
+#		self.assertTrue(tune.eventsListEquals(t3notesOrdered, t3expectedNotesOrdered))
+
+
+	# aubio does this functionality for us
+	# def testExtractFrequency(self):
+	# 	# mp3 file of c major chord on treble clef
+	# 	mp3Frequency = Tune.extractFrequency("../tests/MP3TestFiles/c-major-scale-treble.mp3")
+	# 	# refer to http://www.phy.mtu.edu/~suits/notefreqs.html
+	# 	frequency = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25]
+	# 	for i in xrange(0, 8):
+	# 		self.assertTrue(Note.frequencyEqual(mp3Frequency[i], frequency[i]))
+
+
 
 if __name__ == '__main__':
 	unittest.main()
