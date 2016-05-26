@@ -611,7 +611,7 @@ class AppTestCase(unittest.TestCase):
             noteI = updatedTune.events[1]
             pitchI = noteI.pitch
 
-            self.assertEqual(newPitch.letter, pitchI.letter)
+            self.assertEqual(newPitch.letter, newPitch.letter)
 
     # upload a json file (and that a non-json file doesn't upload) -- sofia
     def test_json_upload(self):
