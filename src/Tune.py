@@ -365,7 +365,6 @@ class Tune(object):
         onset = float(event['onset'])
         duration = self.durationJSONtoTune(str(event['duration']))
         s_duration = float(event['s_duration'])
-        print s_duration  
         #new_event = Event(duration=duration, onset=onset)
 
         if event['class'] == 'note':
