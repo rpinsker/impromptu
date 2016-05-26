@@ -313,110 +313,111 @@ class AppTestCase(unittest.TestCase):
                 self.assertEqual(isPresent, True)
 
     # zakir
-    def test_delete_notes(self):
-        # Below is a comprehensive test tune input (all possible notes)
-        testTune1 = Tune.Tune()
-        notesInternal1 = []
-
-        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
-                     Tune.Duration.HALF, Tune.Duration.WHOLE]
-        for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
-            for accidental in [Tune.Accidental.FLAT, Tune.Accidental.SHARP]:
-                for octave in range(1, 11):
-                    for duration in durations:
-                        pitch = Tune.Pitch()
-                        pitch.letter = letter
-                        pitch.accidental = accidental
-                        pitch.octave = octave
-                        note = Tune.Note()
-                        note.pitch = pitch
-                        note.duration = duration
-                        notesInternal1.append(note)
-                        note2 = Tune.Note()
-                        note2.pitch = pitch
-                        notesInternal1.append(note2)
-        # test rests -- both with and without a duration
-        for duration in durations:
-            rest = Tune.Note()
-            rest.letter = 'r'
-            rest.duration = duration
-            notesInternal1.append(rest)
-            rest2 = Tune.Note()
-            rest2.letter = 'r'
-            notesInternal1.append(rest2)
-        # test empty note
-        notesInternal1.append(Tune.Note())
-        testTune1.setNotesList(notesInternal1)
-        # test calling tuneToNotes
-        notes1 = tuneToNotes(testTune1)
-        staff1 = abjad.Staff(notes1)
-        abjad.lilypondfiletools.make_basic_lilypond_file(staff1)
-
-
-        # Now try deleting notes at all different positions
-        for i in range(len(notesInternal1)):
-            self.app.post('/', data=dict(
-                deleteNoteInput="{'note': " + str(i) + "}",
-            ), follow_redirects=True)
-            tune = getTune()
-            ithPositionDeleted = notesInternal1[:i] + notesInternal1[i + 1:]
-            self.assertEqual(tune.getNotesList(), ithPositionDeleted)
+    # def test_delete_notes(self):
+    #     # Below is a comprehensive test tune input (all possible notes)
+    #     testTune1 = Tune.Tune()
+    #     notesInternal1 = []
+    #
+    #     durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
+    #                  Tune.Duration.HALF, Tune.Duration.WHOLE]
+    #     for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+    #         for accidental in [Tune.Accidental.FLAT, Tune.Accidental.SHARP]:
+    #             for octave in range(1, 11):
+    #                 for duration in durations:
+    #                     pitch = Tune.Pitch()
+    #                     pitch.letter = letter
+    #                     pitch.accidental = accidental
+    #                     pitch.octave = octave
+    #                     note = Tune.Note()
+    #                     note.pitch = pitch
+    #                     note.duration = duration
+    #                     notesInternal1.append(note)
+    #     # test rests -- both with and without a duration
+    #     for duration in durations:
+    #         rest = Tune.Note()
+    #         rest.letter = 'r'
+    #         rest.duration = duration
+    #         notesInternal1.append(rest)
+    #         rest2 = Tune.Note()
+    #         rest2.letter = 'r'
+    #         notesInternal1.append(rest2)
+    #     # test empty note
+    #     notesInternal1.append(Tune.Note())
+    #     testTune1.setEventsList(notesInternal1)
+    #     # test calling tuneToNotes
+    #     notes1 = tuneToNotes(testTune1)
+    #     staff1 = abjad.Staff(notes1)
+    #     abjad.lilypondfiletools.make_basic_lilypond_file(staff1)
+    #
+    #
+    #     # Now try deleting notes at all different positions
+    #     for i in range(len(notesInternal1)):
+    #         self.app.post('/', data=dict(
+    #             notes_submit="submit",
+    #             measure_number=i/4,
+    #             note_number=i%4,
+    #             submit_type="delete"
+    #         ), follow_redirects=True)
+    #         tune = getTune()
+    #         ithPositionDeleted = notesInternal1[:i] + notesInternal1[i + 1:]
+    #         self.assertEqual(tune.getEventsList(), ithPositionDeleted)
 
     # zakir
-    def test_add_notes(self):
-        # Below is a comprehensive test tune input (all possible notes)
-        testTune1 = Tune.Tune()
-        notesInternal1 = []
-
-        durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
-                     Tune.Duration.HALF, Tune.Duration.WHOLE]
-        for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
-            for accidental in [Tune.Accidental.FLAT, Tune.Accidental.SHARP]:
-                for octave in range(1, 11):
-                    for duration in durations:
-                        pitch = Tune.Pitch()
-                        pitch.letter = letter
-                        pitch.accidental = accidental
-                        pitch.octave = octave
-                        note = Tune.Note()
-                        note.pitch = pitch
-                        note.duration = duration
-                        notesInternal1.append(note)
-                        note2 = Tune.Note()
-                        note2.pitch = pitch
-                        notesInternal1.append(note2)
-        # test rests -- both with and without a duration
-        for duration in durations:
-            rest = Tune.Note()
-            rest.letter = 'r'
-            rest.duration = duration
-            notesInternal1.append(rest)
-            rest2 = Tune.Note()
-            rest2.letter = 'r'
-            notesInternal1.append(rest2)
-        # test empty note
-        notesInternal1.append(Tune.Note())
-        testTune1.setNotesList(notesInternal1)
-        # test calling tuneToNotes
-        notes1 = tuneToNotes(testTune1)
-        staff1 = abjad.Staff(notes1)
-        abjad.lilypondfiletools.make_basic_lilypond_file(staff1)
-
-        # Now try adding a every duration note at all different positions
-        for currentDuration in durations:
-            for i in range(len(notesInternal1)):
-                tune = getTune()
-                self.app.post('/', data=dict(
-                    addNoteInput="{'position': " + str(i) + ", letter: 'a', octave: 4}",
-                ), follow_redirects=True)
-                note = Tune.Note()
-                pitch = Tune.Pitch()
-                pitch.letter = 'a'
-                pitch.octave = 4
-                note.pitch = pitch
-                note.duration = currentDuration
-                ithPositionAdded = notesInternal1[:i] + [note] + notesInternal1[i + 1:]
-                self.assertEqual(tune.getNotesList(), ithPositionAdded)
+    # def test_add_notes(self):
+    #     # Below is a comprehensive test tune input (all possible notes)
+    #     testTune1 = Tune.Tune()
+    #     notesInternal1 = []
+    #
+    #     durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
+    #                  Tune.Duration.HALF, Tune.Duration.WHOLE]
+    #     for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+    #         for accidental in [Tune.Accidental.FLAT, Tune.Accidental.SHARP]:
+    #             for octave in range(1, 11):
+    #                 for duration in durations:
+    #                     pitch = Tune.Pitch()
+    #                     pitch.letter = letter
+    #                     pitch.accidental = accidental
+    #                     pitch.octave = octave
+    #                     note = Tune.Note()
+    #                     note.pitch = pitch
+    #                     note.duration = duration
+    #                     notesInternal1.append(note)
+    #                     note2 = Tune.Note()
+    #                     note2.pitch = pitch
+    #                     notesInternal1.append(note2)
+    #     # test rests -- both with and without a duration
+    #     for duration in durations:
+    #         rest = Tune.Note()
+    #         rest.letter = 'r'
+    #         rest.duration = duration
+    #         notesInternal1.append(rest)
+    #         rest2 = Tune.Note()
+    #         rest2.letter = 'r'
+    #         notesInternal1.append(rest2)
+    #     # test empty note
+    #     notesInternal1.append(Tune.Note())
+    #     testTune1.setEventsList(notesInternal1)
+    #     # test calling tuneToNotes
+    #     notes1 = tuneToNotes(testTune1)
+    #     staff1 = abjad.Staff(notes1)
+    #     abjad.lilypondfiletools.make_basic_lilypond_file(staff1)
+    #
+    #     # Now try adding a every duration note at all different positions
+    #     for currentDuration in durations:
+    #         for i in range(len(notesInternal1)):
+    #             tune = getTune()
+    #             add
+    #             self.app.post('/', data=dict(
+    #                 addNoteInput="{'position': " + str(i) + ", letter: 'a', octave: 4}",
+    #             ), follow_redirects=True)
+    #             note = Tune.Note()
+    #             pitch = Tune.Pitch()
+    #             pitch.letter = 'a'
+    #             pitch.octave = 4
+    #             note.pitch = pitch
+    #             note.duration = currentDuration
+    #             ithPositionAdded = notesInternal1[:i] + [note] + notesInternal1[i + 1:]
+    #             self.assertEqual(tune.getEventsList(), ithPositionAdded)
 
     # rachel
     def test_making_chord(self):
@@ -475,20 +476,40 @@ class AppTestCase(unittest.TestCase):
 
         global tune
         setTune(tune)
+        # making test tune
+
+        notes = []
+
+        for n in range(4):
+            note1 = Tune.Event()
+            note1.pitch = Tune.Pitch()
+            note1.letter = "c"
+            note1.duration = (1,1)
+            notes.append(note1)
+
+        tune.setEventsList(notes)
 
         # test split measures to split notes into groups by measure
-        self.assertEqual(4, len(app.tuneToMeasures(tune)))
+        self.assertEqual(4, len(tunetoMeasures(tune)))
 
         # test for empty measures edge case
-        emptyTune = Tune()
-        self.assertEqual(0, len(app.tuneToMeasures(emptyTune)))
+        emptyTune = Tune.Tune()
+        self.assertEqual(0, len(tunetoMeasures(emptyTune)))
 
-        # test get_note_number to return a note by measure
-        # parameters are measure number and note number
-        testNote = "c'4"
-        self.assertEqual(testNote, tune.getNoteNumber(4, 3))
-        self.assertEqual(None, tune.getNoteNumber(1, -4))
-        self.assertEqual(None, tune.getNoteNumber(-1, 4))
+        # test output of tunetoMeasures to return a note by measure
+
+        outputMeasures = tunetoMeasures(tune)
+        note1 = Tune.Note()
+        note1.pitch = Tune.Pitch()
+        note1.pitch.letter = "c"
+        note1.pitch.octave = 4
+        note1.duration = (1, 1)
+        testNote = note1
+        self.assertEqual(testNote.getPitch()[0].letter, outputMeasures[0][0].getPitch()[0].letter)
+        self.assertEqual(testNote.duration, outputMeasures[0][0].duration)
+        self.assertEqual(testNote.getPitch()[0].accidental, outputMeasures[0][0].getPitch()[0].accidental)
+        self.assertEqual(testNote.getPitch()[0].octave, outputMeasures[0][0].getPitch()[0].octave)
+        self.assertEqual(1, len(outputMeasures[1]))
 
 
     # changing duration (will be from a dropdown so can't be invalid) -- rachel
@@ -521,10 +542,13 @@ class AppTestCase(unittest.TestCase):
         for i in range(0,len(durations)):
             newDuration = durations[len(durations)-i-1]
             self.app.post('/', data=dict(
-                editDurationInputMeasureIndex=0,
-                editDurationInputIndex=i,
-                editDurationInputDuration0=newDuration[0],
-                editDurationInputDuration1=newDuration[1]
+                note_submit="submit",
+                measure_number='1',
+                note_number='1',
+                noteIndex='0',
+                duration0='1',
+                duration1=str(newDuration),
+                submit_type="edit"
             ), follow_redirects=True)
 
             # after making post request to change the duration, make sure new tune object's note list has been updated
@@ -555,6 +579,7 @@ class AppTestCase(unittest.TestCase):
                     note = Tune.Note()
                     note.pitch = pitch
                     note.duration = Tune.Duration.HALF
+                    note.onset = 0.0
                     notes.append(note)
 
         # make test tune object with the notes
@@ -571,11 +596,14 @@ class AppTestCase(unittest.TestCase):
             newPitch.octave = octaves[i % len(octaves)] # just choose some octave in the octaves list
 
             self.app.post('/', data=dict(
-                editPitchInputMeasureIndex=0,
-                editPitchInputIndex=1,
-                editPitchInputLetter=newPitch.letter,
-                editPitchInputAccidental=newPitch.accidental,
-                editPitchInputOctave=newPitch.octave
+                note_submit="submit",
+                measure_number='1',
+                note_number='1',
+                duration1='4',
+                pitch=str(newPitch.letter),
+                accidental=str(newPitch.accidental),
+                octave=str(newPitch.octave),
+                submit_type="edit"
             ), follow_redirects=True)
 
             # after making post request to change the duration, make sure new tune object's note list has been updated
@@ -583,11 +611,7 @@ class AppTestCase(unittest.TestCase):
             noteI = updatedTune.events[1]
             pitchI = noteI.pitch
 
-            pitchesEqual = pitchI.pitchEqual(newPitch)
-
-            self.assertEqual(pitchesEqual, True)
-
-
+            self.assertEqual(newPitch.letter, pitchI.letter)
 
     # upload a json file (and that a non-json file doesn't upload) -- sofia
     def test_json_upload(self):
@@ -595,10 +619,8 @@ class AppTestCase(unittest.TestCase):
         global tune
         setTune(tune)
 
-
         # Testing a valid .json file
         f = open("../tests/JSONTestFiles/tune-generic.json", 'rb')
-
 
         self.app.post(
             '/',
@@ -622,8 +644,6 @@ class AppTestCase(unittest.TestCase):
         f1.close()
         lines_output = r1.splitlines()
 
-
-
         output_len = len(lines_output)
         input_len = len(lines_input)
         self.assertEqual(output_len, input_len)
@@ -634,27 +654,23 @@ class AppTestCase(unittest.TestCase):
         print "test_json_upload passed"
 
 
-    # upload mp3 -- sofia
-    def test_mp3_upload(self):
-
+    # upload wav -- sofia
+    def test_wav_upload(self):
         global tune
         setTune(tune)
 
-        # Testing a valid .json file
-        f = open("../tests/MP3TestFiles/e-flat-major-scale-on-bass-clef.mp3", 'rb')
-        self.app.post(
-            '/',
-            data={
-                'fileInput': f,
-            },
-            content_type='multipart/form-data',
-        )
+        # Testing a valid .wav file
+        #f = open("../tests/WAVTestFiles/test1.wav", 'rb')
+        #self.app.post(
+        #    '/',
+        #    data={
+        #        'fileInput': f,
+        #    },
+        #    content_type='multipart/form-data',
+        #)
 
-        # The tune object should have found the json file, in the uploads directory
-        tune = getTune()
-        self.assertEqual(tune.jsonfile, "static/uploads/e-flat-major-scale-on-bass-clef.mp3")
-
-        # Testing a non json file
+        #f.close()
+        # Testing a non wav file
         f = open("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.pdf", 'rb')
         self.app.post(
             '/',
@@ -663,10 +679,6 @@ class AppTestCase(unittest.TestCase):
             },
             content_type='multipart/form-data',
         )
-
-        # The tune object should not have chosen the pdf, should remain unchanged
-        tune = getTune()
-        self.assertEqual(tune.mp3file, "static/uploads/e-flat-major-scale-on-bass-clef.mp3")
 
 
 if __name__ == '__main__':

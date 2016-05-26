@@ -119,7 +119,7 @@ def tune():
                 tuneObj.TunetoJSON(filename='static/uploads/currentTune.json')
                 return render_template('home.html', filename='static/currentTune/' + filenamePDF + '.pdf')
 
-        if request.form.has_key('note-submit') and request.form.has_key('measure_number') and request.form.has_key('note_number'):
+        if request.form.has_key('note_submit') and request.form.has_key('measure_number') and request.form.has_key('note_number'):
             measureIndex = request.form['measure_number']
             noteIndex = request.form['note_number']
             dur0 = request.form['duration0']
@@ -137,7 +137,7 @@ def tune():
             else:
                 accidental = 0
             octave = str(request.form['octave'])
-            type = str(request.form['submit-type'])
+            type = str(request.form['submit_type'])
             if type == "edit":
                 editDurationUpdateTuneObj(int(measureIndex) - 1,int(noteIndex) - 1,int(dur0),int(dur1))
                 editPitchUpdateTuneObj(int(measureIndex) - 1, int(noteIndex) - 1, letter.lower(), accidental, int(octave))
@@ -366,7 +366,8 @@ def tunetoMeasures(tune):
     measureTime = float(tune.getTimeSignature()[0]) / float(tune.getTimeSignature()[1])
     currentTimeLeft = measureTime
     currentMeasure = []
-
+    if tune.events == None:
+        return []
     for note in tune.events:
         
         # give a duration if it is empty or use the note's actual duration

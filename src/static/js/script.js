@@ -149,27 +149,27 @@ $( document ).ready(function() {
         var n = document.getElementById(measureID).value;
         if ($('#note-info-box-'+ m).is(":visible")) {
             infoID = "#m-" + m + "ni-" + n;
-            $('input[name=submit-type]').val('edit');
+            $('input[name=submit_type]').val('edit');
             var d = $(infoID).find(".edit-select-duration").val();
             var l = $(infoID).find(".edit-select-pitch").val();
             var a = $(infoID).find(".edit-select-acc").val();
             var o = $(infoID).find(".edit-select-octave").val();
         } else if ($('#note-add-box-'+ m).is(":visible")) {
             infoID = "#m-" + m + "na-" + n;
-            $('input[name=submit-type]').val('add');
+            $('input[name=submit_type]').val('add');
             var d = $(infoID).find(".add-select-duration").val();
             var l = $(infoID).find(".add-select-pitch").val();
             var a = $(infoID).find(".add-select-acc").val();
             var o = $(infoID).find(".add-select-octave").val();
         } else if ($('#note-delete-box-'+ m).is(":visible")) {
             infoID = "#m-" + m + "nd-" + n;
-            $('input[name=submit-type]').val('delete');
+            $('input[name=submit_type]').val('delete');
             var d = $(infoID).find(".add-select-duration").val();
             var l = $(infoID).find(".add-select-pitch").val();
             var a = $(infoID).find(".add-select-acc").val();
             var o = $(infoID).find(".add-select-octave").val();
         } else {
-            $('input[name=submit-type]').val('edit');
+            $('input[name=submit_type]').val('edit');
             var d = $(infoID).find(".add-select-duration").val();
             var l = $(infoID).find(".add-select-pitch").val();
             var a = $(infoID).find(".add-select-acc").val();
