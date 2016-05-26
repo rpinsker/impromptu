@@ -2,8 +2,11 @@ from TuneSubclasses import *
 
 # refer to vartec's answer at http://stackoverflow.com/questions/682504/what-is-a-clean-pythonic-way-to-have-multiple-constructors-in-python
 class Tune(object):
-
+    
+    
+    
     def __init__(self, **kwargs):
+        self.measures = []
         self.timeSignature = (4,4) # default time Signature
         self.keySignature = kwargs.get('keySignature', Key())
         self.clef = kwargs.get('clef', Clef.TREBLE)
@@ -183,11 +186,8 @@ class Tune(object):
             accidental = str(pitch.accidental)
         myfile.write('\t\t\t\t"pitch":{\n\t\t\t\t\t"letter":"%s",\n\t\t\t\t\t"octave":"%s",\n\t\t\t\t\t"accidental":"%s"\n\t\t\t\t}\n' %(str(letter), octave, accidental))
 
-    def TunetoJSON(self):
-        if self.title != None:
-            filename = 'tune-' + self.title + '.json'
-        else:
-            filename = 'tune-generic.json'
+    def TunetoJSON(self, filename='tune-generic.json'):
+
         f = open(filename, 'w')
         
         f.write('{\n')
@@ -239,9 +239,9 @@ class Tune(object):
                 n_pitches = len(pitches)
                 for n in range(0, n_pitches):
                     f.write('\t\t\t\t\t{\n')
-                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n]['letter']))
-                    f.write('\t\t\t\t\t"octave":"%d",\n' %(int(pitches[n]['octave'])))
-                    f.write('\t\t\t\t\t"accidental":"%d"\n' %(int(pitches[n]['accidental'])))
+                    f.write('\t\t\t\t\t"letter":"%c",\n' %(pitches[n].letter))
+                    f.write('\t\t\t\t\t"octave":"%d",\n' %(int(pitches[n].octave)))
+                    f.write('\t\t\t\t\t"accidental":"%d"\n' %(int(pitches[n].accidental)))
                     f.write('\t\t\t\t\t}')
                     if n != n_pitches-1:
                         f.write(',\n')
@@ -303,9 +303,9 @@ class Tune(object):
 
         keysig = self.keySignature
         if keysig == None:
-            f.write('\t\t"keySignature": {}\n')
+            f.write('\t\t"keySignature":{}\n')
         else:
-            f.write('\t\t"keySignature": {\n')
+            f.write('\t\t"keySignature":{\n')
             if keysig.isMajor != None:
                 f.write('\t\t\t"isMajor":"%s",\n' %(keysig.isMajor))
             else:
@@ -314,7 +314,7 @@ class Tune(object):
             if keysig.pitch != None:
                 self.writePitchtoFile(keysig.pitch, f)
             else:
-                f.write('\t\t\t"pitch":{}\n')
+                f.write('\t\t\t\t"pitch":{}\n')
             f.write('\t\t}\n')
 
         f.write('\t}\n')
@@ -324,6 +324,18 @@ class Tune(object):
         return filename
 
     def pitchJSONtoTune(self, pitch):
+#        if pitch['accidental'] != '':
+#            ksig_pitch_accidental = int(pitch['accidental'])
+#        else:
+#            ksig_pitch_accidental = ''
+#        ksig_pitch_letter = str(pitch['letter'])
+#        if pitch['octave'] != '':
+#            ksig_pitch_octave = int(pitch['octave'])
+#        else:
+#            ksig_pitch_octave = ''
+#        pitch = Pitch(accidental=ksig_pitch_accidental, letter=ksig_pitch_letter, octave=ksig_pitch_octave)
+#        return pitch
+
         if pitch['accidental'] != '':
             ksig_pitch_accidental = int(pitch['accidental'])
         else:
@@ -335,6 +347,7 @@ class Tune(object):
             ksig_pitch_octave = ''
         pitch = Pitch(accidental=ksig_pitch_accidental, letter=ksig_pitch_letter, octave=ksig_pitch_octave)
         return pitch
+
 
     def durationJSONtoTune(self, dur_str):
         dur = None
@@ -371,7 +384,7 @@ class Tune(object):
             pitches = []
             for p in event['pitches']:
                 pch = self.pitchJSONtoTune(p)
-                pitches.append(p)
+                pitches.append(pch)
             new_event.setPitch(pitches)
         return new_event
             
@@ -548,10 +561,10 @@ class Tune(object):
                 if len(tuple) ==1:
                     if len(oldtuple) ==1:
                         sdur = float(tuple[0]) - float(oldtuple[0])
-                        events = events + [Rest(onset=oldtuple[0], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                        events = events + [Rest(onset=float(oldtuple[0]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
                     else:
                         sdur = float(tuple[0]) - float(oldtuple[2])
-                        events = events + [Rest(onset=oldtuple[2], s_duration=sdur, duration = self.secondsToDuration(sdur))]
+                        events = events + [Rest(onset=float(oldtuple[2]), s_duration=sdur, duration = self.secondsToDuration(sdur))]
                 else:
                     sdur = float(tuple[2]) - float(tuple[1])
                     p = Pitch()
@@ -570,25 +583,33 @@ if __name__ == "__main__":
     for i in xrange(1,len(sys.argv)):
         if (sys.argv[i] == '-f'): # input flag: sets input file name
             INPUT_FILE = sys.argv[i+1]
+    tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00 (4).wav')
+    print tuneWav.toString()
+    tuneWav.TunetoJSON()
+    jsonfile = 'tune-generic.json'
+    tuneprime = Tune()
+    tuneprime.JSONtoTune(jsonfile)
+    print tuneprime.toString()
+
     # dummyInstance = Tune()
     # print dummyInstance.MIDItoPattern(INPUT_FILE)
 #    print INPUT_FILE
-    tune = Tune.TuneWrapper(INPUT_FILE)
-    print tune.toString()
-    # tune.TunetoJSON()
-    # jsonfile = 'tune-generic.json'
-    # tuneprime = Tune()
-    # tuneprime.JSONtoTune(jsonfile)
-    # print tuneprime.toString()
+#    tune = Tune.TuneWrapper(INPUT_FILE)
+#    print tune.toString()
+#    tune.TunetoJSON()
+#    jsonfile = 'tune-generic.json'
+#    tuneprime = Tune()
+#    tuneprime.JSONtoTune(jsonfile)
+#    print tuneprime.toString()
 
 
 
 #    file1 = '../tests/MIDITestFiles/three-notes-no-break.mid'
 #    file1 = '../tests/MIDITestFiles/Berkeley Lennox Theme.mid'
-    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
-    tune = Tune.TuneWrapper(file1)
-#    runConvert('../tests/WAVTestFiles/Test1/')
+#    file1 = '../tests/MIDITestFiles/tune-with-chord-rest-note.mid'
+
+#    tune = Tune.TuneWrapper(file1)
     # tuneWav = Tune(wav = 'test1.wav')
-    # tuneWav = Tune(wav = '../tests/WAVTestFiles/myRecording00.wav')
-    # print tuneWav.toString()
+
+#    tune.TunetoJSON()
 #    print tune.toString()

@@ -4,7 +4,7 @@ sys.path.insert(0, '../src')
 from app import app
 from app import getTune, setTune, makeLilypondFile, tuneToNotes, makeStaffFromTune, saveLilypondForDisplay, tunetoMeasures
 import unittest
-import TuneIter2 as Tune
+import Tune
 import subprocess
 import glob
 import time
@@ -101,17 +101,15 @@ class AppTestCase(unittest.TestCase):
             notes.append(rest2)
         # test empty note
         notes.append(Tune.Note())
-        testTune.setEventsList(notes) # changed tuneiter2
+        testTune.setEventsList(notes)
         # test calling tuneToNotes
         notesA = tuneToNotes(testTune)
         staff = abjad.Staff()
         for measure in notesA:
-            # print aEvent.written_duration
             m = abjad.Measure(abjad.TimeSignature(tune.getTimeSignature()), measure)
             d = m._preprolated_duration
             if d == abjad.TimeSignature(tune.getTimeSignature()).duration:
                 staff.append(m)
-        #staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
 
@@ -180,7 +178,6 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(tune.contributors, "good name, good name, good name")
         # title and contributors have same constraints so no need to test bad contributors
 
-
     def test_midi_upload(self):
 
         global tune
@@ -214,8 +211,6 @@ class AppTestCase(unittest.TestCase):
         tune = getTune()
         self.assertEqual(tune.midifile, "static/uploads/e-flat-major-scale-on-bass-clef.mid")
 
-
-
     def test_change_title_and_name(self):
 
         global tune
@@ -239,8 +234,6 @@ class AppTestCase(unittest.TestCase):
         tune2 = getTune()
         ly_file = makeLilypondFile(tune2)
         self.assertEqual(str(ly_file.header_block.composer), "\\markup { \"good name, bad name, ok name\" }")
-
-
 
     # ALL BELOW HERE IS FOR ITERATION 2 (MILESTONE 4A)
 
@@ -369,7 +362,6 @@ class AppTestCase(unittest.TestCase):
             ithPositionDeleted = notesInternal1[:i] + notesInternal1[i + 1:]
             self.assertEqual(tune.getNotesList(), ithPositionDeleted)
 
-
     # zakir
     def test_add_notes(self):
         # Below is a comprehensive test tune input (all possible notes)
@@ -426,7 +418,6 @@ class AppTestCase(unittest.TestCase):
                 ithPositionAdded = notesInternal1[:i] + [note] + notesInternal1[i + 1:]
                 self.assertEqual(tune.getNotesList(), ithPositionAdded)
 
-
     # rachel
     def test_making_chord(self):
         durations = [Tune.Duration.SIXTEENTH, Tune.Duration.EIGHTH, Tune.Duration.QUARTER,
@@ -465,12 +456,10 @@ class AppTestCase(unittest.TestCase):
         notesA = tuneToNotes(testTune)
         staff = abjad.Staff()
         for measure in notesA:
-            # print aEvent.written_duration
             m = abjad.Measure(abjad.TimeSignature(tune.getTimeSignature()), measure)
             d = m._preprolated_duration
             if d == abjad.TimeSignature(tune.getTimeSignature()).duration:
                 staff.append(m)
-        #staff = abjad.Staff(notesA)
         abjad.lilypondfiletools.make_basic_lilypond_file(staff)
 
 ############################ EDITING SHEET MUSIC ###################################################
@@ -488,11 +477,11 @@ class AppTestCase(unittest.TestCase):
         setTune(tune)
 
         # test split measures to split notes into groups by measure
-        self.assertEqual(4, len(tune.splitMeasures()))
+        self.assertEqual(4, len(app.tuneToMeasures(tune)))
 
         # test for empty measures edge case
         emptyTune = Tune()
-        self.assertEqual(0, len(emptyTune.splitMeasures()))
+        self.assertEqual(0, len(app.tuneToMeasures(emptyTune)))
 
         # test get_note_number to return a note by measure
         # parameters are measure number and note number
@@ -509,6 +498,7 @@ class AppTestCase(unittest.TestCase):
                      Tune.Duration.QUARTER]
         notes = []
 
+        curr_onset = 0.0
         for duration in durations:
             pitch = Tune.Pitch()
             pitch.letter = "a"
@@ -516,6 +506,8 @@ class AppTestCase(unittest.TestCase):
             note = Tune.Note()
             note.pitch = pitch
             note.duration = duration
+            note.onset = curr_onset
+            curr_onset += 0.25
             notes.append(note)
 
         # make test tune object with the notes
@@ -567,11 +559,11 @@ class AppTestCase(unittest.TestCase):
 
         # make test tune object with the notes
         testTune = Tune.Tune()
-        testTune.setNotesList(notes)
+        testTune.setEventsList(notes)
         # set the app's tune to be this test tune
         setTune(testTune)
 
-        # for each note, send a request to edit the pitch
+        # send a request to edit the pitch for the note 1 in measure 0
         for i in range(0, len(notes),15):
             newPitch = Tune.Pitch()
             newPitch.letter = letters[i % len(letters)] # just choose some letter in the letters list
@@ -579,8 +571,8 @@ class AppTestCase(unittest.TestCase):
             newPitch.octave = octaves[i % len(octaves)] # just choose some octave in the octaves list
 
             self.app.post('/', data=dict(
-                editDurationInputMeasureIndex=0,
-                editPitchInputIndex=i,
+                editPitchInputMeasureIndex=0,
+                editPitchInputIndex=1,
                 editPitchInputLetter=newPitch.letter,
                 editPitchInputAccidental=newPitch.accidental,
                 editPitchInputOctave=newPitch.octave
@@ -588,7 +580,7 @@ class AppTestCase(unittest.TestCase):
 
             # after making post request to change the duration, make sure new tune object's note list has been updated
             updatedTune = getTune()
-            noteI = updatedTune.notes[i]
+            noteI = updatedTune.events[1]
             pitchI = noteI.pitch
 
             pitchesEqual = pitchI.pitchEqual(newPitch)
@@ -599,37 +591,47 @@ class AppTestCase(unittest.TestCase):
 
     # upload a json file (and that a non-json file doesn't upload) -- sofia
     def test_json_upload(self):
-
+        print "test_json_upload"
         global tune
         setTune(tune)
 
+
         # Testing a valid .json file
-        f = open("../tests/JSONTestFiles/e-flat-major-scale-on-bass-clef.json", 'rb')
+        f = open("../tests/JSONTestFiles/tune-generic.json", 'rb')
+
+
         self.app.post(
             '/',
             data={
-                'fileInput': f,
+                'jsonInput': f,
             },
             content_type='multipart/form-data',
         )
+        f.close()
+        f = open("../tests/JSONTestFiles/tune-generic.json", 'r')
+        r = f.read()
+        f.close()
+        lines_input = r.splitlines()
 
-        # The tune object should have found the json file, in the uploads directory
         tune = getTune()
-        self.assertEqual(tune.jsonfile, "static/uploads/e-flat-major-scale-on-bass-clef.json")
+        tune.TunetoJSON(filename='test-output.json')
 
-        # Testing a non json file
-        f = open("../tests/MIDITestFiles/e-flat-major-scale-on-bass-clef.pdf", 'rb')
-        self.app.post(
-            '/',
-            data={
-                'fileInput': f,
-            },
-            content_type='multipart/form-data',
-        )
+        f1 = open("test-output.json", 'r')
 
-        # The tune object should not have chosen the pdf, should remain unchanged
-        tune = getTune()
-        self.assertEqual(tune.jsonfile, "static/uploads/e-flat-major-scale-on-bass-clef.json")
+        r1 = f1.read()
+        f1.close()
+        lines_output = r1.splitlines()
+
+
+
+        output_len = len(lines_output)
+        input_len = len(lines_input)
+        self.assertEqual(output_len, input_len)
+        for i in range(output_len):
+            print i
+            self.assertEqual(lines_output[i], lines_input[i])
+
+        print "test_json_upload passed"
 
 
     # upload mp3 -- sofia

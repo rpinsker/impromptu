@@ -31,9 +31,11 @@
 </div>
 <br>
 <div class="left-panel">
-        <div class="row">
-            <input class="button" type="submit" value="Save JSON">
+         <div class="row">
+                <a id="saveJSON" class="button" href="static/uploads/currentTune.json" download>Save JSON</a>
         </div>
+
+
         <div class="row">
             <button id="load">LOAD JSON</button>
                 <div class="modal" id="jsonModal">
@@ -261,8 +263,19 @@
                         {% endfor %}
                         <hr>
                         <div class="modal-button-box">
-                            <input class="modal-button" id="note-apply" type="button" value="Apply" \>
-                            <input class="modal-button" id="note-cancel" type="submit" value="Cancel" \>
+                            <form action="/" method="POST">
+                                <input name="measure_number" hidden />
+                                <input name="note_number" hidden />
+                                <input name="duration0" hidden />
+                                <input name="duration1" hidden />
+                                <input name="pitch" hidden />
+                                <input name="acc" hidden />
+                                <input name="octave" hidden />
+                                <input name="submit-type" hidden />
+                                <input class="modal-button" id="note-apply" name="note-apply" type="button" value="Apply" />
+                                <input class="modal-button" id="note-submit" name="note-submit" type="submit" value="Submit" />
+                                <input class="modal-button" id="note-cancel" value="Cancel" type="button" />
+                            </form>
                         </div>
                         <div class="clear"></div>
                     </div>
@@ -289,7 +302,7 @@
                     </div>
                 </div>
 
-                <a id="save" href="#" class="button">Save Recording &#9834;</a> -->
+                <a id="save" href="#" class="button">Save Recording &#9834;</a>
 
             </div>
             <script>
