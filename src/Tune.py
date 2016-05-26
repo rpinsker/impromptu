@@ -363,11 +363,13 @@ class Tune(object):
 
     def eventJSONtoTune(self, event):
         onset = float(event['onset'])
-        duration = self.durationJSONtoTune(str(event['duration']))   
+        duration = self.durationJSONtoTune(str(event['duration']))
+        s_duration = float(event['s_duration'])
+        print s_duration  
         #new_event = Event(duration=duration, onset=onset)
 
         if event['class'] == 'note':
-            new_event = Note(duration=duration, onset=onset)
+            new_event = Note(duration=duration, s_duration=s_duration, onset=onset)
             if event['frequency'] != "":
                 n_frequency = float(event['frequency'])
             else:
@@ -376,9 +378,9 @@ class Tune(object):
             new_event.frequency = n_frequency
             new_event.setPitch(n_pitch)
         elif event['class'] == 'rest':
-            new_event = Rest(duration=duration, onset=onset)
+            new_event = Rest(duration=duration, s_duration=s_duration, onset=onset)
         elif event['class'] == 'chord': 
-            new_event = Chord(duration=duration, onset=onset)
+            new_event = Chord(duration=duration, s_duration=s_duration, onset=onset)
             pitches = []
             for p in event['pitches']:
                 pch = self.pitchJSONtoTune(p)

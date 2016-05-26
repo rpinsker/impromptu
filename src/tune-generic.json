@@ -1,58 +1,40 @@
 {
 	"tune":{
-		"timeSignature":["4","8"],
+		"timeSignature":["3","4"],
 		"clef":"0",
-		"title":"",
-		"contributors":[],
+		"title":"tune title!",
+		"contributors":["contributor one","contributor two"],
 		"events":[
 			{
-				"class":"chord",
-				"duration":"",
-				"s_duration":"",
-				"onset":"0.000000",
-				"pitches":[
-					{
-					"letter":"e",
-					"octave":"3",
-					"accidental":"0"
-					},
-					{
-					"letter":"g",
-					"octave":"3",
-					"accidental":"1"
-					}
-				]
+				"class":"note",
+				"duration":"QUARTER",
+				"s_duration":"1.000000",
+				"frequency":"25.000000",
+				"onset":"5.670000",
+				"pitch":{
+					"letter":"b",
+					"octave":"2",
+					"accidental":"2"
+				}
 			},
 			{
 				"class":"rest",
-				"duration":"QUARTER",
-				"s_duration":"",
-				"onset":"0.272727",
+				"duration":"WHOLE",
+				"s_duration":"4.000000",
+				"onset":"6.670000",
 				"pitch":{
 					"letter":"r",
 					"octave":"",
 					"accidental":""
-				}
-			},
-			{
-				"class":"note",
-				"duration":"SIXTEENTH",
-				"s_duration":"",
-				"frequency":"",
-				"onset":"1.090908",
-				"pitch":{
-					"letter":"a",
-					"octave":"3",
-					"accidental":"0"
 				}
 			}
 		],
 		"keySignature":{
 			"isMajor":"True",
 				"pitch":{
-					"letter":"",
+					"letter":"b",
 					"octave":"",
-					"accidental":""
+					"accidental":"2"
 				}
 		}
 	}

@@ -33,10 +33,10 @@ from Tune import *
 #print tune3_json.toString()
 
 #gtg
-#tune4 = Tune()
-#tune4.JSONtoTune("../tests/MIDITestFiles/tune2.json")
-#print tune4.toString()
-#tune4.TunetoJSON()
+tune4 = Tune()
+tune4.JSONtoTune("../tests/MIDITestFiles/tune.json")
+print tune4.toString()
+tune4.TunetoJSON()
 
 
 
